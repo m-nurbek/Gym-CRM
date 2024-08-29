@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 public class TraineeEntity {
     private Long id;
-    private Date date;
+    private Date dob;
     private String address;
     private Long userId;
 }

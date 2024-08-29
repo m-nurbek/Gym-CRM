@@ -61,7 +61,7 @@ public class MapRepositoryImpl <T, ID> implements MapRepository<T, ID> {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
         Assert.notNull(entity, ENTITY_MUST_NOT_BE_NULL);
 
-        map.put(id, entity);
+        map.putIfAbsent(id, entity);
 
         return entity;
     }
@@ -85,7 +85,9 @@ public class MapRepositoryImpl <T, ID> implements MapRepository<T, ID> {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
         Assert.notNull(entity, ENTITY_MUST_NOT_BE_NULL);
 
-        map.put(id, entity);
+        if (map.containsKey(id)) {
+            map.put(id, entity);
+        }
     }
 
     @Override
