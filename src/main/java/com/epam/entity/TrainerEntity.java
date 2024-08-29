@@ -1,8 +1,15 @@
 package com.epam.entity;
 
+import com.epam.dto.TrainerDto;
+import com.epam.dto.TrainingTypeDto;
+import com.epam.dto.UserDto;
+import com.epam.repository.TrainingTypeRepository;
+import com.epam.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -11,4 +18,26 @@ public class TrainerEntity {
     private Long id;
     private Long specialization; // training type
     private Long userId;
+
+    public TrainerDto toDto(TrainingTypeRepository trainingTypeRepository, UserRepository userRepository) {
+        Optional<TrainingTypeEntity> trainingTypeEntity = trainingTypeRepository.findById(specialization);
+        Optional<UserEntity> userEntity = userRepository.findById(userId);
+
+        TrainingTypeDto trainingTypeDto = null;
+        UserDto userDto = null;
+
+        if (trainingTypeEntity.isPresent()) {
+            trainingTypeDto = trainingTypeEntity.get().toDto();
+        }
+
+        if (userEntity.isPresent()) {
+            userDto = userEntity.get().toDto();
+        }
+
+        return new TrainerDto(id, trainingTypeDto, userDto);
+    }
+
+    public static TrainerEntity fromDto(TrainerDto trainerDto) {
+        return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization().getId(), trainerDto.getUser().getId());
+    }
 }
