@@ -1,6 +1,7 @@
 package com.epam.service;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CrudService<T, ID> {
     void add(T obj);
@@ -9,7 +10,7 @@ public interface CrudService<T, ID> {
 
     void delete(ID id);
 
-    T get(ID id);
+    Optional<T> get(ID id);
 
     List<T> getAll();
 }

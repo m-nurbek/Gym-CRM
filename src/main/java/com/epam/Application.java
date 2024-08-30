@@ -1,7 +1,7 @@
 package com.epam;
 
 import com.epam.config.ApplicationConfig;
-import com.epam.service.serviceImpl.UserService;
+import com.epam.service.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

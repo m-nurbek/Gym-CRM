@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> implements MapRepository<T, ID> {
-
     private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
     private static final String IDS_MUST_NOT_BE_NULL = "IDs must not be null";
     private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
@@ -60,8 +59,17 @@ public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> impl
     public <S extends T> S save(S entity) {
         Assert.notNull(entity, ENTITY_MUST_NOT_BE_NULL);
 
+        if (entity.getId() != null && map.containsKey(entity.getId())) {
+            return (S) map.get(entity.getId());
+        }
+
         if (entity.getId() == null) {
             ID id = generateId();
+
+            while (map.containsKey(id)) {
+                id = generateId();
+            }
+
             entity.setId(id);
         }
 
