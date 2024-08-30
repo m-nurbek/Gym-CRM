@@ -1,14 +1,14 @@
 package com.epam.repository;
 
+import com.epam.entity.Entity;
+import com.epam.util.AtomicBigInteger;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapRepositoryImpl <T, ID> implements MapRepository<T, ID> {
+public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> implements MapRepository<T, ID> {
 
     private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
     private static final String IDS_MUST_NOT_BE_NULL = "IDs must not be null";
@@ -16,6 +16,7 @@ public class MapRepositoryImpl <T, ID> implements MapRepository<T, ID> {
     private static final String ENTITIES_MUST_NOT_BE_NULL = "Entities must not be null";
 
     private final Map<ID, T> map = new ConcurrentHashMap<>();
+    private final AtomicBigInteger idGenerator = new AtomicBigInteger(BigInteger.ZERO);
 
     @Override
     public Optional<T> findById(ID id) {
@@ -55,29 +56,39 @@ public class MapRepositoryImpl <T, ID> implements MapRepository<T, ID> {
         return map.containsKey(id);
     }
 
-
     @Override
-    public <S extends T> S save(ID id, S entity) {
-        Assert.notNull(id, ID_MUST_NOT_BE_NULL);
+    public <S extends T> S save(S entity) {
         Assert.notNull(entity, ENTITY_MUST_NOT_BE_NULL);
 
-        map.putIfAbsent(id, entity);
+        if (entity.getId() == null) {
+            ID id = generateId();
+            entity.setId(id);
+        }
+
+        map.putIfAbsent(entity.getId(), entity);
 
         return entity;
     }
 
+    private ID generateId() {
+        try {
+            return (ID) idGenerator.incrementAndGet();
+        } catch (Exception e) {
+            throw new IllegalStateException("ID type is not supported for generation", e);
+        }
+    }
+
     @Override
-    public <S extends T> Iterable<S> saveAll(Map<ID, S> entityMap) {
-        Assert.notNull(entityMap, ENTITIES_MUST_NOT_BE_NULL);
+    public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
+        Assert.notNull(entities, ENTITIES_MUST_NOT_BE_NULL);
 
-        map.putAll(entityMap);
+        var entitiesIterator = entities.iterator();
 
-        List<S> result = new ArrayList<>();
-        for (ID id : entityMap.keySet()) {
-            result.add(entityMap.get(id));
+        while (entitiesIterator.hasNext()) {
+            save(entitiesIterator.next());
         }
 
-        return result;
+        return entities;
     }
 
     @Override

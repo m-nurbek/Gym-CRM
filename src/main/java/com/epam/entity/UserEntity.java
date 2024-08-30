@@ -1,20 +1,24 @@
 package com.epam.entity;
 
 import com.epam.dto.UserDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+
+import java.math.BigInteger;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Data
-public class UserEntity {
-    private Long id;
+public class UserEntity implements Entity<BigInteger>{
+    private BigInteger id;
+    @NonNull
     private String firstName;
+    @NonNull
     private String lastName;
+    @NonNull
     private String username;
+    @NonNull
     private String password;
-    private boolean isActive;
+    private boolean isActive = true;
 
     public UserDto toDto() {
         return new UserDto(id, firstName, lastName, username, password, isActive);

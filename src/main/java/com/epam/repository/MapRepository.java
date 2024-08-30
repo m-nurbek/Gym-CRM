@@ -1,6 +1,5 @@
 package com.epam.repository;
 
-import java.util.Map;
 import java.util.Optional;
 
 public interface MapRepository<T, ID> {
@@ -13,9 +12,9 @@ public interface MapRepository<T, ID> {
 
     boolean existsById(ID id);
 
-    <S extends T> S save(ID id, S entity);
+    <S extends T> S save(S entity);
 
-    <S extends T> Iterable<S> saveAll(Map<ID, S> entityMap);
+    <S extends T> Iterable<S> saveAll(Iterable<S> entities);
 
     void update(ID id, T entity);
 

@@ -7,17 +7,21 @@ import com.epam.repository.TrainingTypeRepository;
 import com.epam.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigInteger;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Data
-public class TrainerEntity {
-    private Long id;
-    private Long specialization; // training type
-    private Long userId;
+public class TrainerEntity implements Entity<BigInteger> {
+    private BigInteger id;
+    @NonNull
+    private BigInteger specialization; // training type
+    @NonNull
+    private BigInteger userId;
 
     public TrainerDto toDto(TrainingTypeRepository trainingTypeRepository, UserRepository userRepository) {
         Optional<TrainingTypeEntity> trainingTypeEntity = trainingTypeRepository.findById(specialization);

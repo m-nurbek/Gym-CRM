@@ -10,22 +10,29 @@ import com.epam.repository.TrainingTypeRepository;
 import com.epam.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.Optional;
 
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class TrainingEntity {
-    private Long id;
-    private Long traineeId;
-    private Long trainerId;
-
+public class TrainingEntity implements Entity<BigInteger> {
+    private BigInteger id;
+    @NonNull
+    private BigInteger traineeId;
+    @NonNull
+    private BigInteger trainerId;
+    @NonNull
     private String name;
-    private Long type; // training type
+    @NonNull
+    private BigInteger type; // training type
+    @NonNull
     private Date date;
+    @NonNull
     private String duration;
 
     public TrainingDto toDto(TrainerRepository trainerRepository, TraineeRepository traineeRepository, UserRepository userRepository, TrainingTypeRepository trainingTypeRepository) {
