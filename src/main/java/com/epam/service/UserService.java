@@ -1,5 +1,6 @@
 package com.epam.service;
 
+import com.epam.aop.Loggable;
 import com.epam.dto.UserDto;
 import com.epam.entity.UserEntity;
 import com.epam.repository.UserRepository;
@@ -21,6 +22,7 @@ public class UserService implements CrudService<UserDto, BigInteger> {
     }
 
     @Override
+    @Loggable
     public void add(UserDto userDto) {
         UserEntity userEntity = UserEntity.fromDto(userDto);
         userRepository.save(userEntity);
