@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CrudService<T, ID> {
-    void add(T obj);
+    T add(T obj);
 
-    void update(T obj);
+    T update(T obj);
 
     void delete(ID id);
 

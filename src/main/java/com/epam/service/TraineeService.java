@@ -24,15 +24,23 @@ public class TraineeService implements CrudService<TraineeDto, BigInteger> {
     }
 
     @Override
-    public void add(TraineeDto traineeDto) {
+    public TraineeDto add(TraineeDto traineeDto) {
         TraineeEntity traineeEntity = TraineeEntity.fromDto(traineeDto);
-        traineeRepository.save(traineeEntity);
+        TraineeEntity t = traineeRepository.save(traineeEntity);
+
+        return t.toDto(userRepository);
     }
 
     @Override
-    public void update(TraineeDto obj) {
-        TraineeEntity traineeEntity = TraineeEntity.fromDto(obj);
+    public TraineeDto update(TraineeDto traineeDto) {
+        if (traineeDto.getId() == null) {
+            return null;
+        }
+
+        TraineeEntity traineeEntity = TraineeEntity.fromDto(traineeDto);
         traineeRepository.update(traineeEntity.getId(), traineeEntity);
+
+        return get(traineeEntity.getId()).orElse(null);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class UserService implements CrudService<UserDto, BigInteger> {
 
     @Override
     @Loggable
-    public void add(UserDto userDto) {
+    public UserDto add(UserDto userDto) {
         UserEntity userEntity = UserEntity.fromDto(userDto);
 
         int serialNumber = 0;
@@ -38,14 +38,22 @@ public class UserService implements CrudService<UserDto, BigInteger> {
         userEntity.setUsername(username);
         userEntity.setPassword(UserProfileUtil.generatePassword());
 
-        userRepository.save(userEntity);
+        UserEntity u = userRepository.save(userEntity);
+
+        return u.toDto();
     }
 
     @Override
     @Loggable
-    public void update(UserDto userDto) {
+    public UserDto update(UserDto userDto) {
+        if (userDto.getId() == null) {
+            return null;
+        }
+
         UserEntity userEntity = UserEntity.fromDto(userDto);
         userRepository.update(userEntity.getId(), userEntity);
+
+        return get(userEntity.getId()).orElse(null);
     }
 
     @Override

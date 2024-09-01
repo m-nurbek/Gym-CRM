@@ -27,15 +27,23 @@ public class TrainerService implements CrudService<TrainerDto, BigInteger> {
     }
 
     @Override
-    public void add(TrainerDto trainerDto) {
+    public TrainerDto add(TrainerDto trainerDto) {
         TrainerEntity trainerEntity = TrainerEntity.fromDto(trainerDto);
-        trainerRepository.save(trainerEntity);
+        TrainerEntity t = trainerRepository.save(trainerEntity);
+
+        return t.toDto(trainingTypeRepository, userRepository);
     }
 
     @Override
-    public void update(TrainerDto trainerDto) {
+    public TrainerDto update(TrainerDto trainerDto) {
+        if (trainerDto.getId() == null) {
+            return null;
+        }
+
         TrainerEntity trainerEntity = TrainerEntity.fromDto(trainerDto);
         trainerRepository.update(trainerEntity.getId(), trainerEntity);
+
+        return get(trainerEntity.getId()).orElse(null);
     }
 
     @Override

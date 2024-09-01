@@ -19,15 +19,23 @@ public class TrainingTypeService implements CrudService<TrainingTypeDto, BigInte
     }
 
     @Override
-    public void add(TrainingTypeDto obj) {
+    public TrainingTypeDto add(TrainingTypeDto obj) {
         TrainingTypeEntity trainingTypeEntity = TrainingTypeEntity.fromDto(obj);
-        trainingTypeRepository.save(trainingTypeEntity);
+        TrainingTypeEntity t = trainingTypeRepository.save(trainingTypeEntity);
+
+        return t.toDto();
     }
 
     @Override
-    public void update(TrainingTypeDto obj) {
+    public TrainingTypeDto update(TrainingTypeDto obj) {
+        if (obj.getId() == null) {
+            return null;
+        }
+
         TrainingTypeEntity trainingTypeEntity = TrainingTypeEntity.fromDto(obj);
         trainingTypeRepository.update(trainingTypeEntity.getId(), trainingTypeEntity);
+
+        return get(trainingTypeEntity.getId()).orElse(null);
     }
 
     @Override
