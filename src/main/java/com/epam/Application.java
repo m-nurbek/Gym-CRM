@@ -11,7 +11,7 @@ import java.math.BigInteger;
 @Slf4j
 public class Application {
     public static void main(String[] args) {
-        log.info("Hello");
+        log.info("Application started ...");
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class)) {
                 UserService u = context.getBean(UserService.class);
