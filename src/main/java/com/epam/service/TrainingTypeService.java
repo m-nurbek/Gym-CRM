@@ -1,5 +1,6 @@
 package com.epam.service;
 
+import com.epam.aop.Loggable;
 import com.epam.dto.TrainingTypeDto;
 import com.epam.entity.TrainingTypeEntity;
 import com.epam.repository.TrainingTypeRepository;
@@ -19,6 +20,7 @@ public class TrainingTypeService implements CrudService<TrainingTypeDto, BigInte
     }
 
     @Override
+    @Loggable
     public TrainingTypeDto add(TrainingTypeDto obj) {
         TrainingTypeEntity trainingTypeEntity = TrainingTypeEntity.fromDto(obj);
         TrainingTypeEntity t = trainingTypeRepository.save(trainingTypeEntity);
@@ -27,6 +29,7 @@ public class TrainingTypeService implements CrudService<TrainingTypeDto, BigInte
     }
 
     @Override
+    @Loggable
     public TrainingTypeDto update(TrainingTypeDto obj) {
         if (obj.getId() == null) {
             return null;
@@ -39,16 +42,19 @@ public class TrainingTypeService implements CrudService<TrainingTypeDto, BigInte
     }
 
     @Override
+    @Loggable
     public void delete(BigInteger bigInteger) {
         trainingTypeRepository.deleteById(bigInteger);
     }
 
     @Override
+    @Loggable
     public Optional<TrainingTypeDto> get(BigInteger bigInteger) {
         return trainingTypeRepository.findById(bigInteger).map(TrainingTypeEntity::toDto);
     }
 
     @Override
+    @Loggable
     public List<TrainingTypeDto> getAll() {
         List<TrainingTypeEntity> trainingTypeEntities = new ArrayList<>();
         trainingTypeRepository.findAll().forEach(trainingTypeEntities::add);
