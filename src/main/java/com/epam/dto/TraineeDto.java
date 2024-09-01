@@ -1,6 +1,8 @@
 package com.epam.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +21,7 @@ public class TraineeDto {
     private BigInteger id;
     private Date dob;
     private String address;
+    @JsonIgnore
     private UserDto user;
 
     @JsonCreator

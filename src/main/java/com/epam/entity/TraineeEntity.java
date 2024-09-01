@@ -3,6 +3,8 @@ package com.epam.entity;
 import com.epam.dto.TraineeDto;
 import com.epam.dto.UserDto;
 import com.epam.repository.UserRepository;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -13,7 +15,6 @@ import java.util.Date;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Data
 public class TraineeEntity implements Entity<BigInteger> {
     private BigInteger id;
@@ -23,6 +24,19 @@ public class TraineeEntity implements Entity<BigInteger> {
     private String address;
     @NonNull
     private BigInteger userId;
+
+    @JsonCreator
+    public TraineeEntity(
+            @JsonProperty("id") BigInteger id,
+            @JsonProperty("dob") Date dob,
+            @JsonProperty("address") String address,
+            @JsonProperty("userId") BigInteger userId
+    ) {
+        this.id = id;
+        this.dob = dob;
+        this.address = address;
+        this.userId = userId;
+    }
 
     public TraineeDto toDto(UserRepository userRepository) {
         Optional<UserEntity> userEntity = userRepository.findById(userId);

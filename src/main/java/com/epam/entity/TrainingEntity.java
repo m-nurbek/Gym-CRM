@@ -8,6 +8,8 @@ import com.epam.repository.TraineeRepository;
 import com.epam.repository.TrainerRepository;
 import com.epam.repository.TrainingTypeRepository;
 import com.epam.repository.UserRepository;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -19,7 +21,6 @@ import java.util.Optional;
 
 @Data
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class TrainingEntity implements Entity<BigInteger> {
     private BigInteger id;
     @NonNull
@@ -34,6 +35,25 @@ public class TrainingEntity implements Entity<BigInteger> {
     private Date date;
     @NonNull
     private String duration;
+
+    @JsonCreator
+    public TrainingEntity(
+            @JsonProperty("id") BigInteger id,
+            @JsonProperty("traineeId") BigInteger traineeId,
+            @JsonProperty("trainerId") BigInteger trainerId,
+            @JsonProperty("name") String name,
+            @JsonProperty("type") BigInteger type,
+            @JsonProperty("date") Date date,
+            @JsonProperty("duration") String duration
+    ) {
+        this.id = id;
+        this.traineeId = traineeId;
+        this.trainerId = trainerId;
+        this.name = name;
+        this.type = type;
+        this.date = date;
+        this.duration = duration;
+    }
 
     public TrainingDto toDto(TrainerRepository trainerRepository, TraineeRepository traineeRepository, UserRepository userRepository, TrainingTypeRepository trainingTypeRepository) {
         Optional<TrainerEntity> trainer = trainerRepository.findById(trainerId);

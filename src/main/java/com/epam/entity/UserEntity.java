@@ -1,12 +1,13 @@
 package com.epam.entity;
 
 import com.epam.dto.UserDto;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.math.BigInteger;
 
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Data
 public class UserEntity implements Entity<BigInteger>{
     private BigInteger id;
@@ -19,6 +20,23 @@ public class UserEntity implements Entity<BigInteger>{
     @NonNull
     private String password;
     private boolean isActive = true;
+
+    @JsonCreator
+    public UserEntity(
+            @JsonProperty("id") BigInteger id,
+            @JsonProperty("firstName") String firstName,
+            @JsonProperty("lastName") String lastName,
+            @JsonProperty("username") String username,
+            @JsonProperty("password") String password,
+            @JsonProperty("isActive") boolean isActive
+    ) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.password = password;
+        this.isActive = isActive;
+    }
 
     public UserDto toDto() {
         return new UserDto(id, firstName, lastName, username, password, isActive);

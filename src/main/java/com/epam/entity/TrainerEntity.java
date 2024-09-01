@@ -5,6 +5,8 @@ import com.epam.dto.TrainingTypeDto;
 import com.epam.dto.UserDto;
 import com.epam.repository.TrainingTypeRepository;
 import com.epam.repository.UserRepository;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -14,7 +16,6 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Data
 public class TrainerEntity implements Entity<BigInteger> {
     private BigInteger id;
@@ -22,6 +23,17 @@ public class TrainerEntity implements Entity<BigInteger> {
     private BigInteger specialization; // training type
     @NonNull
     private BigInteger userId;
+
+    @JsonCreator
+    public TrainerEntity(
+            @JsonProperty("id") BigInteger id,
+            @JsonProperty("specialization") BigInteger specialization,
+            @JsonProperty("userId") BigInteger userId
+    ) {
+        this.id = id;
+        this.specialization = specialization;
+        this.userId = userId;
+    }
 
     public TrainerDto toDto(TrainingTypeRepository trainingTypeRepository, UserRepository userRepository) {
         Optional<TrainingTypeEntity> trainingTypeEntity = trainingTypeRepository.findById(specialization);
