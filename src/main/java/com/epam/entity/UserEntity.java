@@ -15,9 +15,7 @@ public class UserEntity implements Entity<BigInteger>{
     private String firstName;
     @NonNull
     private String lastName;
-    @NonNull
     private String username;
-    @NonNull
     private String password;
     private boolean isActive = true;
 

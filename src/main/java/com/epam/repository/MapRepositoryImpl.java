@@ -6,7 +6,6 @@ import org.springframework.util.Assert;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> implements MapRepository<T, ID> {
     private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
@@ -14,7 +13,7 @@ public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> impl
     private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
     private static final String ENTITIES_MUST_NOT_BE_NULL = "Entities must not be null";
 
-    private final Map<ID, T> map;
+    final Map<ID, T> map;
 
     private final Storage<T, ID> storage;
     private final AtomicBigInteger idGenerator = new AtomicBigInteger(BigInteger.ZERO);
