@@ -14,8 +14,15 @@ public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> impl
     private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
     private static final String ENTITIES_MUST_NOT_BE_NULL = "Entities must not be null";
 
-    private final Map<ID, T> map = new ConcurrentHashMap<>();
+    private final Map<ID, T> map;
+
+    private final Storage<T, ID> storage;
     private final AtomicBigInteger idGenerator = new AtomicBigInteger(BigInteger.ZERO);
+
+    public MapRepositoryImpl(Storage<T, ID> storage) {
+        this.storage = storage;
+        this.map = storage.getMap();
+    }
 
     @Override
     public Optional<T> findById(ID id) {
