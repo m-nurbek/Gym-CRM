@@ -10,7 +10,6 @@ import com.epam.repository.TrainingTypeRepository;
 import com.epam.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

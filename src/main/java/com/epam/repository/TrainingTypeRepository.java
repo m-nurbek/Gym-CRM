@@ -1,6 +1,5 @@
 package com.epam.repository;
 
-import com.epam.entity.TraineeEntity;
 import com.epam.entity.TrainingTypeEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

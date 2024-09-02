@@ -9,7 +9,7 @@ import java.math.BigInteger;
 
 @RequiredArgsConstructor
 @Data
-public class UserEntity implements Entity<BigInteger>{
+public class UserEntity implements Entity<BigInteger> {
     private BigInteger id;
     @NonNull
     private String firstName;

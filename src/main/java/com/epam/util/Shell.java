@@ -91,15 +91,15 @@ public class Shell implements AutoCloseable {
         writeOutput("============== HELP ==============");
         writeOutput("Available commands:");
         writeOutput("""
-                FIND - find an entity
-                CREATE - create a new entity
-                UPDATE - update an entity
-                DELETE - delete an entity
-                LIST - list all entities
-                EXIT - exit the application
-        
-                Commands are case-insensitive. Use the command HELP to display this message.
-        """);
+                        FIND - find an entity
+                        CREATE - create a new entity
+                        UPDATE - update an entity
+                        DELETE - delete an entity
+                        LIST - list all entities
+                        EXIT - exit the application
+
+                        Commands are case-insensitive. Use the command HELP to display this message.
+               """);
     }
 
     public void listOptions(String... options) {
