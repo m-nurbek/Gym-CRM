@@ -4,6 +4,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -42,8 +46,15 @@ public class Shell implements AutoCloseable {
     public Date readDate(String prompt) {
         String date = readInput(prompt);
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
         if (date.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            return new Date(date);
+            try{
+                return formatter.parse(date);
+            } catch (ParseException e) {
+                writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
+                return readDate(prompt);
+            }
         } else {
             writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
             return readDate(prompt);
