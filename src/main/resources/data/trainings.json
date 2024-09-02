@@ -1,8 +1,17 @@
 [
   {
+    "id": 1,
+    "traineeId": 1,
+    "trainerId": 48,
+    "name": "HIIT",
+    "type": 5,
+    "date": "2021-01-25",
+    "duration": "1 hour"
+  },
+  {
     "id": 2,
-    "trainee": 2,
-    "trainer": 25,
+    "traineeId": 2,
+    "trainerId": 25,
     "name": "Strength Training",
     "type": 2,
     "date": "2021-01-02",
@@ -10,8 +19,8 @@
   },
   {
     "id": 3,
-    "trainee": 3,
-    "trainer": 26,
+    "traineeId": 3,
+    "trainerId": 26,
     "name": "Yoga",
     "type": 3,
     "date": "2021-01-03",
@@ -19,8 +28,8 @@
   },
   {
     "id": 4,
-    "trainee": 4,
-    "trainer": 27,
+    "traineeId": 4,
+    "trainerId": 27,
     "name": "Pilates",
     "type": 4,
     "date": "2021-01-04",
@@ -28,8 +37,8 @@
   },
   {
     "id": 5,
-    "trainee": 5,
-    "trainer": 28,
+    "traineeId": 5,
+    "trainerId": 28,
     "name": "CrossFit",
     "type": 5,
     "date": "2021-01-05",
@@ -37,8 +46,8 @@
   },
   {
     "id": 6,
-    "trainee": 6,
-    "trainer": 29,
+    "traineeId": 6,
+    "trainerId": 29,
     "name": "HIIT",
     "type": 6,
     "date": "2021-01-06",
@@ -46,8 +55,8 @@
   },
   {
     "id": 7,
-    "trainee": 7,
-    "trainer": 30,
+    "traineeId": 7,
+    "trainerId": 30,
     "name": "Zumba",
     "type": 7,
     "date": "2021-01-07",
@@ -55,8 +64,8 @@
   },
   {
     "id": 8,
-    "trainee": 8,
-    "trainer": 31,
+    "traineeId": 8,
+    "trainerId": 31,
     "name": "Martial Arts",
     "type": 8,
     "date": "2021-01-08",
@@ -64,8 +73,8 @@
   },
   {
     "id": 9,
-    "trainee": 9,
-    "trainer": 32,
+    "traineeId": 9,
+    "trainerId": 32,
     "name": "Dance",
     "type": 9,
     "date": "2021-01-09",
@@ -73,8 +82,8 @@
   },
   {
     "id": 10,
-    "trainee": 10,
-    "trainer": 33,
+    "traineeId": 10,
+    "trainerId": 33,
     "name": "Swimming",
     "type": 10,
     "date": "2021-01-10",
@@ -82,8 +91,8 @@
   },
   {
     "id": 11,
-    "trainee": 11,
-    "trainer": 34,
+    "traineeId": 11,
+    "trainerId": 34,
     "name": "Cycling",
     "type": 11,
     "date": "2021-01-11",
@@ -91,8 +100,8 @@
   },
   {
     "id": 12,
-    "trainee": 12,
-    "trainer": 35,
+    "traineeId": 12,
+    "trainerId": 35,
     "name": "Running",
     "type": 12,
     "date": "2021-01-12",
@@ -100,8 +109,8 @@
   },
   {
     "id": 13,
-    "trainee": 13,
-    "trainer": 36,
+    "traineeId": 13,
+    "trainerId": 36,
     "name": "Boxing",
     "type": 13,
     "date": "2021-01-13",
@@ -109,8 +118,8 @@
   },
   {
     "id": 14,
-    "trainee": 14,
-    "trainer": 37,
+    "traineeId": 14,
+    "trainerId": 37,
     "name": "Kickboxing",
     "type": 14,
     "date": "2021-01-14",
@@ -118,8 +127,8 @@
   },
   {
     "id": 15,
-    "trainee": 15,
-    "trainer": 38,
+    "traineeId": 15,
+    "trainerId": 38,
     "name": "Aerobics",
     "type": 15,
     "date": "2021-01-15",
@@ -127,8 +136,8 @@
   },
   {
     "id": 16,
-    "trainee": 16,
-    "trainer": 39,
+    "traineeId": 16,
+    "trainerId": 39,
     "name": "Bodybuilding",
     "type": 16,
     "date": "2021-01-16",
@@ -136,8 +145,8 @@
   },
   {
     "id": 17,
-    "trainee": 17,
-    "trainer": 40,
+    "traineeId": 17,
+    "trainerId": 40,
     "name": "Powerlifting",
     "type": 17,
     "date": "2021-01-17",
@@ -145,8 +154,8 @@
   },
   {
     "id": 18,
-    "trainee": 18,
-    "trainer": 41,
+    "traineeId": 18,
+    "trainerId": 41,
     "name": "Calisthenics",
     "type": 18,
     "date": "2021-01-18",
@@ -154,8 +163,8 @@
   },
   {
     "id": 19,
-    "trainee": 19,
-    "trainer": 42,
+    "traineeId": 19,
+    "trainerId": 42,
     "name": "Gymnastics",
     "type": 19,
     "date": "2021-01-19",
@@ -163,8 +172,8 @@
   },
   {
     "id": 20,
-    "trainee": 20,
-    "trainer": 43,
+    "traineeId": 20,
+    "trainerId": 43,
     "name": "Parkour",
     "type": 20,
     "date": "2021-01-20",
@@ -172,8 +181,8 @@
   },
   {
     "id": 21,
-    "trainee": 21,
-    "trainer": 44,
+    "traineeId": 21,
+    "trainerId": 44,
     "name": "Strength Training",
     "type": 1,
     "date": "2021-01-21",
@@ -181,8 +190,8 @@
   },
   {
     "id": 22,
-    "trainee": 22,
-    "trainer": 45,
+    "traineeId": 22,
+    "trainerId": 45,
     "name": "Yoga",
     "type": 2,
     "date": "2021-01-22",
@@ -190,8 +199,8 @@
   },
   {
     "id": 23,
-    "trainee": 23,
-    "trainer": 46,
+    "traineeId": 23,
+    "trainerId": 46,
     "name": "Pilates",
     "type": 3,
     "date": "2021-01-23",
@@ -199,20 +208,11 @@
   },
   {
     "id": 24,
-    "trainee": 24,
-    "trainer": 47,
+    "traineeId": 24,
+    "trainerId": 47,
     "name": "CrossFit",
     "type": 4,
     "date": "2021-01-24",
-    "duration": "1 hour"
-  },
-  {
-    "id": 25,
-    "trainee": 1,
-    "trainer": 48,
-    "name": "HIIT",
-    "type": 5,
-    "date": "2021-01-25",
     "duration": "1 hour"
   }
 ]

@@ -38,7 +38,7 @@ public class TrainingServiceIntegrationTest {
     public void shouldFindTraining() {
         // given
         var trainingId = BigInteger.ONE;
-        var trainingId50 = BigInteger.valueOf(25L);
+        var trainingId50 = BigInteger.valueOf(24L);
 
         // when
         var foundTraining = trainingService.get(trainingId).orElse(null);
@@ -87,7 +87,7 @@ public class TrainingServiceIntegrationTest {
         // then
         assertThat(addedTraining).isNotNull();
         assertThat(addedTraining.getId()).isNotNull();
-        assertThat(addedTraining.getId()).isEqualTo(BigInteger.valueOf(26L));
+        assertThat(addedTraining.getId()).isEqualTo(BigInteger.valueOf(25L));
         assertThat(addedTraining.getType()).isEqualTo(trainingType);
         assertThat(addedTraining.getDate()).isEqualTo(date);
         assertThat(addedTraining.getDuration()).isEqualTo("2 hours");
@@ -102,7 +102,7 @@ public class TrainingServiceIntegrationTest {
         var trainingType = trainingTypeService.get(BigInteger.ONE).orElse(null);
         var trainer = trainerService.get(BigInteger.valueOf(25L)).orElse(null);
         var trainee = traineeService.get(BigInteger.valueOf(1L)).orElse(null);
-        var date = new Date(2001, 1, 1);
+        var date = new Date(3000, 1, 1);
 
         var training = TrainingDto.builder()
                 .id(BigInteger.valueOf(1L))
@@ -140,7 +140,7 @@ public class TrainingServiceIntegrationTest {
                 .name("TEST")
                 .build();
 
-        var addedTraining = trainingService.add(training);
+        var addedTraining = trainingService.update(training);
         assert addedTraining != null;
 
         // when
@@ -149,7 +149,7 @@ public class TrainingServiceIntegrationTest {
 
         // then
         assertThat(updatedTraining).isNotNull();
-        assertThat(updatedTraining.getId()).isEqualTo(BigInteger.valueOf(26L));
+        assertThat(updatedTraining.getId()).isEqualTo(BigInteger.valueOf(1L));
         assertThat(updatedTraining.getType()).isEqualTo(trainingType);
         assertThat(updatedTraining.getDate()).isEqualTo(date);
         assertThat(updatedTraining.getDuration()).isEqualTo("2 hours");
@@ -167,7 +167,7 @@ public class TrainingServiceIntegrationTest {
         var date = new Date(2001, 1, 1);
 
         var training = TrainingDto.builder()
-                .id(BigInteger.valueOf(26L))
+                .id(BigInteger.valueOf(25L))
                 .type(trainingType)
                 .date(date)
                 .duration("2 hours")
@@ -176,12 +176,8 @@ public class TrainingServiceIntegrationTest {
                 .name("TEST")
                 .build();
 
-        var addedTraining = trainingService.add(training);
-        assert addedTraining != null;
-
         // when
-        addedTraining.setId(BigInteger.valueOf(51L));
-        var updatedTraining = trainingService.update(addedTraining);
+        var updatedTraining = trainingService.update(training);
 
         // then
         assertThat(updatedTraining).isNull();
@@ -218,7 +214,7 @@ public class TrainingServiceIntegrationTest {
 
         // then
         assertThat(trainings).isNotNull();
-        assertThat(trainings.size()).isEqualTo(25);
+        assertThat(trainings.size()).isEqualTo(24);
     }
 
     @Test
