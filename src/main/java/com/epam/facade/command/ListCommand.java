@@ -30,7 +30,7 @@ public class ListCommand implements Command {
     }
 
     private void listEntities(CrudService<?, ?> service) {
-        shell.writeOutput("Listing all trainees...");
+        shell.writeOutput("Listing all entities...");
         service.getAll().forEach(x -> shell.writeOutput(x.toString()));
     }
 }
