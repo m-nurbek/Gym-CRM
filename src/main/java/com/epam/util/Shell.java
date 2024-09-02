@@ -2,6 +2,7 @@ package com.epam.util;
 
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.Scanner;
@@ -9,7 +10,7 @@ import java.util.Scanner;
 @Component
 public class Shell implements AutoCloseable {
     private static final String PROMPT = "shell> ";
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     public static final String CREATE = "create";
     public static final String FIND = "find";
@@ -136,5 +137,10 @@ public class Shell implements AutoCloseable {
 
     public void close() {
         scanner.close();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        close();
     }
 }

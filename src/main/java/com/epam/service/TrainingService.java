@@ -41,7 +41,7 @@ public class TrainingService implements CrudService<TrainingDto, BigInteger> {
     @Override
     @Loggable
     public TrainingDto update(TrainingDto trainingDto) {
-        if (trainingDto.getId() == null) {
+        if (trainingDto == null || trainingDto.getId() == null) {
             return null;
         }
 

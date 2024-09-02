@@ -31,7 +31,7 @@ public class TrainingTypeService implements CrudService<TrainingTypeDto, BigInte
     @Override
     @Loggable
     public TrainingTypeDto update(TrainingTypeDto obj) {
-        if (obj.getId() == null) {
+        if (obj == null || obj.getId() == null) {
             return null;
         }
 

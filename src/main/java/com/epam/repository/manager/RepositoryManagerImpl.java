@@ -67,20 +67,20 @@ public class RepositoryManagerImpl<T extends Entity<ID>, ID extends BigInteger> 
         }
     }
 
-    @Override
-    @PreDestroy
-    public void saveToFile() {
-        log.debug("REPOSITORY -> FILE: Trying to load data to a file '{}'", file.getName());
-
-        try (FileWriter fileWriter = new FileWriter(file, false)) {
-            StringWriter writer = new StringWriter();
-            objectMapper.writeValue(writer, repository.findAll());
-            fileWriter.write(writer.toString());
-
-            log.debug("REPOSITORY -> FILE: Loaded data from the repository to the '{}' file", file.getName());
-
-        } catch (IOException e) {
-            log.error("REPOSITORY -> FILE: Failed to save data to file: {}", e.getMessage());
-        }
-    }
+//    @Override
+//    @PreDestroy
+//    public void saveToFile() {
+//        log.debug("REPOSITORY -> FILE: Trying to load data to a file '{}'", file.getName());
+//
+//        try (FileWriter fileWriter = new FileWriter(file, false)) {
+//            StringWriter writer = new StringWriter();
+//            objectMapper.writeValue(writer, repository.findAll());
+//            fileWriter.write(writer.toString());
+//
+//            log.debug("REPOSITORY -> FILE: Loaded data from the repository to the '{}' file", file.getName());
+//
+//        } catch (IOException e) {
+//            log.error("REPOSITORY -> FILE: Failed to save data to file: {}", e.getMessage());
+//        }
+//    }
 }

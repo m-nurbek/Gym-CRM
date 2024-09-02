@@ -23,6 +23,6 @@ public class UserProfileUtil {
     }
 
     public static String generateUsername(String firstName, String lastName, int serialNumber) {
-        return serialNumber > 0 ? String.format("%s.%s.%d", firstName, lastName, serialNumber) : String.format("%s.%s", firstName, lastName);
+        return serialNumber > 0 ? String.format("%s.%s%d", firstName, lastName, serialNumber) : String.format("%s.%s", firstName, lastName);
     }
 }

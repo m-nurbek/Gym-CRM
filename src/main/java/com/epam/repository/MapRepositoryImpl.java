@@ -96,10 +96,8 @@ public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> impl
     public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
         Assert.notNull(entities, ENTITIES_MUST_NOT_BE_NULL);
 
-        var entitiesIterator = entities.iterator();
-
-        while (entitiesIterator.hasNext()) {
-            save(entitiesIterator.next());
+        for (S entity : entities) {
+            save(entity);
         }
 
         return entities;

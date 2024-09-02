@@ -19,8 +19,8 @@ public class Application {
 //            System.out.println("All users:");
 //            u.getAll().forEach(r -> System.out.println(UserDto.Parser.toJson(r)));
 
-            Facade facade = context.getBean(Facade.class);
-            facade.run();
+//            Facade facade = context.getBean(Facade.class);
+//            facade.run();
         }
 
     }

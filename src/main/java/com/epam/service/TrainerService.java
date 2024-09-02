@@ -39,7 +39,7 @@ public class TrainerService implements CrudService<TrainerDto, BigInteger> {
     @Override
     @Loggable
     public TrainerDto update(TrainerDto trainerDto) {
-        if (trainerDto.getId() == null) {
+        if (trainerDto == null || trainerDto.getId() == null) {
             return null;
         }
 

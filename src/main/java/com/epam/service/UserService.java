@@ -46,7 +46,7 @@ public class UserService implements CrudService<UserDto, BigInteger> {
     @Override
     @Loggable
     public UserDto update(UserDto userDto) {
-        if (userDto.getId() == null) {
+        if (userDto == null || userDto.getId() == null) {
             return null;
         }
 

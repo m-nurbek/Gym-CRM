@@ -29,6 +29,7 @@ public class RepositoryTest {
 
     @BeforeEach
     void setUp() {
+        traineeRepository.deleteAll();
         List<TraineeEntity> traineeList = new ArrayList<>();
 
         traineeList.add(new TraineeEntity(Date.valueOf("2001-01-01"), "Malheim Avenue 1E", BigInteger.valueOf(10L))); // id = 1

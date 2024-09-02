@@ -135,9 +135,11 @@
                 <configuration>
                     <excludes>
                         <exclude>com/epam/Application.class</exclude>
-                        <exclude>com/epam/entity/*</exclude>
                         <exclude>com/epam/dto/*</exclude>
                         <exclude>com/epam/config/*</exclude>
+                        <exclude>com/epam/facade/*</exclude>
+                        <exclude>com/epam/aop/*</exclude>
+                        <exclude>com/epam/util/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

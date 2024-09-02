@@ -36,7 +36,7 @@ public class TraineeService implements CrudService<TraineeDto, BigInteger> {
     @Override
     @Loggable
     public TraineeDto update(TraineeDto traineeDto) {
-        if (traineeDto.getId() == null) {
+        if (traineeDto == null || traineeDto.getId() == null) {
             return null;
         }
 
@@ -48,14 +48,15 @@ public class TraineeService implements CrudService<TraineeDto, BigInteger> {
 
     @Override
     @Loggable
-    public void delete(BigInteger bigInteger) {
-        traineeRepository.deleteById(bigInteger);
+    public void delete(BigInteger id) {
+        traineeRepository.deleteById(id);
     }
 
     @Override
     @Loggable
-    public Optional<TraineeDto> get(BigInteger bigInteger) {
-        return traineeRepository.findById(bigInteger).map(traineeEntity -> traineeEntity.toDto(userRepository));
+    public Optional<TraineeDto> get(BigInteger id) {
+        var trainee = traineeRepository.findById(id);
+        return trainee.map(traineeEntity -> traineeEntity.toDto(userRepository));
     }
 
     @Override
