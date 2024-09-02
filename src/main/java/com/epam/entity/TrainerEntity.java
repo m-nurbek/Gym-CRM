@@ -53,6 +53,10 @@ public class TrainerEntity implements Entity<BigInteger> {
     }
 
     public static TrainerEntity fromDto(TrainerDto trainerDto) {
-        return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization().getId(), trainerDto.getUser().getId());
+        return new TrainerEntity(
+                trainerDto.getId(),
+                trainerDto.getSpecialization() == null ? BigInteger.ZERO : trainerDto.getSpecialization().getId(),
+                trainerDto.getUser() == null ? BigInteger.ZERO : trainerDto.getUser().getId()
+        );
     }
 }

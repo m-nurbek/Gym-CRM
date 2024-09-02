@@ -50,6 +50,11 @@ public class TraineeEntity implements Entity<BigInteger> {
     }
 
     public static TraineeEntity fromDto(TraineeDto traineeDto) {
-        return new TraineeEntity(traineeDto.getId(), traineeDto.getDob(), traineeDto.getAddress(), traineeDto.getUser().getId());
+        return new TraineeEntity(
+                traineeDto.getId(),
+                traineeDto.getDob(),
+                traineeDto.getAddress(),
+                traineeDto.getUser() == null ? BigInteger.ZERO : traineeDto.getUser().getId()
+        );
     }
 }

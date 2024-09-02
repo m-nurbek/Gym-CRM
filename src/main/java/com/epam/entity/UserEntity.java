@@ -41,6 +41,13 @@ public class UserEntity implements Entity<BigInteger> {
     }
 
     public static UserEntity fromDto(UserDto userDto) {
-        return new UserEntity(userDto.getId(), userDto.getFirstName(), userDto.getLastName(), userDto.getUsername(), userDto.getPassword(), userDto.isActive());
+        return new UserEntity(
+                userDto.getId(),
+                userDto.getFirstName(),
+                userDto.getLastName(),
+                userDto.getUsername(),
+                userDto.getPassword(),
+                userDto.isActive()
+        );
     }
 }

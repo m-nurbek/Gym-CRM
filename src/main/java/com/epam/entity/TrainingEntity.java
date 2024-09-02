@@ -79,6 +79,14 @@ public class TrainingEntity implements Entity<BigInteger> {
     }
 
     public static TrainingEntity fromDto(TrainingDto trainingDto) {
-        return new TrainingEntity(trainingDto.getId(), trainingDto.getTrainee().getId(), trainingDto.getTrainer().getId(), trainingDto.getName(), trainingDto.getType().getId(), trainingDto.getDate(), trainingDto.getDuration());
+        return new TrainingEntity(
+                trainingDto.getId(),
+                trainingDto.getTrainee() == null ? BigInteger.ZERO : trainingDto.getTrainee().getId(),
+                trainingDto.getTrainer() == null ? BigInteger.ZERO : trainingDto.getTrainer().getId(),
+                trainingDto.getName(),
+                trainingDto.getType() == null ? BigInteger.ZERO : trainingDto.getType().getId(),
+                trainingDto.getDate(),
+                trainingDto.getDuration()
+        );
     }
 }
