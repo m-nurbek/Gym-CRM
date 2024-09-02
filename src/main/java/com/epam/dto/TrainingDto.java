@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -15,7 +16,8 @@ import java.util.Date;
 
 @Data
 @Builder
-public class TrainingDto {
+@ToString
+public class TrainingDto implements Dto<BigInteger> {
     private BigInteger id;
     private TraineeDto trainee;
     private TrainerDto trainer;

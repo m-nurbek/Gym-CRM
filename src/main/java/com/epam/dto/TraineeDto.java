@@ -1,7 +1,6 @@
 package com.epam.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -10,6 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -17,7 +17,8 @@ import java.util.Date;
 
 @Data
 @Builder
-public class TraineeDto {
+@ToString
+public class TraineeDto implements Dto<BigInteger> {
     private BigInteger id;
     private Date dob;
     private String address;
