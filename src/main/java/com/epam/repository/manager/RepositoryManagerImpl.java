@@ -43,6 +43,7 @@ public class RepositoryManagerImpl<T extends Entity<ID>, ID extends BigInteger> 
         if (genericSuperclass instanceof ParameterizedType) {
             Type[] actualTypeArguments = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
             this.entityClass = (Class<T>) actualTypeArguments[0];
+            System.out.println("entityClass = " + entityClass + ", actualTypeArguments = " + actualTypeArguments[0]);
         } else {
             throw new IllegalArgumentException("Class is not parameterized with generic types");
         }

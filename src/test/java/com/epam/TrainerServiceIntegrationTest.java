@@ -21,6 +21,7 @@ public class TrainerServiceIntegrationTest {
 
     @Test
     public void shouldFindTrainer() {
+        System.out.println(trainerService.getAll());
 
     }
 

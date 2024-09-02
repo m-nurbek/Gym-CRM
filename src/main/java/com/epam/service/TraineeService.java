@@ -19,9 +19,9 @@ public class TraineeService implements CrudService<TraineeDto, BigInteger> {
     private final UserRepository userRepository;
 
     @Autowired
-    public TraineeService(TraineeRepository traineeRepository, UserRepository userRepository1) {
+    public TraineeService(TraineeRepository traineeRepository, UserRepository userRepository) {
         this.traineeRepository = traineeRepository;
-        this.userRepository = userRepository1;
+        this.userRepository = userRepository;
     }
 
     @Override

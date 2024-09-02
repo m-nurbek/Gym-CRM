@@ -86,7 +86,7 @@ public class TraineeServiceIntegrationTest {
 
     @Test
     public void shouldUpdateTrainee() {
-
+        System.out.println(traineeService.getAll());
     }
 
     @Test
