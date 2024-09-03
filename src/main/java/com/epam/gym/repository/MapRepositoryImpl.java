@@ -13,7 +13,7 @@ public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> impl
     private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
     private static final String ENTITIES_MUST_NOT_BE_NULL = "Entities must not be null";
 
-    final Map<ID, T> map;
+    protected final Map<ID, T> map;
 
     private final Storage<T, ID> storage;
     private final AtomicBigInteger idGenerator = new AtomicBigInteger(BigInteger.ZERO);

@@ -9,6 +9,15 @@ import java.util.Random;
 public class UserProfileUtil {
     private static final String CHARACTERS;
     private static final int PASSWORD_LENGTH = 10;
+
+    /**
+     * This class provides a cryptographically strong random number generator (RNG).
+     * A cryptographically strong random number minimally complies with
+     * the statistical random number generator tests specified in FIPS 140-2.
+     * Additionally, SecureRandom must produce non-deterministic output.
+     * Therefore any seed material passed to a SecureRandom object must be unpredictable,
+     * and all SecureRandom output sequences must be cryptographically strong.
+     */
     private static final Random RANDOM = new SecureRandom();
 
     static {
