@@ -2,7 +2,11 @@ package com.epam.gym.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,6 +16,7 @@ public class LoggingAspect {
 
     @Pointcut("@annotation(com.epam.gym.aop.Loggable)")
     public void executeLogging() {
+        // Do nothing because of setting up a pointcut for Spring AOP.
     }
 
     @Before(value = "executeLogging()")

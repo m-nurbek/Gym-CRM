@@ -1,8 +1,11 @@
 package com.epam.gym.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.security.SecureRandom;
 import java.util.Random;
 
+@UtilityClass
 public class UserProfileUtil {
     private static final String CHARACTERS;
     private static final int PASSWORD_LENGTH = 10;

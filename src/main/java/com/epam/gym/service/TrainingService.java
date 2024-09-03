@@ -3,7 +3,11 @@ package com.epam.gym.service;
 import com.epam.gym.aop.Loggable;
 import com.epam.gym.dto.TrainingDto;
 import com.epam.gym.entity.TrainingEntity;
-import com.epam.gym.repository.*;
+import com.epam.gym.repository.TraineeRepository;
+import com.epam.gym.repository.TrainerRepository;
+import com.epam.gym.repository.TrainingRepository;
+import com.epam.gym.repository.TrainingTypeRepository;
+import com.epam.gym.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,9 @@ package com.epam.gym.entity;
 import com.epam.gym.dto.UserDto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
 

@@ -3,19 +3,14 @@ package com.epam.gym.facade;
 import com.epam.gym.facade.command.Command;
 import com.epam.gym.facade.command.CommandFactory;
 import com.epam.gym.util.Shell;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class Facade {
     private final Shell shell;
     private final CommandFactory commandFactory;
-
-    @Autowired
-    public Facade(Shell shell, CommandFactory commandFactory) {
-        this.shell = shell;
-        this.commandFactory = commandFactory;
-    }
 
     public void run() {
         while (true) {

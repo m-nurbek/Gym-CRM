@@ -12,7 +12,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @Data
@@ -35,28 +35,20 @@ public class TrainerEntity implements Entity<BigInteger> {
     }
 
     public TrainerDto toDto(TrainingTypeRepository trainingTypeRepository, UserRepository userRepository) {
-        Optional<TrainingTypeEntity> trainingTypeEntity = trainingTypeRepository.findById(specialization);
-        Optional<UserEntity> userEntity = userRepository.findById(userId);
+        AtomicReference<TrainingTypeDto> trainingTypeDto = new AtomicReference<>();
+        AtomicReference<UserDto> userDto = new AtomicReference<>();
 
-        TrainingTypeDto trainingTypeDto = null;
-        UserDto userDto = null;
+        trainingTypeRepository.findById(specialization).ifPresent(s -> trainingTypeDto.set(s.toDto()));
+        userRepository.findById(userId).ifPresent(u -> userDto.set(u.toDto()));
 
-        if (trainingTypeEntity.isPresent()) {
-            trainingTypeDto = trainingTypeEntity.get().toDto();
-        }
-
-        if (userEntity.isPresent()) {
-            userDto = userEntity.get().toDto();
-        }
-
-        return new TrainerDto(id, trainingTypeDto, userDto);
+        return new TrainerDto(id, trainingTypeDto.get(), userDto.get());
     }
 
     public static TrainerEntity fromDto(TrainerDto trainerDto) {
         return new TrainerEntity(
                 trainerDto.getId(),
-                trainerDto.getSpecialization() == null ? BigInteger.ZERO : trainerDto.getSpecialization().getId(),
-                trainerDto.getUser() == null ? BigInteger.ZERO : trainerDto.getUser().getId()
+                Entity.getIdFromDto(trainerDto.getSpecialization()),
+                Entity.getIdFromDto(trainerDto.getUser())
         );
     }
 }

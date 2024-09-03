@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
 import java.util.Date;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @Data
@@ -38,15 +38,10 @@ public class TraineeEntity implements Entity<BigInteger> {
     }
 
     public TraineeDto toDto(UserRepository userRepository) {
-        Optional<UserEntity> userEntity = userRepository.findById(userId);
+        AtomicReference<UserDto> userDto = new AtomicReference<>(null);
+        userRepository.findById(userId).ifPresent(u -> userDto.set(u.toDto()));
 
-        UserDto userDto = null;
-
-        if (userEntity.isPresent()) {
-            userDto = userEntity.get().toDto();
-        }
-
-        return new TraineeDto(id, dob, address, userDto);
+        return new TraineeDto(id, dob, address, userDto.get());
     }
 
     public static TraineeEntity fromDto(TraineeDto traineeDto) {
@@ -54,7 +49,7 @@ public class TraineeEntity implements Entity<BigInteger> {
                 traineeDto.getId(),
                 traineeDto.getDob(),
                 traineeDto.getAddress(),
-                traineeDto.getUser() == null ? BigInteger.ZERO : traineeDto.getUser().getId()
+                Entity.getIdFromDto(traineeDto.getUser())
         );
     }
 }

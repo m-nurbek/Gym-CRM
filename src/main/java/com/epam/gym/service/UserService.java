@@ -27,6 +27,15 @@ public class UserService implements CrudService<UserDto, BigInteger> {
     public UserDto add(UserDto userDto) {
         UserEntity userEntity = UserEntity.fromDto(userDto);
 
+        userEntity.setUsername(generateUniqueUsername(userEntity));
+        userEntity.setPassword(UserProfileUtil.generatePassword());
+
+        UserEntity u = userRepository.save(userEntity);
+
+        return u.toDto();
+    }
+
+    private String generateUniqueUsername(UserEntity userEntity) {
         int serialNumber = 0;
         String username;
 
@@ -35,12 +44,7 @@ public class UserService implements CrudService<UserDto, BigInteger> {
             serialNumber++;
         } while (userRepository.findByUsername(username).isPresent());
 
-        userEntity.setUsername(username);
-        userEntity.setPassword(UserProfileUtil.generatePassword());
-
-        UserEntity u = userRepository.save(userEntity);
-
-        return u.toDto();
+        return username;
     }
 
     @Override

@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
 import java.util.Date;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Data
 @RequiredArgsConstructor
@@ -55,36 +55,24 @@ public class TrainingEntity implements Entity<BigInteger> {
     }
 
     public TrainingDto toDto(TrainerRepository trainerRepository, TraineeRepository traineeRepository, UserRepository userRepository, TrainingTypeRepository trainingTypeRepository) {
-        Optional<TrainerEntity> trainer = trainerRepository.findById(trainerId);
-        Optional<TraineeEntity> trainee = traineeRepository.findById(traineeId);
-        Optional<TrainingTypeEntity> trainingType = trainingTypeRepository.findById(type);
+        AtomicReference<TrainerDto> trainerDto = new AtomicReference<>();
+        AtomicReference<TraineeDto> traineeDto = new AtomicReference<>();
+        AtomicReference<TrainingTypeDto> trainingTypeDto = new AtomicReference<>();
 
-        TrainerDto trainerDto = null;
-        TraineeDto traineeDto = null;
-        TrainingTypeDto trainingTypeDto = null;
+        trainerRepository.findById(trainerId).ifPresent(t -> trainerDto.set(t.toDto(trainingTypeRepository, userRepository)));
+        traineeRepository.findById(traineeId).ifPresent(t -> traineeDto.set(t.toDto(userRepository)));
+        trainingTypeRepository.findById(type).ifPresent(t -> trainingTypeDto.set(t.toDto()));
 
-        if (trainer.isPresent()) {
-            trainerDto = trainer.get().toDto(trainingTypeRepository, userRepository);
-        }
-
-        if (trainee.isPresent()) {
-            traineeDto = trainee.get().toDto(userRepository);
-        }
-
-        if (trainingType.isPresent()) {
-            trainingTypeDto = trainingType.get().toDto();
-        }
-
-        return new TrainingDto(id, traineeDto, trainerDto, name, trainingTypeDto, date, duration);
+        return new TrainingDto(id, traineeDto.get(), trainerDto.get(), name, trainingTypeDto.get(), date, duration);
     }
 
     public static TrainingEntity fromDto(TrainingDto trainingDto) {
         return new TrainingEntity(
                 trainingDto.getId(),
-                trainingDto.getTrainee() == null ? BigInteger.ZERO : trainingDto.getTrainee().getId(),
-                trainingDto.getTrainer() == null ? BigInteger.ZERO : trainingDto.getTrainer().getId(),
+                Entity.getIdFromDto(trainingDto.getTrainee()),
+                Entity.getIdFromDto(trainingDto.getTrainer()),
                 trainingDto.getName(),
-                trainingDto.getType() == null ? BigInteger.ZERO : trainingDto.getType().getId(),
+                Entity.getIdFromDto(trainingDto.getType()),
                 trainingDto.getDate(),
                 trainingDto.getDuration()
         );

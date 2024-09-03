@@ -1,7 +1,8 @@
 package com.epam.gym.repository.manager;
 
-public interface RepositoryManager {
-    void loadFromFile();
+import javax.annotation.PostConstruct;
 
-//    void saveToFile();
+public interface RepositoryManager {
+    @PostConstruct
+    void loadFromFile();
 }

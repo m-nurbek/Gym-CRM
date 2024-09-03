@@ -1,7 +1,15 @@
 package com.epam.gym.facade.command;
 
-import com.epam.gym.dto.*;
-import com.epam.gym.service.*;
+import com.epam.gym.dto.TraineeDto;
+import com.epam.gym.dto.TrainerDto;
+import com.epam.gym.dto.TrainingDto;
+import com.epam.gym.dto.TrainingTypeDto;
+import com.epam.gym.dto.UserDto;
+import com.epam.gym.service.TraineeService;
+import com.epam.gym.service.TrainerService;
+import com.epam.gym.service.TrainingService;
+import com.epam.gym.service.TrainingTypeService;
+import com.epam.gym.service.UserService;
 import com.epam.gym.util.Shell;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
