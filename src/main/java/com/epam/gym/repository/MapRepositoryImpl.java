@@ -1,13 +1,16 @@
 package com.epam.gym.repository;
 
-import com.epam.gym.entity.Entity;
+import com.epam.gym.entity.EntityInterface;
 import com.epam.gym.util.AtomicBigInteger;
 import org.springframework.util.Assert;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-public class MapRepositoryImpl<T extends Entity<ID>, ID extends BigInteger> implements MapRepository<T, ID> {
+public class MapRepositoryImpl<T extends EntityInterface<ID>, ID extends BigInteger> implements MapRepository<T, ID> {
     private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
     private static final String IDS_MUST_NOT_BE_NULL = "IDs must not be null";
     private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";

@@ -3,22 +3,35 @@ package com.epam.gym.entity;
 import com.epam.gym.dto.UserDto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
 
 @RequiredArgsConstructor
+@NoArgsConstructor
 @Data
-public class UserEntity implements Entity<BigInteger> {
+@Entity
+@Table(name = "USER_TABLE")
+public class UserEntity implements EntityInterface<BigInteger> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private BigInteger id;
     @NonNull
+    @Column(name = "FIRST_NAME")
     private String firstName;
     @NonNull
+    @Column(name = "LAST_NAME")
     private String lastName;
+    @Column(name = "USERNAME")
     private String username;
+    @Column(name = "PASSWORD")
     private String password;
+    @Column(name = "IS_ACTIVE")
     private boolean isActive = true;
 
     @JsonCreator

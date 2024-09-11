@@ -3,17 +3,26 @@ package com.epam.gym.entity;
 import com.epam.gym.dto.TrainingTypeDto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
 
 @RequiredArgsConstructor
+@NoArgsConstructor
 @Data
-public class TrainingTypeEntity implements Entity<BigInteger> {
+@Entity
+@Table(name = "TRAINING_TYPE")
+public class TrainingTypeEntity implements EntityInterface<BigInteger> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private BigInteger id;
     @NonNull
+    @Column(name = "NAME")
     private String name;
 
     @JsonCreator

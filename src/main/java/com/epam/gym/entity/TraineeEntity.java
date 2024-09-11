@@ -5,7 +5,9 @@ import com.epam.gym.dto.UserDto;
 import com.epam.gym.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -14,14 +16,23 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
+@NoArgsConstructor
 @Data
-public class TraineeEntity implements Entity<BigInteger> {
+@Entity
+@Table(name = "TRAINEE")
+public class TraineeEntity implements EntityInterface<BigInteger> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private BigInteger id;
     @NonNull
+    @Column(name = "DOB")
     private Date dob;
     @NonNull
+    @Column(name = "ADDRESS")
     private String address;
     @NonNull
+    @Column(name = "USER_ID")
     private BigInteger userId;
 
     @JsonCreator
@@ -49,7 +60,7 @@ public class TraineeEntity implements Entity<BigInteger> {
                 traineeDto.getId(),
                 traineeDto.getDob(),
                 traineeDto.getAddress(),
-                Entity.getIdFromDto(traineeDto.getUser())
+                EntityInterface.getIdFromDto(traineeDto.getUser())
         );
     }
 }

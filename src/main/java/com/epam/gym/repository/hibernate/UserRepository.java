@@ -1,0 +1,10 @@
+package com.epam.gym.repository.hibernate;
+
+import com.epam.gym.entity.UserEntity;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigInteger;
+
+@Repository
+public interface UserRepository extends HibernateRepository<UserEntity, BigInteger> {
+}

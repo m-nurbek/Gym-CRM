@@ -10,7 +10,9 @@ import com.epam.gym.repository.TrainingTypeRepository;
 import com.epam.gym.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -20,19 +22,31 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Data
 @RequiredArgsConstructor
-public class TrainingEntity implements Entity<BigInteger> {
+@NoArgsConstructor
+@Entity
+@Table(name = "TRAINING")
+public class TrainingEntity implements EntityInterface<BigInteger> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private BigInteger id;
     @NonNull
+    @Column(name = "TRAINEE_ID")
     private BigInteger traineeId;
     @NonNull
+    @Column(name = "TRAINER_ID")
     private BigInteger trainerId;
     @NonNull
+    @Column(name = "NAME")
     private String name;
     @NonNull
+    @Column(name = "TYPE")
     private BigInteger type; // training type
     @NonNull
+    @Column(name = "DATE")
     private Date date;
     @NonNull
+    @Column(name = "DURATION")
     private String duration;
 
     @JsonCreator
@@ -69,10 +83,10 @@ public class TrainingEntity implements Entity<BigInteger> {
     public static TrainingEntity fromDto(TrainingDto trainingDto) {
         return new TrainingEntity(
                 trainingDto.getId(),
-                Entity.getIdFromDto(trainingDto.getTrainee()),
-                Entity.getIdFromDto(trainingDto.getTrainer()),
+                EntityInterface.getIdFromDto(trainingDto.getTrainee()),
+                EntityInterface.getIdFromDto(trainingDto.getTrainer()),
                 trainingDto.getName(),
-                Entity.getIdFromDto(trainingDto.getType()),
+                EntityInterface.getIdFromDto(trainingDto.getType()),
                 trainingDto.getDate(),
                 trainingDto.getDuration()
         );

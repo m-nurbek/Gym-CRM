@@ -7,7 +7,9 @@ import com.epam.gym.repository.TrainingTypeRepository;
 import com.epam.gym.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -15,12 +17,20 @@ import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
+@NoArgsConstructor
 @Data
-public class TrainerEntity implements Entity<BigInteger> {
+@Entity
+@Table(name = "TRAINER")
+public class TrainerEntity implements EntityInterface<BigInteger> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private BigInteger id;
     @NonNull
+    @Column(name = "SPECIALIZATION")
     private BigInteger specialization; // training type
     @NonNull
+    @Column(name = "USER_ID")
     private BigInteger userId;
 
     @JsonCreator
@@ -47,8 +57,8 @@ public class TrainerEntity implements Entity<BigInteger> {
     public static TrainerEntity fromDto(TrainerDto trainerDto) {
         return new TrainerEntity(
                 trainerDto.getId(),
-                Entity.getIdFromDto(trainerDto.getSpecialization()),
-                Entity.getIdFromDto(trainerDto.getUser())
+                EntityInterface.getIdFromDto(trainerDto.getSpecialization()),
+                EntityInterface.getIdFromDto(trainerDto.getUser())
         );
     }
 }

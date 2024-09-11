@@ -1,6 +1,6 @@
 package com.epam.gym.repository.manager;
 
-import com.epam.gym.entity.Entity;
+import com.epam.gym.entity.EntityInterface;
 import com.epam.gym.repository.MapRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Slf4j
-public class RepositoryManagerImpl<T extends Entity<ID>, ID extends BigInteger> implements RepositoryManager {
+public class RepositoryManagerImpl<T extends EntityInterface<ID>, ID extends BigInteger> implements RepositoryManager {
     private final MapRepository<T, ID> repository;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private File file;
