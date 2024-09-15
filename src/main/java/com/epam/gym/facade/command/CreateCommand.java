@@ -5,6 +5,7 @@ import com.epam.gym.dto.TrainerDto;
 import com.epam.gym.dto.TrainingDto;
 import com.epam.gym.dto.TrainingTypeDto;
 import com.epam.gym.dto.UserDto;
+import com.epam.gym.entity.TrainingTypeEnum;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.TrainingService;
@@ -67,10 +68,9 @@ public class CreateCommand implements Command {
         shell.writeOutput("Creating a new training type...");
 
         String name = shell.readInput("Enter the training type name: ");
+        var type = TrainingTypeEnum.valueOf(name);
 
-        trainingTypeService.add(
-                TrainingTypeDto.builder().name(name).build()
-        );
+        trainingTypeService.add(TrainingTypeDto.builder().name(type).build());
     }
 
     private void createTraining() {
@@ -79,7 +79,7 @@ public class CreateCommand implements Command {
         TrainingTypeDto specialization = trainingTypeService.get(shell.readBigInteger("Enter the training type ID: ")).orElse(null);
         LocalDate date = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
         String name = shell.readInput("Enter the training name: ");
-        String duration = shell.readInput("Enter the training duration: ");
+        int duration = Integer.parseInt(shell.readInput("Enter the training duration: "));
         TrainerDto trainer = trainerService.get(shell.readBigInteger("Enter the trainer ID: ")).orElse(null);
         TraineeDto trainee = traineeService.get(shell.readBigInteger("Enter the trainee ID: ")).orElse(null);
 

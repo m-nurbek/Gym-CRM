@@ -76,7 +76,7 @@ public class TrainingServiceIntegrationTest {
         var training = TrainingDto.builder()
                 .type(trainingType)
                 .date(date)
-                .duration("2 hours")
+                .duration(2)
                 .trainee(trainee)
                 .trainer(trainer)
                 .name("TEST")
@@ -91,7 +91,7 @@ public class TrainingServiceIntegrationTest {
         assertThat(addedTraining.getId()).isEqualTo(BigInteger.valueOf(25L));
         assertThat(addedTraining.getType()).isEqualTo(trainingType);
         assertThat(addedTraining.getDate()).isEqualTo(date);
-        assertThat(addedTraining.getDuration()).isEqualTo("2 hours");
+        assertThat(addedTraining.getDuration()).isEqualTo(2);
         assertThat(addedTraining.getTrainee()).isEqualTo(trainee);
         assertThat(addedTraining.getTrainer()).isEqualTo(trainer);
         assertThat(addedTraining.getName()).isEqualTo("TEST");
@@ -109,7 +109,7 @@ public class TrainingServiceIntegrationTest {
                 .id(BigInteger.valueOf(1L))
                 .type(trainingType)
                 .date(date)
-                .duration("2 hours")
+                .duration(2)
                 .trainee(trainee)
                 .trainer(trainer)
                 .name("TEST")
@@ -135,7 +135,7 @@ public class TrainingServiceIntegrationTest {
                 .id(BigInteger.valueOf(1L))
                 .type(trainingType)
                 .date(date)
-                .duration("2 hours")
+                .duration(2)
                 .trainee(trainee)
                 .trainer(trainer)
                 .name("TEST")
@@ -153,7 +153,7 @@ public class TrainingServiceIntegrationTest {
         assertThat(updatedTraining.getId()).isEqualTo(BigInteger.valueOf(1L));
         assertThat(updatedTraining.getType()).isEqualTo(trainingType);
         assertThat(updatedTraining.getDate()).isEqualTo(date);
-        assertThat(updatedTraining.getDuration()).isEqualTo("2 hours");
+        assertThat(updatedTraining.getDuration()).isEqualTo(2);
         assertThat(updatedTraining.getTrainee()).isEqualTo(trainee);
         assertThat(updatedTraining.getTrainer()).isEqualTo(trainer);
         assertThat(updatedTraining.getName()).isEqualTo("UpdatedName");
@@ -171,7 +171,7 @@ public class TrainingServiceIntegrationTest {
                 .id(BigInteger.valueOf(25L))
                 .type(trainingType)
                 .date(date)
-                .duration("2 hours")
+                .duration(2)
                 .trainee(trainee)
                 .trainer(trainer)
                 .name("TEST")

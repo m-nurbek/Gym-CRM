@@ -6,7 +6,7 @@
     "name": "HIIT",
     "type": 5,
     "date": "2021-01-25",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 2,
@@ -15,7 +15,7 @@
     "name": "Strength Training",
     "type": 2,
     "date": "2021-01-02",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 3,
@@ -24,7 +24,7 @@
     "name": "Yoga",
     "type": 3,
     "date": "2021-01-03",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 4,
@@ -33,7 +33,7 @@
     "name": "Pilates",
     "type": 4,
     "date": "2021-01-04",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 5,
@@ -42,7 +42,7 @@
     "name": "CrossFit",
     "type": 5,
     "date": "2021-01-05",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 6,
@@ -51,7 +51,7 @@
     "name": "HIIT",
     "type": 6,
     "date": "2021-01-06",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 7,
@@ -60,7 +60,7 @@
     "name": "Zumba",
     "type": 7,
     "date": "2021-01-07",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 8,
@@ -69,7 +69,7 @@
     "name": "Martial Arts",
     "type": 8,
     "date": "2021-01-08",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 9,
@@ -78,7 +78,7 @@
     "name": "Dance",
     "type": 9,
     "date": "2021-01-09",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 10,
@@ -87,7 +87,7 @@
     "name": "Swimming",
     "type": 10,
     "date": "2021-01-10",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 11,
@@ -96,7 +96,7 @@
     "name": "Cycling",
     "type": 11,
     "date": "2021-01-11",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 12,
@@ -105,7 +105,7 @@
     "name": "Running",
     "type": 12,
     "date": "2021-01-12",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 13,
@@ -114,7 +114,7 @@
     "name": "Boxing",
     "type": 13,
     "date": "2021-01-13",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 14,
@@ -123,7 +123,7 @@
     "name": "Kickboxing",
     "type": 14,
     "date": "2021-01-14",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 15,
@@ -132,7 +132,7 @@
     "name": "Aerobics",
     "type": 15,
     "date": "2021-01-15",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 16,
@@ -141,7 +141,7 @@
     "name": "Bodybuilding",
     "type": 16,
     "date": "2021-01-16",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 17,
@@ -150,7 +150,7 @@
     "name": "Powerlifting",
     "type": 17,
     "date": "2021-01-17",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 18,
@@ -159,7 +159,7 @@
     "name": "Calisthenics",
     "type": 18,
     "date": "2021-01-18",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 19,
@@ -168,7 +168,7 @@
     "name": "Gymnastics",
     "type": 19,
     "date": "2021-01-19",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 20,
@@ -177,7 +177,7 @@
     "name": "Parkour",
     "type": 20,
     "date": "2021-01-20",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 21,
@@ -186,7 +186,7 @@
     "name": "Strength Training",
     "type": 1,
     "date": "2021-01-21",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 22,
@@ -195,7 +195,7 @@
     "name": "Yoga",
     "type": 2,
     "date": "2021-01-22",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 23,
@@ -204,7 +204,7 @@
     "name": "Pilates",
     "type": 3,
     "date": "2021-01-23",
-    "duration": "1 hour"
+    "duration": 3
   },
   {
     "id": 24,
@@ -213,6 +213,6 @@
     "name": "CrossFit",
     "type": 4,
     "date": "2021-01-24",
-    "duration": "1 hour"
+    "duration": 3
   }
 ]

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,7 +37,8 @@ public class TrainingTypeEntity implements EntityInterface<BigInteger> {
     @Column(name = "ID")
     private BigInteger id;
     @Column(name = "NAME")
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private TrainingTypeEnum name;
 
     @OneToMany(mappedBy = "trainingType")
     @Transient
@@ -52,7 +55,7 @@ public class TrainingTypeEntity implements EntityInterface<BigInteger> {
             @JsonProperty("name") String name
     ) {
         this.id = id;
-        this.name = name;
+        this.name = TrainingTypeEnum.valueOf(name);
     }
 
     public TrainingTypeDto toDto() {

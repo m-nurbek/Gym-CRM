@@ -1,82 +1,82 @@
 [
   {
     "id": 1,
-    "name": "Cardio"
+    "name": "SWIMMING"
   },
   {
     "id": 2,
-    "name": "Strength Training"
+    "name": "SWIMMING"
   },
   {
     "id": 3,
-    "name": "Yoga"
+    "name": "SWIMMING"
   },
   {
     "id": 4,
-    "name": "Pilates"
+    "name": "SWIMMING"
   },
   {
     "id": 5,
-    "name": "CrossFit"
+    "name": "SWIMMING"
   },
   {
     "id": 6,
-    "name": "HIIT"
+    "name": "SWIMMING"
   },
   {
     "id": 7,
-    "name": "Zumba"
+    "name": "SWIMMING"
   },
   {
     "id": 8,
-    "name": "Martial Arts"
+    "name": "SWIMMING"
   },
   {
     "id": 9,
-    "name": "Dance"
+    "name": "SWIMMING"
   },
   {
     "id": 10,
-    "name": "Swimming"
+    "name": "SWIMMING"
   },
   {
     "id": 11,
-    "name": "Cycling"
+    "name": "SWIMMING"
   },
   {
     "id": 12,
-    "name": "Running"
+    "name": "SWIMMING"
   },
   {
     "id": 13,
-    "name": "Boxing"
+    "name": "SWIMMING"
   },
   {
     "id": 14,
-    "name": "Kickboxing"
+    "name": "SWIMMING"
   },
   {
     "id": 15,
-    "name": "Aerobics"
+    "name": "SWIMMING"
   },
   {
     "id": 16,
-    "name": "Bodybuilding"
+    "name": "SWIMMING"
   },
   {
     "id": 17,
-    "name": "Powerlifting"
+    "name": "SWIMMING"
   },
   {
     "id": 18,
-    "name": "Calisthenics"
+    "name": "SWIMMING"
   },
   {
     "id": 19,
-    "name": "Gymnastics"
+    "name": "SWIMMING"
   },
   {
     "id": 20,
-    "name": "Parkour"
+    "name": "SWIMMING"
   }
 ]

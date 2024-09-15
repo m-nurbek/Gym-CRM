@@ -9,6 +9,7 @@ import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.TrainingTypeEntity;
+import com.epam.gym.entity.TrainingTypeEnum;
 import com.epam.gym.entity.UserEntity;
 import lombok.experimental.UtilityClass;
 
@@ -82,7 +83,7 @@ public class DtoEntityCreationUtil {
     public static TrainingTypeDto getNewTrainingTypeDtoInstance(long index, List<TrainerDto> trainers, List<TrainingDto> trainings) {
         return new TrainingTypeDto(
                 BigInteger.valueOf(index),
-                "Cardio%d".formatted(index),
+                TrainingTypeEnum.BODYBUILDING,
                 trainers,
                 trainings
         );
@@ -91,7 +92,7 @@ public class DtoEntityCreationUtil {
     public static TrainingTypeEntity getNewTrainingTypeEntityInstance(long index, List<TrainerEntity> trainerEntities, List<TrainingEntity> trainingEntities) {
         return new TrainingTypeEntity(
                 BigInteger.valueOf(index),
-                "Type%d".formatted(index),
+                TrainingTypeEnum.BODYBUILDING,
                 trainerEntities,
                 trainingEntities
         );
@@ -105,7 +106,7 @@ public class DtoEntityCreationUtil {
                 "SOME TRAINING%d".formatted(index),
                 type,
                 LocalDate.of(2024, 10, (int) index % 30),
-                "Some duration%d".formatted(index)
+                3
         );
     }
 
@@ -117,7 +118,7 @@ public class DtoEntityCreationUtil {
                 "SOME TRAINING%d".formatted(index),
                 BigInteger.valueOf(typeId),
                 LocalDate.of(2024, 10, (int) index % 30),
-                "Some duration%d".formatted(index),
+                3,
                 trainee,
                 trainer,
                 type

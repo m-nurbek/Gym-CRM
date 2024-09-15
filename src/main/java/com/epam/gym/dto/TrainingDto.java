@@ -19,5 +19,5 @@ public class TrainingDto implements Dto<BigInteger> {
     private String name;
     private TrainingTypeDto type;
     private LocalDate date;
-    private String duration;
+    private int duration;
 }

@@ -67,7 +67,7 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     @Column(name = "DURATION")
-    private String duration;
+    private int duration;
 
     @ManyToOne
     @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID", nullable = false)
@@ -90,7 +90,7 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
             @JsonSerialize(using = LocalDateSerializer.class)
             @JsonDeserialize(using = LocalDateDeserializer.class)
             LocalDate date,
-            @JsonProperty("duration") String duration
+            @JsonProperty("duration") int duration
     ) {
         this.id = id;
         this.traineeId = traineeId;

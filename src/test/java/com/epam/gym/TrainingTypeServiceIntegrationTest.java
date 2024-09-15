@@ -2,6 +2,7 @@ package com.epam.gym;
 
 import com.epam.gym.config.ApplicationConfig;
 import com.epam.gym.dto.TrainingTypeDto;
+import com.epam.gym.entity.TrainingTypeEnum;
 import com.epam.gym.service.TrainingTypeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,27 +58,27 @@ public class TrainingTypeServiceIntegrationTest {
     @Test
     public void shouldAddTrainingType() {
         // given
-        var trainingType = TrainingTypeDto.builder().name("TEST").build();
+        var trainingType = TrainingTypeDto.builder().name(TrainingTypeEnum.CIRCUIT_TRAINING).build();
 
         // when
         var addedTrainingType = trainingTypeService.add(trainingType);
 
         // then
         assertThat(addedTrainingType).isNotNull();
-        assertThat(addedTrainingType.getName()).isEqualTo("TEST");
+        assertThat(addedTrainingType.getName()).isEqualTo(TrainingTypeEnum.CIRCUIT_TRAINING);
     }
 
     @Test
     public void shouldNotAddTrainingType() {
         // given
-        var trainingType = TrainingTypeDto.builder().id(BigInteger.ONE).name("TEST").build();
+        var trainingType = TrainingTypeDto.builder().id(BigInteger.ONE).name(TrainingTypeEnum.CIRCUIT_TRAINING).build();
 
         // when
         var addedTrainingType = trainingTypeService.add(trainingType);
 
         // then
         assertThat(addedTrainingType).isNotNull();
-        assertThat(addedTrainingType.getName()).isNotEqualTo("TEST");
+        assertThat(addedTrainingType.getName()).isNotEqualTo(TrainingTypeEnum.CIRCUIT_TRAINING);
     }
 
     @Test
@@ -88,13 +89,13 @@ public class TrainingTypeServiceIntegrationTest {
         assert trainingType != null;
 
         // when
-        trainingType.setName("UpdatedName");
+        trainingType.setName(TrainingTypeEnum.YOGA);
         var updatedTrainingType = trainingTypeService.update(trainingType);
 
         // then
         assertThat(updatedTrainingType).isNotNull();
         assertThat(updatedTrainingType.getId()).isEqualTo(trainingTypeId);
-        assertThat(updatedTrainingType.getName()).isEqualTo("UpdatedName");
+        assertThat(updatedTrainingType.getName()).isEqualTo(TrainingTypeEnum.YOGA);
         assertThat(trainingTypeService.get(trainingTypeId).orElse(null)).isEqualTo(updatedTrainingType);
     }
 
@@ -102,7 +103,7 @@ public class TrainingTypeServiceIntegrationTest {
     public void shouldNotUpdateTrainingType() {
         // given
         BigInteger trainingTypeId = BigInteger.valueOf(25L);
-        var trainingType = TrainingTypeDto.builder().id(trainingTypeId).name("TEST").build();
+        var trainingType = TrainingTypeDto.builder().id(trainingTypeId).name(TrainingTypeEnum.YOGA).build();
 
         // when
         var updatedTrainingType = trainingTypeService.update(trainingType);
