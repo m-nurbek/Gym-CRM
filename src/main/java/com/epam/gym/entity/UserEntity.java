@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,10 +44,8 @@ public class UserEntity implements EntityInterface<BigInteger> {
     private Boolean isActive = true;
 
     @OneToOne(mappedBy = "user")
-    @Transient
     private TraineeEntity trainee;
     @OneToOne(mappedBy = "user")
-    @Transient
     private TrainerEntity trainer;
 
     @JsonCreator

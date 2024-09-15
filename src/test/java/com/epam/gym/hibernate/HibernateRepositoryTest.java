@@ -2,6 +2,7 @@ package com.epam.gym.hibernate;
 
 import com.epam.gym.config.ApplicationConfig;
 import com.epam.gym.entity.UserEntity;
+import com.epam.gym.repository.hibernate.TraineeRepository;
 import com.epam.gym.repository.hibernate.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,18 +12,22 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
+import static com.epam.gym.util.DtoEntityCreationUtil.getNewTraineeEntityInstance;
 import static com.epam.gym.util.DtoEntityCreationUtil.getNewUserEntityInstance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringJUnitConfig(classes = ApplicationConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test2.properties")
 public class HibernateRepositoryTest {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TraineeRepository traineeRepository;
 
     @BeforeEach
     void setUp() {
@@ -205,6 +210,36 @@ public class HibernateRepositoryTest {
                 "Assert deleteAll",
                 () -> assertThat(size).isEqualTo(0),
                 () -> assertThat(u).isEmpty()
+        );
+    }
+
+    @Test
+    void shouldAddTrainee() {
+        // given
+        var user1 = userRepository.findById(BigInteger.valueOf(1));
+        var user2 = userRepository.findById(BigInteger.valueOf(2));
+        var trainee1 = getNewTraineeEntityInstance(1, 1, user1.get(), List.of(), List.of());
+        var trainee2 = getNewTraineeEntityInstance(2, 2, user2.get(), List.of(), List.of());
+
+        // when
+        traineeRepository.save(trainee1);
+        traineeRepository.save(trainee2);
+
+        // then
+        var t1 = traineeRepository.findById(BigInteger.valueOf(1));
+        var t2 = traineeRepository.findById(BigInteger.valueOf(2));
+
+        assertAll(
+                "Assertions for adding a trainee",
+                () -> assertThat(t1).isPresent(),
+                () -> assertThat(t2).isPresent(),
+                () -> assertThat(t1.get().getAddress()).isEqualTo(trainee1.getAddress()),
+                () -> assertThat(t2.get().getAddress()).isEqualTo(trainee2.getAddress()),
+
+                () -> assertThat(user1.get().getTrainee()).isNotNull(),
+                () -> assertThat(user2.get().getTrainee()).isNotNull(),
+                () -> assertThat(user1.get().getTrainee().getAddress()).isEqualTo(trainee1.getAddress()),
+                () -> assertThat(user2.get().getTrainee().getAddress()).isEqualTo(trainee2.getAddress())
         );
     }
 }

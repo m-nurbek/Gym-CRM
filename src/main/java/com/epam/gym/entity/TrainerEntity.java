@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.util.Assert;
 
@@ -53,15 +54,14 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     private BigInteger userId;
 
     @ManyToOne
-    @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID")
     private TrainingTypeEntity trainingType;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private UserEntity user;
 
     @OneToMany(mappedBy = "trainer")
-    @Transient
     @ToString.Exclude
     List<TrainingEntity> trainings;
 

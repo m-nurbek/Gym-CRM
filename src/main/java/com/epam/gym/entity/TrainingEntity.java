@@ -70,13 +70,13 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
     private int duration;
 
     @ManyToOne
-    @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID")
     private TraineeEntity trainee;
     @ManyToOne
-    @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID")
     private TrainerEntity trainer;
     @ManyToOne
-    @JoinColumn(name = "TYPE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "TYPE", referencedColumnName = "ID")
     private TrainingTypeEntity trainingType;
 
     @JsonCreator

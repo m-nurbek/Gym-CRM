@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,11 +40,9 @@ public class TrainingTypeEntity implements EntityInterface<BigInteger> {
     private TrainingTypeEnum name;
 
     @OneToMany(mappedBy = "trainingType")
-    @Transient
     @ToString.Exclude
     private List<TrainerEntity> trainers;
     @OneToMany(mappedBy = "trainingType")
-    @Transient
     @ToString.Exclude
     private List<TrainingEntity> trainings;
 
