@@ -49,7 +49,13 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
 
         Session session = sessionFactory.getCurrentSession();
-        return Optional.of(session.get(entityClass, id));
+        var foundEntity = session.get(entityClass, id);
+
+        if (foundEntity == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(foundEntity);
     }
 
     @Override
@@ -83,7 +89,7 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
         }
 
         Session session = sessionFactory.getCurrentSession();
-        session.persist(entity);
+        session.save(entity);
         session.flush();
         session.refresh(entity);
         return entity;

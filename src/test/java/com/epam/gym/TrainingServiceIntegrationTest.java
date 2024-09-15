@@ -13,6 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,7 +71,7 @@ public class TrainingServiceIntegrationTest {
         var trainingType = trainingTypeService.get(BigInteger.ONE).orElse(null);
         var trainer = trainerService.get(BigInteger.valueOf(25L)).orElse(null);
         var trainee = traineeService.get(BigInteger.valueOf(1L)).orElse(null);
-        var date = new Date(2001, 1, 1);
+        var date = LocalDate.of(2001, 1, 1);
 
         var training = TrainingDto.builder()
                 .type(trainingType)
@@ -102,7 +103,7 @@ public class TrainingServiceIntegrationTest {
         var trainingType = trainingTypeService.get(BigInteger.ONE).orElse(null);
         var trainer = trainerService.get(BigInteger.valueOf(25L)).orElse(null);
         var trainee = traineeService.get(BigInteger.valueOf(1L)).orElse(null);
-        var date = new Date(3000, 1, 1);
+        var date = LocalDate.of(3000, 1, 1);
 
         var training = TrainingDto.builder()
                 .id(BigInteger.valueOf(1L))
@@ -128,7 +129,7 @@ public class TrainingServiceIntegrationTest {
         var trainingType = trainingTypeService.get(BigInteger.ONE).orElse(null);
         var trainer = trainerService.get(BigInteger.valueOf(25L)).orElse(null);
         var trainee = traineeService.get(BigInteger.valueOf(1L)).orElse(null);
-        var date = new Date(2001, 1, 1);
+        var date = LocalDate.of(2001, 1, 1);
 
         var training = TrainingDto.builder()
                 .id(BigInteger.valueOf(1L))
@@ -164,7 +165,7 @@ public class TrainingServiceIntegrationTest {
         var trainingType = trainingTypeService.get(BigInteger.ONE).orElse(null);
         var trainer = trainerService.get(BigInteger.valueOf(25L)).orElse(null);
         var trainee = traineeService.get(BigInteger.valueOf(1L)).orElse(null);
-        var date = new Date(2001, 1, 1);
+        var date = LocalDate.of(2001, 1, 1);
 
         var training = TrainingDto.builder()
                 .id(BigInteger.valueOf(25L))

@@ -1,61 +1,30 @@
 package com.epam.gym.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
 @Data
 @Builder
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class TrainerDto implements Dto<BigInteger> {
     private BigInteger id;
     private TrainingTypeDto specialization;
     private UserDto user;
+    private List<TrainingDto> trainings;
+    private List<TraineeDto> trainees;
 
-    @JsonCreator
-    public TrainerDto(
-            @JsonProperty("id") BigInteger id,
-            @JsonProperty("specialization") TrainingTypeDto specialization,
-            @JsonProperty("user") UserDto user
-    ) {
+    @Deprecated(since = "2024-09-12", forRemoval = false)
+    public TrainerDto(BigInteger id, TrainingTypeDto specialization, UserDto user) {
         this.id = id;
         this.specialization = specialization;
         this.user = user;
-    }
-
-    public static class Parser {
-        private static final ObjectMapper mapper = new ObjectMapper();
-
-        static {
-            mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-            mapper.registerModule(new JavaTimeModule());
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, false);
-        }
-
-        public static String toJson(TrainerDto trainer) {
-            try {
-                return mapper.writeValueAsString(trainer);
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            }
-        }
-
-        public static TrainerDto parseJson(String json) {
-            try {
-                return mapper.readValue(json, TrainerDto.class);
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            }
-        }
     }
 }

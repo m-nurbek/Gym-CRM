@@ -6,7 +6,7 @@ import javax.annotation.PreDestroy;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 @Component
@@ -41,22 +41,21 @@ public class Shell implements AutoCloseable {
         return scanner.nextLine().trim();
     }
 
-    public Date readDate(String prompt) {
+    public LocalDate readDate(String prompt) {
         String date = readInput(prompt);
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         if (date.matches("\\d{4}-\\d{2}-\\d{2}")) {
             try {
-                return formatter.parse(date);
+                return DateConversionUtil.convertDateToLocalDate(formatter.parse(date));
             } catch (ParseException e) {
                 writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
                 return readDate(prompt);
             }
-        } else {
-            writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
-            return readDate(prompt);
         }
+
+        writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
+        return readDate(prompt);
     }
 
     public BigInteger readBigInteger(String prompt) {

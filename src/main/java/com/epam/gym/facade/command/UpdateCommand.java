@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Component
 @AllArgsConstructor
@@ -45,7 +45,7 @@ public class UpdateCommand implements Command {
         shell.writeOutput("Updating a trainee...");
 
         BigInteger id = shell.readBigInteger("Enter the ID: ");
-        Date dob = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
+        LocalDate dob = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
         String address = shell.readInput("Enter the address: ");
         UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
 
@@ -94,7 +94,7 @@ public class UpdateCommand implements Command {
 
         BigInteger id = shell.readBigInteger("Enter the ID: ");
         TrainingTypeDto specialization = trainingTypeService.get(shell.readBigInteger("Enter the training type ID: ")).orElse(null);
-        Date date = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
+        LocalDate date = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
         String name = shell.readInput("Enter the training name: ");
         String duration = shell.readInput("Enter the training duration: ");
         TrainerDto trainer = trainerService.get(shell.readBigInteger("Enter the trainer ID: ")).orElse(null);

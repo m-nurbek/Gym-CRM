@@ -9,20 +9,40 @@ import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.repository.TrainingTypeRepository;
 import com.epam.gym.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
-import lombok.Data;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Data
-@RequiredArgsConstructor
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "TRAINING")
 public class TrainingEntity implements EntityInterface<BigInteger> {
@@ -30,24 +50,34 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private BigInteger id;
-    @NonNull
-    @Column(name = "TRAINEE_ID")
+
+    @Transient
     private BigInteger traineeId;
-    @NonNull
-    @Column(name = "TRAINER_ID")
+    @Transient
     private BigInteger trainerId;
-    @NonNull
+
     @Column(name = "NAME")
     private String name;
-    @NonNull
-    @Column(name = "TYPE")
+
+    @Transient
     private BigInteger type; // training type
-    @NonNull
+
     @Column(name = "DATE")
-    private Date date;
-    @NonNull
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
     @Column(name = "DURATION")
     private String duration;
+
+    @ManyToOne
+    @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID", nullable = false)
+    private TraineeEntity trainee;
+    @ManyToOne
+    @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID", nullable = false)
+    private TrainerEntity trainer;
+    @ManyToOne
+    @JoinColumn(name = "TYPE", referencedColumnName = "ID", nullable = false)
+    private TrainingTypeEntity trainingType;
 
     @JsonCreator
     public TrainingEntity(
@@ -56,7 +86,10 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
             @JsonProperty("trainerId") BigInteger trainerId,
             @JsonProperty("name") String name,
             @JsonProperty("type") BigInteger type,
-            @JsonProperty("date") Date date,
+            @JsonProperty("date") @JsonFormat(pattern = "yyyy-MM-dd")
+            @JsonSerialize(using = LocalDateSerializer.class)
+            @JsonDeserialize(using = LocalDateDeserializer.class)
+            LocalDate date,
             @JsonProperty("duration") String duration
     ) {
         this.id = id;
@@ -68,6 +101,7 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
         this.duration = duration;
     }
 
+    @Deprecated(since = "2024-09-12", forRemoval = false)
     public TrainingDto toDto(TrainerRepository trainerRepository, TraineeRepository traineeRepository, UserRepository userRepository, TrainingTypeRepository trainingTypeRepository) {
         AtomicReference<TrainerDto> trainerDto = new AtomicReference<>();
         AtomicReference<TraineeDto> traineeDto = new AtomicReference<>();
@@ -81,6 +115,10 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
     }
 
     public static TrainingEntity fromDto(TrainingDto trainingDto) {
+        if (trainingDto == null) {
+            return null;
+        }
+
         return new TrainingEntity(
                 trainingDto.getId(),
                 EntityInterface.getIdFromDto(trainingDto.getTrainee()),
@@ -88,7 +126,38 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
                 trainingDto.getName(),
                 EntityInterface.getIdFromDto(trainingDto.getType()),
                 trainingDto.getDate(),
-                trainingDto.getDuration()
+                trainingDto.getDuration(),
+                trainingDto.getTrainee() == null ? null : TraineeEntity.fromDto(trainingDto.getTrainee()),
+                trainingDto.getTrainer() == null ? null : TrainerEntity.fromDto(trainingDto.getTrainer()),
+                trainingDto.getType() == null ? null : TrainingTypeEntity.fromDto(trainingDto.getType())
         );
+    }
+
+    public TrainingDto toDto() {
+        return new TrainingDto(
+                id,
+                trainee == null ? null : trainee.toDto(),
+                trainer == null ? null : trainer.toDto(),
+                name,
+                trainingType == null ? null : trainingType.toDto(),
+                date,
+                duration
+        );
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        TrainingEntity that = (TrainingEntity) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

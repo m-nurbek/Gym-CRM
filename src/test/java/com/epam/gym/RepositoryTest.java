@@ -10,7 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -32,16 +32,16 @@ public class RepositoryTest {
         traineeRepository.deleteAll();
         List<TraineeEntity> traineeList = new ArrayList<>();
 
-        traineeList.add(new TraineeEntity(Date.valueOf("2001-01-01"), "Malheim Avenue 1E", BigInteger.valueOf(10L))); // id = 1
-        traineeList.add(new TraineeEntity(Date.valueOf("1995-05-15"), "Baker Street 221B", BigInteger.valueOf(9L))); // id = 2
-        traineeList.add(new TraineeEntity(Date.valueOf("1998-11-23"), "Elm Street 13", BigInteger.valueOf(8L))); // id = 3
-        traineeList.add(new TraineeEntity(Date.valueOf("2000-07-07"), "Sunset Boulevard 45", BigInteger.valueOf(7L))); // id = 4
-        traineeList.add(new TraineeEntity(Date.valueOf("2003-03-03"), "Oak Avenue 9", BigInteger.valueOf(6L))); // id = 5
-        traineeList.add(new TraineeEntity(Date.valueOf("1999-09-09"), "Maple Lane 17A", BigInteger.valueOf(5L))); // id = 6
-        traineeList.add(new TraineeEntity(Date.valueOf("2002-12-12"), "Pine Street 22", BigInteger.valueOf(4L))); // id = 7
-        traineeList.add(new TraineeEntity(Date.valueOf("1997-04-04"), "Cedar Road 5B", BigInteger.valueOf(3L))); // id = 8
-        traineeList.add(new TraineeEntity(Date.valueOf("2001-08-08"), "Birch Avenue 33C", BigInteger.valueOf(2L))); // id = 9
-        traineeList.add(new TraineeEntity(Date.valueOf("2004-02-28"), "Willow Drive 12A", BigInteger.valueOf(1L))); // id = 10
+        traineeList.add(new TraineeEntity(null, LocalDate.of(2001, 1, 1), "Malheim Avenue 1E", BigInteger.valueOf(10L))); // id = 1
+        traineeList.add(new TraineeEntity(null, LocalDate.of(1995, 5, 15), "Baker Street 221B", BigInteger.valueOf(9L))); // id = 2
+        traineeList.add(new TraineeEntity(null, LocalDate.of(1998, 11, 23), "Elm Street 13", BigInteger.valueOf(8L))); // id = 3
+        traineeList.add(new TraineeEntity(null, LocalDate.of(2000, 7, 7), "Sunset Boulevard 45", BigInteger.valueOf(7L))); // id = 4
+        traineeList.add(new TraineeEntity(null, LocalDate.of(2003, 3, 3), "Oak Avenue 9", BigInteger.valueOf(6L))); // id = 5
+        traineeList.add(new TraineeEntity(null, LocalDate.of(1999, 9, 9), "Maple Lane 17A", BigInteger.valueOf(5L))); // id = 6
+        traineeList.add(new TraineeEntity(null, LocalDate.of(2002, 12, 12), "Pine Street 22", BigInteger.valueOf(4L))); // id = 7
+        traineeList.add(new TraineeEntity(null, LocalDate.of(1997, 4, 4), "Cedar Road 5B", BigInteger.valueOf(3L))); // id = 8
+        traineeList.add(new TraineeEntity(null, LocalDate.of(2001, 8, 8), "Birch Avenue 33C", BigInteger.valueOf(2L))); // id = 9
+        traineeList.add(new TraineeEntity(null, LocalDate.of(2004, 2, 28), "Willow Drive 12A", BigInteger.valueOf(1L))); // id = 10
 
         traineeRepository.saveAll(traineeList);
     }
@@ -49,8 +49,8 @@ public class RepositoryTest {
     @Test
     public void shouldFindCorrectEntity() {
         // given
-        TraineeEntity trainee1 = new TraineeEntity(BigInteger.valueOf(4L), Date.valueOf("2000-07-07"), "Sunset Boulevard 45", BigInteger.valueOf(7L));
-        TraineeEntity trainee2 = new TraineeEntity(BigInteger.valueOf(5L), Date.valueOf("2003-03-03"), "Oak Avenue 9", BigInteger.valueOf(6L));
+        TraineeEntity trainee1 = new TraineeEntity(BigInteger.valueOf(4L), LocalDate.of(2000, 7, 7), "Sunset Boulevard 45", BigInteger.valueOf(7L));
+        TraineeEntity trainee2 = new TraineeEntity(BigInteger.valueOf(5L), LocalDate.of(2003, 3, 3), "Oak Avenue 9", BigInteger.valueOf(6L));
 
         // when
         TraineeEntity foundTrainee1 = traineeRepository.findById(BigInteger.valueOf(4L)).orElse(null);
@@ -79,12 +79,12 @@ public class RepositoryTest {
         // given
         List<TraineeEntity> expectedResult = new ArrayList<>();
 
-        expectedResult.add(new TraineeEntity(BigInteger.valueOf(1L), Date.valueOf("2001-01-01"), "Malheim Avenue 1E", BigInteger.valueOf(10L))); // id = 1
-        expectedResult.add(new TraineeEntity(BigInteger.valueOf(2L), Date.valueOf("1995-05-15"), "Baker Street 221B", BigInteger.valueOf(9L))); // id = 2
-        expectedResult.add(new TraineeEntity(BigInteger.valueOf(6L), Date.valueOf("1999-09-09"), "Maple Lane 17A", BigInteger.valueOf(5L))); // id = 6
-        expectedResult.add(new TraineeEntity(BigInteger.valueOf(7L), Date.valueOf("2002-12-12"), "Pine Street 22", BigInteger.valueOf(4L))); // id = 7
-        expectedResult.add(new TraineeEntity(BigInteger.valueOf(8L), Date.valueOf("1997-04-04"), "Cedar Road 5B", BigInteger.valueOf(3L))); // id = 8
-        expectedResult.add(new TraineeEntity(BigInteger.valueOf(10L), Date.valueOf("2004-02-28"), "Willow Drive 12A", BigInteger.valueOf(1L))); // id = 10
+        expectedResult.add(new TraineeEntity(BigInteger.valueOf(1L), LocalDate.of(2001, 1, 1), "Malheim Avenue 1E", BigInteger.valueOf(10L))); // id = 1
+        expectedResult.add(new TraineeEntity(BigInteger.valueOf(2L), LocalDate.of(1995, 5, 15), "Baker Street 221B", BigInteger.valueOf(9L))); // id = 2
+        expectedResult.add(new TraineeEntity(BigInteger.valueOf(6L), LocalDate.of(1999, 9, 9), "Maple Lane 17A", BigInteger.valueOf(5L))); // id = 6
+        expectedResult.add(new TraineeEntity(BigInteger.valueOf(7L), LocalDate.of(2002, 12, 12), "Pine Street 22", BigInteger.valueOf(4L))); // id = 7
+        expectedResult.add(new TraineeEntity(BigInteger.valueOf(8L), LocalDate.of(1997, 4, 4), "Cedar Road 5B", BigInteger.valueOf(3L))); // id = 8
+        expectedResult.add(new TraineeEntity(BigInteger.valueOf(10L), LocalDate.of(2004, 2, 28), "Willow Drive 12A", BigInteger.valueOf(1L))); // id = 10
 
         // when
         traineeRepository.deleteById(BigInteger.valueOf(3L));
@@ -106,7 +106,7 @@ public class RepositoryTest {
     @Test
     public void shouldSaveEntity() {
         // given
-        TraineeEntity trainee = new TraineeEntity(BigInteger.valueOf(11L), Date.valueOf("2005-05-05"), "Palm Street 11", BigInteger.valueOf(1L)); // new entity with id = 11
+        TraineeEntity trainee = new TraineeEntity(BigInteger.valueOf(11L), LocalDate.of(2005, 05, 05), "Palm Street 11", BigInteger.valueOf(1L)); // new entity with id = 11
 
         // when
         traineeRepository.save(trainee);
@@ -120,15 +120,18 @@ public class RepositoryTest {
     public void shouldNotUpdateEntityWhenSaving() {
         // given
         // original in repository: TraineeEntity(BigInteger.valueOf(4L), Date.valueOf("2000-07-07"), "Sunset Boulevard 45", BigInteger.valueOf(7L)));
-        TraineeEntity trainee = new TraineeEntity(BigInteger.valueOf(4L), Date.valueOf("2020-09-10"), "Sunset 50", BigInteger.valueOf(7L));
+        TraineeEntity trainee = new TraineeEntity(BigInteger.valueOf(4L), LocalDate.of(2020, 9, 10), "Sunset 50", BigInteger.valueOf(7L));
 
         // when
         traineeRepository.save(trainee);
 
         // then
-        assertThat(traineeRepository.findById(BigInteger.valueOf(4L))).isNotEmpty();
+        var originalTrainee = traineeRepository.findById(BigInteger.valueOf(4L));
+
+        assertThat(originalTrainee).isPresent();
+        assertThat(originalTrainee).isNotEmpty();
         assertThat(traineeRepository.findById(BigInteger.valueOf(11L))).isEmpty();
-        assertThat(traineeRepository.findById(BigInteger.valueOf(4L)).get()).isNotEqualTo(trainee);
+        assertThat(originalTrainee.get().getAddress()).isNotEqualTo(trainee.getAddress());
     }
 
     @Test
@@ -144,7 +147,7 @@ public class RepositoryTest {
     public void shouldUpdateEntity() {
         // given
         // original in repository: TraineeEntity(BigInteger.valueOf(4L), Date.valueOf("2000-07-07"), "Sunset Boulevard 45", BigInteger.valueOf(7L)));
-        TraineeEntity updatedTrainee = new TraineeEntity(BigInteger.valueOf(4L), Date.valueOf("2020-07-07"), "Sunset 50", BigInteger.valueOf(7L));
+        TraineeEntity updatedTrainee = new TraineeEntity(BigInteger.valueOf(4L), LocalDate.of(2020, 7, 7), "Sunset 50", BigInteger.valueOf(7L));
 
         // when
         traineeRepository.update(BigInteger.valueOf(4L), updatedTrainee);
@@ -157,7 +160,7 @@ public class RepositoryTest {
     @Test
     public void shouldNotAddEntityWhenUpdating() {
         // given
-        TraineeEntity updatedTrainee = new TraineeEntity(BigInteger.valueOf(11L), Date.valueOf("2000-07-07"), "Sunset Boulevard 45", BigInteger.valueOf(4L));
+        TraineeEntity updatedTrainee = new TraineeEntity(BigInteger.valueOf(11L), LocalDate.of(2000, 7, 7), "Sunset Boulevard 45", BigInteger.valueOf(4L));
 
         // when
         traineeRepository.update(BigInteger.valueOf(11L), updatedTrainee);
@@ -169,7 +172,7 @@ public class RepositoryTest {
     @Test
     public void shouldReturnCorrectSize() {
         // given
-        TraineeEntity trainee = new TraineeEntity(BigInteger.valueOf(11L), Date.valueOf("2005-05-05"), "Palm Street 11", BigInteger.valueOf(2L));
+        TraineeEntity trainee = new TraineeEntity(BigInteger.valueOf(11L), LocalDate.of(2005, 5, 5), "Palm Street 11", BigInteger.valueOf(2L));
 
         // when
         traineeRepository.save(trainee);
@@ -202,11 +205,11 @@ public class RepositoryTest {
         // then
         assertThat(trainees).isNotEmpty();
         assertThat(trainees).containsExactlyInAnyOrder(
-                new TraineeEntity(BigInteger.valueOf(1L), Date.valueOf("2001-01-01"), "Malheim Avenue 1E", BigInteger.valueOf(10L)),
-                new TraineeEntity(BigInteger.valueOf(3L), Date.valueOf("1998-11-23"), "Elm Street 13", BigInteger.valueOf(8L)),
-                new TraineeEntity(BigInteger.valueOf(5L), Date.valueOf("2003-03-03"), "Oak Avenue 9", BigInteger.valueOf(6L)),
-                new TraineeEntity(BigInteger.valueOf(7L), Date.valueOf("2002-12-12"), "Pine Street 22", BigInteger.valueOf(4L)),
-                new TraineeEntity(BigInteger.valueOf(9L), Date.valueOf("2001-08-08"), "Birch Avenue 33C", BigInteger.valueOf(2L))
+                new TraineeEntity(BigInteger.valueOf(1L), LocalDate.of(2001, 1, 1), "Malheim Avenue 1E", BigInteger.valueOf(10L)),
+                new TraineeEntity(BigInteger.valueOf(3L), LocalDate.of(1998, 11, 23), "Elm Street 13", BigInteger.valueOf(8L)),
+                new TraineeEntity(BigInteger.valueOf(5L), LocalDate.of(2003, 3, 3), "Oak Avenue 9", BigInteger.valueOf(6L)),
+                new TraineeEntity(BigInteger.valueOf(7L), LocalDate.of(2002, 12, 12), "Pine Street 22", BigInteger.valueOf(4L)),
+                new TraineeEntity(BigInteger.valueOf(9L), LocalDate.of(2001, 8, 8), "Birch Avenue 33C", BigInteger.valueOf(2L))
         );
     }
 }

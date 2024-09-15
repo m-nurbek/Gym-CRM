@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +63,7 @@ public class TraineeServiceIntegrationTest {
     @Test
     public void shouldAddTrainee() throws ParseException {
         // given
-        var trainee = TraineeDto.builder().address("Address 1").dob(new Date(2001, 1, 1)).user(userService.get(BigInteger.ONE).orElse(null)).build();
+        var trainee = TraineeDto.builder().address("Address 1").dob(LocalDate.of(2001, 1, 1)).user(userService.get(BigInteger.ONE).orElse(null)).build();
 
         // when
         var addedTrainee = traineeService.add(trainee);
@@ -76,7 +77,7 @@ public class TraineeServiceIntegrationTest {
     @Test
     public void shouldNotAddTrainee() {
         // given
-        var trainee = TraineeDto.builder().id(BigInteger.ONE).address("NEW ADDRESS").dob(new Date(2001, 6, 1)).user(userService.get(BigInteger.valueOf(24L)).orElse(null)).build();
+        var trainee = TraineeDto.builder().id(BigInteger.ONE).address("NEW ADDRESS").dob(LocalDate.of(2001, 6, 1)).user(userService.get(BigInteger.valueOf(24L)).orElse(null)).build();
 
         // when
         var addedTrainee = traineeService.add(trainee);
@@ -95,14 +96,14 @@ public class TraineeServiceIntegrationTest {
 
         // when
         trainee.setAddress("UpdatedAddress");
-        trainee.setDob(new Date(2002, 2, 2));
+        trainee.setDob(LocalDate.of(2002, 2, 2));
         TraineeDto updatedTrainee = traineeService.update(trainee);
 
         // then
         assertThat(updatedTrainee).isNotNull();
         assertThat(updatedTrainee.getId()).isEqualTo(traineeId);
         assertThat(updatedTrainee.getAddress()).isEqualTo("UpdatedAddress");
-        assertThat(updatedTrainee.getDob()).isEqualTo(new Date(2002, 2, 2));
+        assertThat(updatedTrainee.getDob()).isEqualTo(LocalDate.of(2002, 2, 2));
         assertThat(traineeService.get(traineeId).orElse(null)).isEqualTo(updatedTrainee);
     }
 
@@ -110,7 +111,7 @@ public class TraineeServiceIntegrationTest {
     public void shouldNotUpdateTrainee() {
         // given
         BigInteger traineeId = BigInteger.valueOf(25L);
-        var trainee = TraineeDto.builder().id(traineeId).address("Address 1").dob(new Date(2001, 1, 1)).user(userService.get(BigInteger.ONE).orElse(null)).build();
+        var trainee = TraineeDto.builder().id(traineeId).address("Address 1").dob(LocalDate.of(2001, 1, 1)).user(userService.get(BigInteger.ONE).orElse(null)).build();
 
         // when
         var updatedTrainee = traineeService.update(trainee);

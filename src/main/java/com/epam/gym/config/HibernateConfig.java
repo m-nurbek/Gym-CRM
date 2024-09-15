@@ -17,7 +17,6 @@ public class HibernateConfig {
     @Value("${hibernate.show_sql}")
     private String showSql;
 
-
     @Bean
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();

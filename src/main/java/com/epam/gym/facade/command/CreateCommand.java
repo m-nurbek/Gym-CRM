@@ -14,7 +14,7 @@ import com.epam.gym.util.Shell;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Component
 @AllArgsConstructor
@@ -43,7 +43,7 @@ public class CreateCommand implements Command {
     private void createTrainee() {
         shell.writeOutput("Creating a new trainee...");
 
-        Date dob = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
+        LocalDate dob = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
         String address = shell.readInput("Enter the address: ");
         UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
 
@@ -77,7 +77,7 @@ public class CreateCommand implements Command {
         shell.writeOutput("Creating a new training...");
 
         TrainingTypeDto specialization = trainingTypeService.get(shell.readBigInteger("Enter the training type ID: ")).orElse(null);
-        Date date = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
+        LocalDate date = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
         String name = shell.readInput("Enter the training name: ");
         String duration = shell.readInput("Enter the training duration: ");
         TrainerDto trainer = trainerService.get(shell.readBigInteger("Enter the trainer ID: ")).orElse(null);

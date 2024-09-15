@@ -71,7 +71,7 @@ public class UserServiceIntegrationTest {
         assertThat(addedUser.getId()).isNotNull();
         assertThat(addedUser.getFirstName()).isEqualTo("NewUser");
         assertThat(addedUser.getLastName()).isEqualTo("NewUserSurname");
-        assertThat(addedUser.isActive()).isTrue();
+        assertThat(addedUser.getIsActive()).isTrue();
         assertThat(addedUser.getUsername()).isNotNull();
         assertThat(addedUser.getPassword()).isNotNull();
         assertThat(addedUser.getId()).isEqualTo(BigInteger.valueOf(51));
@@ -82,7 +82,7 @@ public class UserServiceIntegrationTest {
         assertThat(addedUser2.getId()).isNotNull();
         assertThat(addedUser2.getFirstName()).isEqualTo("NewUser");
         assertThat(addedUser2.getLastName()).isEqualTo("NewUserSurname");
-        assertThat(addedUser2.isActive()).isTrue();
+        assertThat(addedUser2.getIsActive()).isTrue();
         assertThat(addedUser2.getUsername()).isNotNull();
         assertThat(addedUser2.getPassword()).isNotNull();
         assertThat(addedUser2.getId()).isEqualTo(BigInteger.valueOf(52));
@@ -117,7 +117,7 @@ public class UserServiceIntegrationTest {
         // when
         user.setFirstName("UpdatedFirstname");
         user.setLastName("UpdatedLastname");
-        user.setActive(false);
+        user.setIsActive(false);
         UserDto updatedUser = userService.update(user);
 
         // then
@@ -125,7 +125,7 @@ public class UserServiceIntegrationTest {
         assertThat(updatedUser.getId()).isEqualTo(userId);
         assertThat(updatedUser.getFirstName()).isEqualTo("UpdatedFirstname");
         assertThat(updatedUser.getLastName()).isEqualTo("UpdatedLastname");
-        assertThat(updatedUser.isActive()).isFalse();
+        assertThat(updatedUser.getIsActive()).isFalse();
         assertThat(userService.get(userId).orElse(null)).isEqualTo(updatedUser);
     }
 
