@@ -1,8 +1,8 @@
 package com.epam.gym.hibernate;
 
 import com.epam.gym.config.ApplicationConfig;
-import com.epam.gym.repository.hibernate.TraineeRepository;
-import com.epam.gym.repository.hibernate.UserRepository;
+import com.epam.gym.repository.TraineeRepository;
+import com.epam.gym.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

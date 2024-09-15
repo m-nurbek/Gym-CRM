@@ -1,5 +1,7 @@
 package com.epam.gym.dto;
 
+import com.epam.gym.entity.TrainingEntity;
+import com.epam.gym.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,15 +19,6 @@ public class TraineeDto implements Dto<BigInteger> {
     private BigInteger id;
     private LocalDate dob;
     private String address;
-    private UserDto user;
-    private List<TrainingDto> trainings;
-    private List<TrainerDto> trainers;
-
-    @Deprecated(since = "2024-09-12", forRemoval = false)
-    public TraineeDto(BigInteger id, LocalDate dob, String address, UserDto user) {
-        this.id = id;
-        this.dob = dob;
-        this.address = address;
-        this.user = user;
-    }
+    private UserEntity user;
+    private List<TrainingEntity> trainings;
 }

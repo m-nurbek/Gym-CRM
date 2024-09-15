@@ -1,9 +1,7 @@
 package com.epam.gym;
 
 import com.epam.gym.config.ApplicationConfig;
-import com.epam.gym.facade.Facade;
-import com.epam.gym.repository.hibernate.init.DatabaseInitializer;
-import com.epam.gym.service.hibernate.serviceImpl.TrainerServiceImpl;
+import com.epam.gym.service.serviceImpl.TrainerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

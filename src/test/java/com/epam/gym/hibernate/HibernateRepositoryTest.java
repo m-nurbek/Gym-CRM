@@ -2,8 +2,8 @@ package com.epam.gym.hibernate;
 
 import com.epam.gym.config.ApplicationConfig;
 import com.epam.gym.entity.UserEntity;
-import com.epam.gym.repository.hibernate.TraineeRepository;
-import com.epam.gym.repository.hibernate.UserRepository;
+import com.epam.gym.repository.TraineeRepository;
+import com.epam.gym.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,13 +71,13 @@ public class HibernateRepositoryTest {
                 null,
                 "Name12", "Surname12",
                 "username12", "password12",
-                false);
+                false, null, null);
 
         var entity13 = new UserEntity(
                 BigInteger.valueOf(0),
                 "Name13", "Surname13",
                 "username13", "password13",
-                false);
+                false, null, null);
 
         // when
         userRepository.save(entity11);
@@ -113,7 +113,7 @@ public class HibernateRepositoryTest {
                 id,
                 "NewName", "NewSurname",
                 "NewUsername", "NewPassword",
-                false);
+                false, null, null);
 
         // when
         userRepository.save(newEntity);
@@ -218,8 +218,8 @@ public class HibernateRepositoryTest {
         // given
         var user1 = userRepository.findById(BigInteger.valueOf(1));
         var user2 = userRepository.findById(BigInteger.valueOf(2));
-        var trainee1 = getNewTraineeEntityInstance(1, 1, user1.get(), List.of(), List.of());
-        var trainee2 = getNewTraineeEntityInstance(2, 2, user2.get(), List.of(), List.of());
+        var trainee1 = getNewTraineeEntityInstance(1, user1.get(), List.of());
+        var trainee2 = getNewTraineeEntityInstance(2, user2.get(), List.of());
 
         // when
         traineeRepository.save(trainee1);

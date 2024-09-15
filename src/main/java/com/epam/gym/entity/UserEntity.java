@@ -1,8 +1,6 @@
 package com.epam.gym.entity;
 
 import com.epam.gym.dto.UserDto;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,36 +46,12 @@ public class UserEntity implements EntityInterface<BigInteger> {
     @OneToOne(mappedBy = "user")
     private TrainerEntity trainer;
 
-    @JsonCreator
-    public UserEntity(
-            @JsonProperty("id") BigInteger id,
-            @JsonProperty("firstName") String firstName,
-            @JsonProperty("lastName") String lastName,
-            @JsonProperty("username") String username,
-            @JsonProperty("password") String password,
-            @JsonProperty("isActive") Boolean isActive
-    ) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.password = password;
-        this.isActive = isActive;
-    }
-
     public UserDto toDto() {
-        return new UserDto(id, firstName, lastName, username, password, isActive);
+        return new UserDto(id, firstName, lastName, username, password, isActive, trainee, trainer);
     }
 
-    public static UserEntity fromDto(UserDto userDto) {
-        return new UserEntity(
-                userDto.getId(),
-                userDto.getFirstName(),
-                userDto.getLastName(),
-                userDto.getUsername(),
-                userDto.getPassword(),
-                userDto.getIsActive()
-        );
+    public static UserEntity fromDto(UserDto dto) {
+        return new UserEntity(dto.getId(), dto.getFirstName(), dto.getLastName(), dto.getUsername(), dto.getPassword(), dto.getIsActive(), dto.getTrainee(), dto.getTrainer());
     }
 
     @Override

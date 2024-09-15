@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.math.BigInteger;
-import java.util.List;
 
 @Data
 @Builder
@@ -16,12 +15,4 @@ import java.util.List;
 public class TrainingTypeDto implements Dto<BigInteger> {
     private BigInteger id;
     private TrainingTypeEnum name;
-    private List<TrainerDto> trainers;
-    private List<TrainingDto> trainings;
-
-    @Deprecated(since = "2024-09-12", forRemoval = false)
-    public TrainingTypeDto(BigInteger id, String name) {
-        this.id = id;
-        this.name = TrainingTypeEnum.valueOf(name);
-    }
 }

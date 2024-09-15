@@ -24,7 +24,7 @@ public class DtoEntityCreationUtil {
                 BigInteger.valueOf(index),
                 "Name%d".formatted(index), "Surname%d".formatted(index),
                 "username%d".formatted(index), "password%d".formatted(index),
-                false);
+                false, null, null);
     }
 
     public static UserEntity getNewUserEntityInstance(long index) {
@@ -32,73 +32,62 @@ public class DtoEntityCreationUtil {
                 BigInteger.valueOf(index),
                 "Name%d".formatted(index), "Surname%d".formatted(index),
                 "username%d".formatted(index), "password%d".formatted(index),
-                false);
+                false, null, null);
     }
 
-    public static TraineeDto getNewTraineeDtoInstance(long index, UserDto userDto, List<TrainingDto> trainingDtos, List<TrainerDto> trainerDtos) {
+    public static TraineeDto getNewTraineeDtoInstance(long index, UserEntity user, List<TrainingEntity> trainings) {
         return new TraineeDto(
                 BigInteger.valueOf(index),
                 LocalDate.of(2003, 1, (int) index % 30),
                 "Some Address%d".formatted(index),
-                userDto,
-                trainingDtos,
-                trainerDtos
-        );
-    }
-
-    public static TraineeEntity getNewTraineeEntityInstance(long index, long userId, UserEntity userEntity, List<TrainingEntity> trainingEntities, List<TrainerEntity> trainerEntities) {
-        return new TraineeEntity(
-                BigInteger.valueOf(index),
-                LocalDate.of(2003, 1, (int) index % 30),
-                "Some Address%d".formatted(index),
-                BigInteger.valueOf(userId),
-                userEntity,
-                trainingEntities,
-                trainerEntities
-        );
-    }
-
-    public static TrainerDto getNewTrainerDtoInstance(long index, TrainingTypeDto type, UserDto user, List<TrainingDto> trainingDtos, List<TraineeDto> traineeDtos) {
-        return new TrainerDto(
-                BigInteger.valueOf(index),
-                type,
                 user,
-                trainingDtos,
-                traineeDtos
-        );
-    }
-
-    public static TrainerEntity getNewTrainerEntityInstance(long index, long specializationId, long userId, TrainingTypeEntity type, UserEntity user, List<TrainingEntity> trainingEntities, List<TraineeEntity> traineeEntities) {
-        return new TrainerEntity(
-                BigInteger.valueOf(index),
-                BigInteger.valueOf(specializationId),
-                BigInteger.valueOf(userId),
-                type,
-                user,
-                trainingEntities,
-                traineeEntities
-        );
-    }
-
-    public static TrainingTypeDto getNewTrainingTypeDtoInstance(long index, List<TrainerDto> trainers, List<TrainingDto> trainings) {
-        return new TrainingTypeDto(
-                BigInteger.valueOf(index),
-                TrainingTypeEnum.BODYBUILDING,
-                trainers,
                 trainings
         );
     }
 
-    public static TrainingTypeEntity getNewTrainingTypeEntityInstance(long index, List<TrainerEntity> trainerEntities, List<TrainingEntity> trainingEntities) {
-        return new TrainingTypeEntity(
+    public static TraineeEntity getNewTraineeEntityInstance(long index, UserEntity user, List<TrainingEntity> trainings) {
+        return new TraineeEntity(
                 BigInteger.valueOf(index),
-                TrainingTypeEnum.BODYBUILDING,
-                trainerEntities,
-                trainingEntities
+                LocalDate.of(2003, 1, (int) index % 30),
+                "Some Address%d".formatted(index),
+                user,
+                trainings
         );
     }
 
-    public static TrainingDto getNewTrainingDtoInstance(long index, TraineeDto trainee, TrainerDto trainer, TrainingTypeDto type) {
+    public static TrainerDto getNewTrainerDtoInstance(long index, TrainingTypeEntity type, UserEntity user, List<TrainingEntity> trainings) {
+        return new TrainerDto(
+                BigInteger.valueOf(index),
+                type,
+                user,
+                trainings
+        );
+    }
+
+    public static TrainerEntity getNewTrainerEntityInstance(long index, TrainingTypeEntity type, UserEntity user, List<TrainingEntity> trainings) {
+        return new TrainerEntity(
+                BigInteger.valueOf(index),
+                type,
+                user,
+                trainings
+        );
+    }
+
+    public static TrainingTypeDto getNewTrainingTypeDtoInstance(long index) {
+        return new TrainingTypeDto(
+                BigInteger.valueOf(index),
+                TrainingTypeEnum.BODYBUILDING
+        );
+    }
+
+    public static TrainingTypeEntity getNewTrainingTypeEntityInstance(long index) {
+        return new TrainingTypeEntity(
+                BigInteger.valueOf(index),
+                TrainingTypeEnum.BODYBUILDING
+        );
+    }
+
+    public static TrainingDto getNewTrainingDtoInstance(long index, TraineeEntity trainee, TrainerEntity trainer, TrainingTypeEntity type) {
         return new TrainingDto(
                 BigInteger.valueOf(index),
                 trainee,
@@ -110,13 +99,10 @@ public class DtoEntityCreationUtil {
         );
     }
 
-    public static TrainingEntity getNewTrainingEntityInstance(long index, long traineeId, long trainerId, long typeId, TraineeEntity trainee, TrainerEntity trainer, TrainingTypeEntity type) {
+    public static TrainingEntity getNewTrainingEntityInstance(long index, TraineeEntity trainee, TrainerEntity trainer, TrainingTypeEntity type) {
         return new TrainingEntity(
                 BigInteger.valueOf(index),
-                BigInteger.valueOf(traineeId),
-                BigInteger.valueOf(trainerId),
                 "SOME TRAINING%d".formatted(index),
-                BigInteger.valueOf(typeId),
                 LocalDate.of(2024, 10, (int) index % 30),
                 3,
                 trainee,

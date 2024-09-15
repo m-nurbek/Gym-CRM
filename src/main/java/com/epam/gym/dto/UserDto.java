@@ -1,5 +1,7 @@
 package com.epam.gym.dto;
 
+import com.epam.gym.entity.TraineeEntity;
+import com.epam.gym.entity.TrainerEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +20,7 @@ public class UserDto implements Dto<BigInteger> {
     private String username;
     private String password;
     private Boolean isActive;
+
+    private TraineeEntity trainee;
+    private TrainerEntity trainer;
 }
