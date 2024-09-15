@@ -141,7 +141,7 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
     @Override
     public void deleteAll() {
         Session session = sessionFactory.getCurrentSession();
-        session.createQuery("DELETE FROM %s".formatted(entityClass.getSimpleName()), entityClass).executeUpdate();
+        session.createQuery("DELETE FROM %s".formatted(entityClass.getSimpleName())).executeUpdate();
         session.flush();
     }
 

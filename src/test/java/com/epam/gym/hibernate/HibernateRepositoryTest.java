@@ -3,12 +3,14 @@ package com.epam.gym.hibernate;
 import com.epam.gym.config.ApplicationConfig;
 import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.hibernate.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 import static com.epam.gym.util.DtoEntityCreationUtil.getNewUserEntityInstance;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,76 +22,187 @@ public class HibernateRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @BeforeEach
+    void setUp() {
+        for (int i = 1; i <= 10; i++) {
+            var entity = getNewUserEntityInstance(i);
+            userRepository.save(entity);
+        }
+    }
+
     @Test
-    void shouldSaveEntity() {
-        // given
-        var entity1 = getNewUserEntityInstance(1);
-        var entity2 = getNewUserEntityInstance(2);
-        var entity3 = new UserEntity(
-                null,
-                "Name3", "Surname3",
-                "username3", "password3",
-                false);
-
-        var entity4 = new UserEntity(
-                BigInteger.valueOf(0),
-                "Name4", "Surname4",
-                "username4", "password4",
-                false);
-
+    void shouldCorrectlyFindEntity() {
         // when
-        userRepository.save(entity1);
-        userRepository.save(entity2);
-        userRepository.save(entity3);
-        userRepository.save(entity4);
+        Optional<UserEntity> user = userRepository.findById(BigInteger.TWO);
 
         // then
         assertAll(
-                "Assertions for entity1",
-                () -> assertThat(entity1.getId()).isNotNull(),
-                () -> assertThat(entity1.getId()).isEqualTo(BigInteger.valueOf(1)),
-                () -> assertThat(entity1.getFirstName()).isEqualTo("Name1")
+                "Assert found user entity",
+                () -> assertThat(user).isPresent(),
+                () -> assertThat(user.get().getId()).isEqualTo(BigInteger.TWO),
+                () -> assertThat(user.get().getFirstName()).isEqualTo("Name2")
+        );
+    }
+
+    @Test
+    void shouldNotFindEntity() {
+        // when
+        Optional<UserEntity> user = userRepository.findById(BigInteger.valueOf(500));
+
+        // then
+        assertAll(
+                "Assert found user entity that does not exist",
+                () -> assertThat(user).isEmpty()
+        );
+    }
+
+    @Test
+    void shouldSaveEntity() {
+        // given
+        var entity11 = getNewUserEntityInstance(11);
+        var entity12 = new UserEntity(
+                null,
+                "Name12", "Surname12",
+                "username12", "password12",
+                false);
+
+        var entity13 = new UserEntity(
+                BigInteger.valueOf(0),
+                "Name13", "Surname13",
+                "username13", "password13",
+                false);
+
+        // when
+        userRepository.save(entity11);
+        userRepository.save(entity12);
+        userRepository.save(entity13);
+
+        // then
+        assertAll(
+                "Assertions for entity11",
+                () -> assertThat(entity11.getId()).isNotNull(),
+                () -> assertThat(entity11.getId()).isEqualTo(BigInteger.valueOf(11)),
+                () -> assertThat(entity11.getFirstName()).isEqualTo("Name11")
         );
         assertAll(
-                "Assertions for entity2",
-                () -> assertThat(entity2.getId()).isNotNull(),
-                () -> assertThat(entity2.getId()).isEqualTo(BigInteger.valueOf(2)),
-                () -> assertThat(entity2.getFirstName()).isEqualTo("Name2")
+                "Assertions for entity12 (edge case: id is null)",
+                () -> assertThat(entity12.getId()).isNotNull(),
+                () -> assertThat(entity12.getId()).isEqualTo(BigInteger.valueOf(12)),
+                () -> assertThat(entity12.getFirstName()).isEqualTo("Name12")
         );
         assertAll(
-                "Assertions for entity3 (edge case: id is null)",
-                () -> assertThat(entity3.getId()).isNotNull(),
-                () -> assertThat(entity3.getId()).isEqualTo(BigInteger.valueOf(3)),
-                () -> assertThat(entity3.getFirstName()).isEqualTo("Name3")
-        );
-        assertAll(
-                "Assertions for entity4 (edge case: id is 0)",
-                () -> assertThat(entity4.getId()).isNotNull(),
-                () -> assertThat(entity4.getId()).isEqualTo(BigInteger.valueOf(4)),
-                () -> assertThat(entity4.getFirstName()).isEqualTo("Name4")
+                "Assertions for entity13 (edge case: id is 0)",
+                () -> assertThat(entity13.getId()).isNotNull(),
+                () -> assertThat(entity13.getId()).isEqualTo(BigInteger.valueOf(13)),
+                () -> assertThat(entity13.getFirstName()).isEqualTo("Name13")
         );
     }
 
     @Test
     void shouldNotSaveEntity() {
         // given
-        var entity1 = getNewUserEntityInstance(1);
         var id = BigInteger.valueOf(1);
-        var entity5 = new UserEntity(
+        var newEntity = new UserEntity(
                 id,
-                "Name5", "Surname5",
-                "username5", "password5",
+                "NewName", "NewSurname",
+                "NewUsername", "NewPassword",
                 false);
 
         // when
-        userRepository.save(entity1);
-        userRepository.save(entity5);
+        userRepository.save(newEntity);
+
+        // then
+        assertAll(
+                "Assertions for newEntity (edge case: id is 1 that is present already)",
+                () -> assertThat(userRepository.findById(id).get().getId()).isNotNull(),
+                () -> assertThat(userRepository.findById(id).get().getFirstName()).isNotEqualTo(newEntity.getFirstName()),
+                () -> assertThat(userRepository.count()).isEqualTo(10)
+        );
+    }
+
+    @Test
+    void shouldUpdateEntity() {
+        // given
+        var updatedName = "Updated FirstName";
+        var updatedPassword = "Updated Password";
+        Optional<UserEntity> user = userRepository.findById(BigInteger.TWO);
+        user.ifPresent((entity) -> {
+            entity.setFirstName(updatedName);
+            entity.setPassword(updatedPassword);
+        });
+
+        // when
+        final boolean[] response = new boolean[1];
+        user.ifPresent((entity) -> response[0] = userRepository.update(entity));
+
+        // then
+        var u = userRepository.findById(BigInteger.TWO);
+        assertAll(
+                "Assert updated entity",
+                () -> assertThat(response[0]).isTrue(),
+                () -> assertThat(u).isPresent(),
+                () -> assertThat(u.get().getFirstName()).isEqualTo(updatedName),
+                () -> assertThat(u.get().getPassword()).isEqualTo(updatedPassword)
+        );
+    }
+
+    @Test
+    void shouldNotUpdateEntity() {
+        // given
+        var updatedName = "Updated FirstName";
+        var updatedPassword = "Updated Password";
+        Optional<UserEntity> user = userRepository.findById(BigInteger.TWO);
+        user.ifPresent((entity) -> {
+            entity.setId(BigInteger.valueOf(500)); // entity with this id doesn't exist
+            entity.setFirstName(updatedName);
+            entity.setPassword(updatedPassword);
+        });
+
+        // when
+        final boolean[] response = new boolean[1];
+        user.ifPresent((entity) -> response[0] = userRepository.update(entity));
+
+        // then
+        var u2 = userRepository.findById(BigInteger.TWO);
+        var u500 = userRepository.findById(BigInteger.valueOf(500));
+        assertAll(
+                "Assert updated entity",
+                () -> assertThat(response[0]).isFalse(),
+                () -> assertThat(u2.get().getFirstName()).isNotEqualTo(updatedName),
+                () -> assertThat(u2.get().getPassword()).isNotEqualTo(updatedPassword),
+                () -> assertThat(u500).isEmpty()
+        );
+    }
+
+    @Test
+    void shouldDeleteEntity() {
+        // when
+        userRepository.deleteById(BigInteger.TWO);
+
+        // then
+        var u = userRepository.findById(BigInteger.TWO);
+        var size = userRepository.count();
 
         assertAll(
-                "Assertions for entity5 (edge case: id is 1 that is present already)",
-                () -> assertThat(userRepository.findById(id).get().getId()).isNotNull(),
-                () -> assertThat(userRepository.findById(id).get().getFirstName()).isNotEqualTo(entity5.getFirstName()),
-                () -> assertThat(userRepository.count()).isEqualTo(1)
+                "Assert delete entity",
+                () -> assertThat(u).isEmpty(),
+                () -> assertThat(size).isEqualTo(9)
+        );
+    }
+
+    @Test
+    void shouldDeleteAll() {
+        // when
+        userRepository.deleteAll();
+
+        // then
+        var u = userRepository.findById(BigInteger.TWO);
+        var size = userRepository.count();
+
+        assertAll(
+                "Assert deleteAll",
+                () -> assertThat(size).isEqualTo(0),
+                () -> assertThat(u).isEmpty()
         );
     }
 }
