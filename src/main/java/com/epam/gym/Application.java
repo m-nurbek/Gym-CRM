@@ -11,15 +11,7 @@ public class Application {
         log.info("Application started ...");
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class)) {
-//            Facade facade = context.getBean(Facade.class);
-//            facade.run();
 
-            TrainerServiceImpl service = context.getBean(TrainerServiceImpl.class);
-
-            var trainerDto = service.findByUsername("xandercarter26");
-
-            System.out.println("APPLICATION ==================");
-            trainerDto.ifPresent(System.out::println);
         }
     }
 }

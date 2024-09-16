@@ -16,6 +16,7 @@ import lombok.experimental.UtilityClass;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @UtilityClass
 public class DtoEntityCreationUtil {
@@ -76,14 +77,18 @@ public class DtoEntityCreationUtil {
     public static TrainingTypeDto getNewTrainingTypeDtoInstance(long index) {
         return new TrainingTypeDto(
                 BigInteger.valueOf(index),
-                TrainingTypeEnum.BODYBUILDING
+                TrainingTypeEnum.BODYBUILDING,
+                Set.of(),
+                Set.of()
         );
     }
 
     public static TrainingTypeEntity getNewTrainingTypeEntityInstance(long index) {
         return new TrainingTypeEntity(
                 BigInteger.valueOf(index),
-                TrainingTypeEnum.BODYBUILDING
+                TrainingTypeEnum.BODYBUILDING,
+                Set.of(),
+                Set.of()
         );
     }
 

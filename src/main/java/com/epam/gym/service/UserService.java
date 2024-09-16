@@ -2,15 +2,21 @@ package com.epam.gym.service;
 
 import com.epam.gym.dto.UserDto;
 
+import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends CrudService<UserDto, BigInteger> {
 
     Optional<UserDto> findByUsername(String username);
 
-    boolean changePassword(String oldPassword, String newPassword);
+    boolean changePassword(BigInteger id, String oldPassword, String newPassword);
 
-    UserDto updateProfile(UserDto updatedUser);
+    boolean updateProfile(UserDto updatedUser);
 
-    void updateActiveState(boolean isActive);
+    boolean updateActiveState(BigInteger id, boolean isActive);
+
+    UserDto save(UserDto userDto);
+
+    List<UserDto> getAll();
 }

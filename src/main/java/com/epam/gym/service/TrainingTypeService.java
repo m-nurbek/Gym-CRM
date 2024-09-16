@@ -1,4 +1,8 @@
 package com.epam.gym.service;
 
-public interface TrainingTypeService {
+import com.epam.gym.dto.TrainingTypeDto;
+
+import java.math.BigInteger;
+
+public interface TrainingTypeService extends CrudService<TrainingTypeDto, BigInteger> {
 }

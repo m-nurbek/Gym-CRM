@@ -2,6 +2,7 @@ package com.epam.gym.repository.impl;
 
 import com.epam.gym.entity.EntityInterface;
 import com.epam.gym.repository.HibernateRepository;
+import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Isolation;
@@ -14,15 +15,15 @@ import java.util.Optional;
 
 @Transactional(isolation = Isolation.READ_COMMITTED)
 public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implements HibernateRepository<T, ID> {
-    private final SessionFactory sessionFactory;
+    @PersistenceContext
+    private Session session;
     private final Class<T> entityClass;
 
     private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
     private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
     private static final String ENTITIES_MUST_NOT_BE_NULL = "Entities must not be null";
 
-    public HibernateRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public HibernateRepositoryImpl() {
         entityClass = getDomainClass();
     }
 
@@ -48,7 +49,6 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
     public Optional<T> findById(ID id) {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
 
-        Session session = sessionFactory.getCurrentSession();
         var foundEntity = session.get(entityClass, id);
 
         if (foundEntity == null) {
@@ -60,7 +60,6 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
 
     @Override
     public Iterable<T> findAll() {
-        Session session = sessionFactory.getCurrentSession();
         return session.createQuery("from %s".formatted(entityClass.getSimpleName()), entityClass).list();
     }
 
@@ -68,7 +67,6 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
     public boolean existsById(ID id) {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
 
-        Session session = sessionFactory.getCurrentSession();
         Long count = session.createQuery("SELECT COUNT(e) FROM %s e WHERE e.id = :id".formatted(entityClass.getSimpleName()), Long.class)
                 .setParameter("id", id)
                 .uniqueResult();
@@ -88,10 +86,7 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
             }
         }
 
-        Session session = sessionFactory.getCurrentSession();
         session.save(entity);
-        session.flush();
-        session.refresh(entity);
         return entity;
     }
 
@@ -115,10 +110,7 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
             return false;
         }
 
-        Session session = sessionFactory.getCurrentSession();
         session.merge(entity);
-        session.flush();
-        session.refresh(entity);
 
         return true;
     }
@@ -127,7 +119,6 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
     public boolean deleteById(ID id) {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
 
-        Session session = sessionFactory.getCurrentSession();
         var entity = session.get(entityClass, id);
 
         if (entity != null) {
@@ -140,14 +131,12 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
 
     @Override
     public void deleteAll() {
-        Session session = sessionFactory.getCurrentSession();
         session.createQuery("DELETE FROM %s".formatted(entityClass.getSimpleName())).executeUpdate();
         session.flush();
     }
 
     @Override
     public long count() {
-        Session session = sessionFactory.getCurrentSession();
 
         Long count = session.createQuery("SELECT COUNT(e) FROM %s e".formatted(entityClass.getSimpleName()), Long.class).uniqueResult();
 

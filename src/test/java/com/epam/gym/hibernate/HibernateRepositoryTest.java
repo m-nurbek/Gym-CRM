@@ -40,13 +40,13 @@ public class HibernateRepositoryTest {
     @Test
     void shouldCorrectlyFindEntity() {
         // when
-        Optional<UserEntity> user = userRepository.findById(BigInteger.TWO);
+        Optional<UserEntity> user = userRepository.findById(BigInteger.valueOf(1000 + 2)); // id is generated starting from 1000
 
         // then
         assertAll(
                 "Assert found user entity",
                 () -> assertThat(user).isPresent(),
-                () -> assertThat(user.get().getId()).isEqualTo(BigInteger.TWO),
+                () -> assertThat(user.get().getId()).isEqualTo(BigInteger.valueOf(1000 + 2)),
                 () -> assertThat(user.get().getFirstName()).isEqualTo("Name2")
         );
     }
@@ -54,7 +54,7 @@ public class HibernateRepositoryTest {
     @Test
     void shouldNotFindEntity() {
         // when
-        Optional<UserEntity> user = userRepository.findById(BigInteger.valueOf(500));
+        Optional<UserEntity> user = userRepository.findById(BigInteger.valueOf(50_000));
 
         // then
         assertAll(
@@ -88,19 +88,19 @@ public class HibernateRepositoryTest {
         assertAll(
                 "Assertions for entity11",
                 () -> assertThat(entity11.getId()).isNotNull(),
-                () -> assertThat(entity11.getId()).isEqualTo(BigInteger.valueOf(11)),
+                () -> assertThat(entity11.getId()).isEqualTo(BigInteger.valueOf(1000 + 11)),
                 () -> assertThat(entity11.getFirstName()).isEqualTo("Name11")
         );
         assertAll(
                 "Assertions for entity12 (edge case: id is null)",
                 () -> assertThat(entity12.getId()).isNotNull(),
-                () -> assertThat(entity12.getId()).isEqualTo(BigInteger.valueOf(12)),
+                () -> assertThat(entity12.getId()).isEqualTo(BigInteger.valueOf(1000 + 12)),
                 () -> assertThat(entity12.getFirstName()).isEqualTo("Name12")
         );
         assertAll(
                 "Assertions for entity13 (edge case: id is 0)",
                 () -> assertThat(entity13.getId()).isNotNull(),
-                () -> assertThat(entity13.getId()).isEqualTo(BigInteger.valueOf(13)),
+                () -> assertThat(entity13.getId()).isEqualTo(BigInteger.valueOf(1000 + 13)),
                 () -> assertThat(entity13.getFirstName()).isEqualTo("Name13")
         );
     }
@@ -108,7 +108,7 @@ public class HibernateRepositoryTest {
     @Test
     void shouldNotSaveEntity() {
         // given
-        var id = BigInteger.valueOf(1);
+        var id = BigInteger.valueOf(1000 + 1);
         var newEntity = new UserEntity(
                 id,
                 "NewName", "NewSurname",
@@ -132,7 +132,7 @@ public class HibernateRepositoryTest {
         // given
         var updatedName = "Updated FirstName";
         var updatedPassword = "Updated Password";
-        Optional<UserEntity> user = userRepository.findById(BigInteger.TWO);
+        Optional<UserEntity> user = userRepository.findById(BigInteger.valueOf(1000 + 2));
         user.ifPresent((entity) -> {
             entity.setFirstName(updatedName);
             entity.setPassword(updatedPassword);
@@ -143,7 +143,7 @@ public class HibernateRepositoryTest {
         user.ifPresent((entity) -> response[0] = userRepository.update(entity));
 
         // then
-        var u = userRepository.findById(BigInteger.TWO);
+        var u = userRepository.findById(BigInteger.valueOf(1000 + 2));
         assertAll(
                 "Assert updated entity",
                 () -> assertThat(response[0]).isTrue(),
@@ -158,9 +158,9 @@ public class HibernateRepositoryTest {
         // given
         var updatedName = "Updated FirstName";
         var updatedPassword = "Updated Password";
-        Optional<UserEntity> user = userRepository.findById(BigInteger.TWO);
+        Optional<UserEntity> user = userRepository.findById(BigInteger.valueOf(1000 + 2));
         user.ifPresent((entity) -> {
-            entity.setId(BigInteger.valueOf(500)); // entity with this id doesn't exist
+            entity.setId(BigInteger.valueOf(500_000)); // entity with this id doesn't exist
             entity.setFirstName(updatedName);
             entity.setPassword(updatedPassword);
         });
@@ -170,8 +170,8 @@ public class HibernateRepositoryTest {
         user.ifPresent((entity) -> response[0] = userRepository.update(entity));
 
         // then
-        var u2 = userRepository.findById(BigInteger.TWO);
-        var u500 = userRepository.findById(BigInteger.valueOf(500));
+        var u2 = userRepository.findById(BigInteger.valueOf(1000 + 2));
+        var u500 = userRepository.findById(BigInteger.valueOf(500_000));
         assertAll(
                 "Assert updated entity",
                 () -> assertThat(response[0]).isFalse(),
@@ -184,10 +184,10 @@ public class HibernateRepositoryTest {
     @Test
     void shouldDeleteEntity() {
         // when
-        userRepository.deleteById(BigInteger.TWO);
+        userRepository.deleteById(BigInteger.valueOf(1000 + 2));
 
         // then
-        var u = userRepository.findById(BigInteger.TWO);
+        var u = userRepository.findById(BigInteger.valueOf(1000 + 2));
         var size = userRepository.count();
 
         assertAll(
@@ -216,8 +216,8 @@ public class HibernateRepositoryTest {
     @Test
     void shouldAddTrainee() {
         // given
-        var user1 = userRepository.findById(BigInteger.valueOf(1));
-        var user2 = userRepository.findById(BigInteger.valueOf(2));
+        var user1 = userRepository.findById(BigInteger.valueOf(1000 + 1));
+        var user2 = userRepository.findById(BigInteger.valueOf(1000 + 2));
         var trainee1 = getNewTraineeEntityInstance(1, user1.get(), List.of());
         var trainee2 = getNewTraineeEntityInstance(2, user2.get(), List.of());
 
@@ -226,8 +226,11 @@ public class HibernateRepositoryTest {
         traineeRepository.save(trainee2);
 
         // then
-        var t1 = traineeRepository.findById(BigInteger.valueOf(1));
-        var t2 = traineeRepository.findById(BigInteger.valueOf(2));
+        var t1 = traineeRepository.findById(BigInteger.valueOf(1000 + 1));
+        var t2 = traineeRepository.findById(BigInteger.valueOf(1000 + 2));
+
+        var u1 = userRepository.findById(BigInteger.valueOf(1000 + 1));
+        var u2 = userRepository.findById(BigInteger.valueOf(1000 + 2));
 
         assertAll(
                 "Assertions for adding a trainee",
@@ -236,10 +239,10 @@ public class HibernateRepositoryTest {
                 () -> assertThat(t1.get().getAddress()).isEqualTo(trainee1.getAddress()),
                 () -> assertThat(t2.get().getAddress()).isEqualTo(trainee2.getAddress()),
 
-                () -> assertThat(user1.get().getTrainee()).isNotNull(),
-                () -> assertThat(user2.get().getTrainee()).isNotNull(),
-                () -> assertThat(user1.get().getTrainee().getAddress()).isEqualTo(trainee1.getAddress()),
-                () -> assertThat(user2.get().getTrainee().getAddress()).isEqualTo(trainee2.getAddress())
+                () -> assertThat(u1.get().getTrainee()).isNotNull(),
+                () -> assertThat(u2.get().getTrainee()).isNotNull(),
+                () -> assertThat(u1.get().getTrainee().getAddress()).isEqualTo(trainee1.getAddress()),
+                () -> assertThat(u2.get().getTrainee().getAddress()).isEqualTo(trainee2.getAddress())
         );
     }
 }

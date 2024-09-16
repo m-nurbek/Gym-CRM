@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,14 @@ import java.util.Objects;
 @Table(name = "TRAINING")
 public class TrainingEntity implements EntityInterface<BigInteger> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "training_table_seq")
+    @TableGenerator(
+            name = "training_table_seq",
+            table = "id_gen_table",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_val",
+            initialValue = 1000,
+            allocationSize = 1)
     @Column(name = "ID")
     private BigInteger id;
     @Column(name = "NAME")
@@ -62,6 +70,10 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
     }
 
     public static TrainingEntity fromDto(TrainingDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
         return new TrainingEntity(dto.getId(), dto.getName(), dto.getDate(), dto.getDuration(), dto.getTrainee(), dto.getTrainer(), dto.getType());
     }
 

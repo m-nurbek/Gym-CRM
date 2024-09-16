@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -34,7 +35,14 @@ import java.util.Objects;
 @Table(name = "TRAINEE")
 public class TraineeEntity implements EntityInterface<BigInteger> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "trainee_table_seq")
+    @TableGenerator(
+            name = "trainee_table_seq",
+            table = "id_gen_table",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_val",
+            initialValue = 1000,
+            allocationSize = 1)
     @Column(name = "ID")
     private BigInteger id;
     @Column(name = "DOB")
@@ -43,8 +51,9 @@ public class TraineeEntity implements EntityInterface<BigInteger> {
     @Column(name = "ADDRESS")
     private String address;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+    @ToString.Exclude
     private UserEntity user;
 
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL)
@@ -56,6 +65,10 @@ public class TraineeEntity implements EntityInterface<BigInteger> {
     }
 
     public static TraineeEntity fromDto(TraineeDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
         return new TraineeEntity(dto.getId(), dto.getDob(), dto.getAddress(), dto.getUser(), dto.getTrainings());
     }
 

@@ -9,7 +9,7 @@ import java.math.BigInteger;
 
 @Repository
 public class TrainingRepositoryImpl extends HibernateRepositoryImpl<TrainingEntity, BigInteger> implements TrainingRepository {
-    public TrainingRepositoryImpl(SessionFactory sessionFactory) {
-        super(sessionFactory);
+    public TrainingRepositoryImpl() {
+        super();
     }
 }

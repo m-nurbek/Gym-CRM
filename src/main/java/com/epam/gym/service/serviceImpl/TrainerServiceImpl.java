@@ -10,9 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class TrainerServiceImpl implements TrainerService {
     private final UserService userService;
     private final TrainerRepository trainerRepository;
@@ -24,7 +28,6 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    @Transactional
     public Optional<TrainerDto> findByUsername(String username) {
         Optional<UserDto> userDto = userService.findByUsername(username);
 
@@ -38,5 +41,51 @@ public class TrainerServiceImpl implements TrainerService {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public TrainerDto save(TrainerDto trainer) {
+        var trainerEntity = trainerRepository.save(TrainerEntity.fromDto(trainer));
+        return trainerEntity.toDto();
+    }
+
+    @Override
+    public boolean update(TrainerDto trainer) {
+        Optional<TrainerEntity> trainerEntityOptional = trainerRepository.findById(trainer.getId());
+
+        if (trainerEntityOptional.isPresent()) {
+            TrainerEntity trainerEntity = trainerEntityOptional.get();
+            trainerEntity.setUser(trainer.getUser());
+            trainerEntity.setTrainings(trainer.getTrainings());
+            trainerEntity.setSpecialization(trainer.getSpecialization());
+
+            return trainerRepository.update(trainerEntity);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean delete(BigInteger id) {
+        return trainerRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<TrainerDto> get(BigInteger id) {
+        var trainer = trainerRepository.findById(id);
+        return trainer.map(TrainerEntity::toDto);
+    }
+
+    @Override
+    public List<TrainerDto> getAll() {
+        List<TrainerEntity> trainerEntities = new ArrayList<>();
+        trainerRepository.findAll().forEach(trainerEntities::add);
+
+        return trainerEntities.stream().map(TrainerEntity::toDto).toList();
+    }
+
+    @Override
+    public long count() {
+        return trainerRepository.count();
     }
 }

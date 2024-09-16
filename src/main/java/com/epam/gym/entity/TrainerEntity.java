@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,14 @@ import java.util.Objects;
 @Table(name = "TRAINER")
 public class TrainerEntity implements EntityInterface<BigInteger> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "trainer_table_seq")
+    @TableGenerator(
+            name = "trainer_table_seq",
+            table = "id_gen_table",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_val",
+            initialValue = 1000,
+            allocationSize = 1)
     @Column(name = "ID")
     private BigInteger id;
 
@@ -40,11 +48,12 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID")
     private TrainingTypeEntity specialization;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+    @ToString.Exclude
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trainer")
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL)
     @ToString.Exclude
     List<TrainingEntity> trainings;
 
@@ -53,6 +62,10 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     }
 
     public static TrainerEntity fromDto(TrainerDto trainerDto) {
+        if (trainerDto == null) {
+            return null;
+        }
+
         return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization(), trainerDto.getUser(), trainerDto.getTrainings());
     }
 

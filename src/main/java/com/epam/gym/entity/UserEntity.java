@@ -1,6 +1,7 @@
 package com.epam.gym.entity;
 
 import com.epam.gym.dto.UserDto;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +29,14 @@ import java.util.Objects;
 @Table(name = "USER_TABLE")
 public class UserEntity implements EntityInterface<BigInteger> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "user_table_seq")
+    @TableGenerator(
+            name = "user_table_seq",
+            table = "id_gen_table",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_val",
+            initialValue = 1000,
+            allocationSize = 1)
     @Column(name = "ID")
     private BigInteger id;
     @Column(name = "FIRST_NAME", nullable = false)
@@ -41,9 +50,11 @@ public class UserEntity implements EntityInterface<BigInteger> {
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive = true;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private TraineeEntity trainee;
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private TrainerEntity trainer;
 
     public UserDto toDto() {
@@ -51,6 +62,10 @@ public class UserEntity implements EntityInterface<BigInteger> {
     }
 
     public static UserEntity fromDto(UserDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
         return new UserEntity(dto.getId(), dto.getFirstName(), dto.getLastName(), dto.getUsername(), dto.getPassword(), dto.getIsActive(), dto.getTrainee(), dto.getTrainer());
     }
 
