@@ -13,4 +13,6 @@ public interface UserRepository extends HibernateRepository<UserEntity, BigInteg
     boolean updateActiveState(BigInteger id, boolean isActive);
 
     boolean updatePassword(BigInteger id, String newPassword);
+
+    boolean isUsernameAndPasswordMatch(String username, String password);
 }

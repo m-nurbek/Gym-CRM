@@ -4,6 +4,7 @@ import com.epam.gym.dto.TrainingDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -53,15 +54,15 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
     private int duration;
 
     @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID")
     private TraineeEntity trainee;
     @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID")
     private TrainerEntity trainer;
     @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TYPE", referencedColumnName = "ID")
     private TrainingTypeEntity type;
 

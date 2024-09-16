@@ -1,39 +1,47 @@
 package com.epam.gym.aop;
 
+import com.epam.gym.service.AuthService;
+import com.epam.gym.util.AuthenticationFailedException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 @Aspect
-public class AuthorizedAspect {
-    @Pointcut("@annotation(com.epam.gym.aop.Authorized)")
-    public void executeLogging() {
+public class AuthenticatedAspect {
+    private final AuthService authService;
+
+    @Pointcut("@annotation(com.epam.gym.aop.Authenticated)")
+    public void executeAuthentication() {
         // Do nothing because of setting up a pointcut for Spring AOP.
     }
 
-    @Before(value = "executeLogging()")
-    public void logBefore(JoinPoint joinPoint) {
+    @Around(value = "executeAuthentication()")
+    public Object callAuthentication(ProceedingJoinPoint joinPoint) throws Throwable {
+        log.debug(">> AUTHENTICATED METHOD: {}", joinPoint.getSignature().getName());
+
         Object[] args = joinPoint.getArgs();
-        String methodName = joinPoint.getSignature().getName();
-        log.debug(">> CALLED METHOD: {}() with args: {}", methodName, args);
+        String username = (String) args[0];
+
+        Object returnValue = null;
+
+        if (authService.isAuthenticated(username)) {
+            log.debug("User is authenticated.");
+            returnValue = joinPoint.proceed();
+        } else {
+            log.debug("User is not authenticated.");
+            throw new AuthenticationFailedException("User is not authenticated.");
+        }
+
+        log.debug("<< AUTHENTICATED METHOD: {}", joinPoint.getSignature().getName());
+
+        return returnValue;
     }
 
-    @AfterReturning(value = "executeLogging()", returning = "result")
-    public void logAfter(JoinPoint joinPoint, Object result) {
-        String methodName = joinPoint.getSignature().getName();
-        log.debug("<< METHOD RETURNED: {}() result: {}", methodName, result);
-    }
-
-    @AfterThrowing(pointcut = "executeLogging()", throwing = "exception")
-    public void logException(JoinPoint joinPoint, Throwable exception) {
-        String methodName = joinPoint.getSignature().getName();
-        log.debug("!! ERROR: {}() - {}", methodName, exception.getMessage());
-    }
 }

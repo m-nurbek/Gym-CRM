@@ -4,6 +4,7 @@ import com.epam.gym.dto.TrainerDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,8 +45,9 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @Column(name = "ID")
     private BigInteger id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID")
+    @ToString.Exclude
     private TrainingTypeEntity specialization;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -53,7 +55,7 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @ToString.Exclude
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
     List<TrainingEntity> trainings;
 

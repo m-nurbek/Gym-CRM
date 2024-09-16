@@ -60,4 +60,14 @@ public class UserRepositoryImpl extends HibernateRepositoryImpl<UserEntity, BigI
 
         return true;
     }
+
+    @Override
+    public boolean isUsernameAndPasswordMatch(String username, String password) {
+        var foundEntity = session.createQuery("from UserEntity where username = :username and password = :password", UserEntity.class)
+                .setParameter("username", username)
+                .setParameter("password", password)
+                .uniqueResult();
+
+        return foundEntity != null;
+    }
 }

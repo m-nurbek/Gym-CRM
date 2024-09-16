@@ -21,6 +21,9 @@ public class Shell implements AutoCloseable {
     public static final String EXIT = "exit";
     public static final String HELP = "help";
     public static final String LIST = "list";
+    public static final String REGISTER = "register";
+    public static final String LOGIN = "login";
+    public static final String LOGOUT = "logout";
 
     public Shell() {
         writeOutput("Welcome to the Gym CRM system!");
@@ -28,7 +31,10 @@ public class Shell implements AutoCloseable {
     }
 
     public boolean isValidCommand(String input) {
-        return equals(input, CREATE) || equals(input, FIND) || equals(input, UPDATE) || equals(input, DELETE) || equals(input, EXIT) || equals(input, HELP) || equals(input, LIST);
+        return equals(input, REGISTER) || equals(input, LOGIN) || equals(input, LOGOUT)
+                || equals(input, CREATE) || equals(input, FIND) || equals(input, UPDATE)
+                || equals(input, DELETE) || equals(input, EXIT) || equals(input, HELP)
+                || equals(input, LIST);
     }
 
     public String readInput() {

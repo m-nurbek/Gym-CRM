@@ -6,6 +6,7 @@ import com.epam.gym.repository.TrainingTypeRepository;
 import com.epam.gym.service.TrainingTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class TrainingTypeServiceImpl implements TrainingTypeService {
     private final TrainingTypeRepository trainingTypeRepository;
 

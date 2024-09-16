@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for authorized method calls.
+ * Annotation for authenticated method calls.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
