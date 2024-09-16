@@ -33,7 +33,11 @@ public class Facade {
             Command command = commandFactory.getCommand(input);
 
             if (command != null) {
-                command.execute();
+                try {
+                    command.execute();
+                } catch (Exception e) {
+                    shell.writeOutput("An error occurred: " + e.getMessage());
+                }
             }
         }
     }

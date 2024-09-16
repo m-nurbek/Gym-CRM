@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class CommandFactory {
-    private CreateCommand createCommand;
-    private FindCommand findCommand;
-    private UpdateCommand updateCommand;
-    private DeleteCommand deleteCommand;
-    private ListCommand listCommand;
-    private RegisterCommand registerCommand;
-    private LoginCommand loginCommand;
-    private LogoutCommand logoutCommand;
+    private final CreateCommand createCommand;
+    private final FindCommand findCommand;
+    private final UpdateCommand updateCommand;
+    private final DeleteCommand deleteCommand;
+    private final ListCommand listCommand;
+    private final RegisterCommand registerCommand;
+    private final LoginCommand loginCommand;
+    private final LogoutCommand logoutCommand;
 
     public Command getCommand(String command) {
         return switch (command) {

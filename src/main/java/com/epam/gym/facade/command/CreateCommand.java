@@ -1,5 +1,6 @@
 package com.epam.gym.facade.command;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.TraineeDto;
 import com.epam.gym.dto.TrainerDto;
 import com.epam.gym.dto.TrainingDto;
@@ -33,6 +34,7 @@ public class CreateCommand implements Command {
     private final Shell shell;
 
     @Override
+    @Authenticated
     public void execute() {
         int option = shell.printAndGetOption("trainee", "trainer", "training type", "training", "user");
 
@@ -49,39 +51,49 @@ public class CreateCommand implements Command {
     private void createTrainee() {
         shell.writeOutput("Creating a new trainee...");
 
-        LocalDate dob = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
-        String address = shell.readInput("Enter the address: ");
-        UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
+        try {
+            LocalDate dob = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
+            String address = shell.readInput("Enter the address: ");
+            UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
 
-        if (user == null) {
-            shell.writeOutput("User not found.");
-            return;
+            if (user == null) {
+                shell.writeOutput("User not found.");
+                return;
+            }
+
+            traineeService.save(
+                    new TraineeDto(null, dob, address, UserEntity.fromDto(user), List.of())
+            );
+
+        } catch (Exception e) {
+            shell.writeOutput("Invalid input⛔");
         }
-
-        traineeService.save(
-                new TraineeDto(null, dob, address, UserEntity.fromDto(user), List.of())
-        );
     }
 
     private void createTrainer() {
         shell.writeOutput("Creating a new trainer...");
 
-        UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
-        TrainingTypeDto specialization = trainingTypeService.get(shell.readBigInteger("Enter the training type ID: ")).orElse(null);
+        try {
+            UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
+            TrainingTypeDto specialization = trainingTypeService.get(shell.readBigInteger("Enter the training type ID: ")).orElse(null);
 
-        if (user == null) {
-            shell.writeOutput("User not found.");
-            return;
+            if (user == null) {
+                shell.writeOutput("User not found.");
+                return;
+            }
+
+            if (specialization == null) {
+                shell.writeOutput("Training type not found.");
+                return;
+            }
+
+            trainerService.save(
+                    new TrainerDto(null, TrainingTypeEntity.fromDto(specialization), UserEntity.fromDto(user), List.of())
+            );
+
+        } catch (Exception e) {
+            shell.writeOutput("Invalid input⛔");
         }
-
-        if (specialization == null) {
-            shell.writeOutput("Training type not found.");
-            return;
-        }
-
-        trainerService.save(
-                new TrainerDto(null, TrainingTypeEntity.fromDto(specialization), UserEntity.fromDto(user), List.of())
-        );
     }
 
     private void createTrainingType() {
@@ -97,47 +109,52 @@ public class CreateCommand implements Command {
     private void createTraining() {
         shell.writeOutput("Creating a new training...");
 
-        TrainingTypeDto type = trainingTypeService.get(shell.readBigInteger("Enter the training type ID: ")).orElse(null);
-        TrainerDto trainer = trainerService.get(shell.readBigInteger("Enter the trainer ID: ")).orElse(null);
-        TraineeDto trainee = traineeService.get(shell.readBigInteger("Enter the trainee ID: ")).orElse(null);
-
-        if (type == null) {
-            shell.writeOutput("Training type not found.");
-            return;
-        }
-
-        if (trainer == null) {
-            shell.writeOutput("Trainer not found.");
-            return;
-        }
-
-        if (trainee == null) {
-            shell.writeOutput("Trainee not found.");
-            return;
-        }
-
-        LocalDate date = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
-        String name = shell.readInput("Enter the training name: ");
-
-        int duration = 0;
-
         try {
-            duration = Integer.parseInt(shell.readInput("Enter the training duration: "));
-        } catch (NumberFormatException e) {
-            shell.writeOutput("Invalid input.");
-            return;
-        }
+            TrainingTypeDto type = trainingTypeService.get(shell.readBigInteger("Enter the training type ID: ")).orElse(null);
+            TrainerDto trainer = trainerService.get(shell.readBigInteger("Enter the trainer ID: ")).orElse(null);
+            TraineeDto trainee = traineeService.get(shell.readBigInteger("Enter the trainee ID: ")).orElse(null);
 
-        trainingService.save(
-                new TrainingDto(null,
-                        TraineeEntity.fromDto(trainee),
-                        TrainerEntity.fromDto(trainer),
-                        name,
-                        TrainingTypeEntity.fromDto(type),
-                        date,
-                        duration
-                )
-        );
+            if (type == null) {
+                shell.writeOutput("Training type not found.");
+                return;
+            }
+
+            if (trainer == null) {
+                shell.writeOutput("Trainer not found.");
+                return;
+            }
+
+            if (trainee == null) {
+                shell.writeOutput("Trainee not found.");
+                return;
+            }
+
+            LocalDate date = shell.readDate("Enter the date of birth (yyyy-MM-dd): ");
+            String name = shell.readInput("Enter the training name: ");
+
+            int duration = 0;
+
+            try {
+                duration = Integer.parseInt(shell.readInput("Enter the training duration: "));
+            } catch (NumberFormatException e) {
+                shell.writeOutput("Invalid input.");
+                return;
+            }
+
+            trainingService.save(
+                    new TrainingDto(null,
+                            TraineeEntity.fromDto(trainee),
+                            TrainerEntity.fromDto(trainer),
+                            name,
+                            TrainingTypeEntity.fromDto(type),
+                            date,
+                            duration
+                    )
+            );
+
+        } catch (Exception e) {
+            shell.writeOutput("Invalid input⛔");
+        }
     }
 
     private void createUser() {

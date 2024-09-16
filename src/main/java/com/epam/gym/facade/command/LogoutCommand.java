@@ -16,7 +16,7 @@ public class LogoutCommand implements Command {
         var s = shell.readInput("Type username: ");
 
         if (authService.logout(s)) {
-            shell.writeOutput("Logout successful.");
+            shell.writeOutput("Logout successful👋");
         } else {
             shell.writeOutput("Logout failed.");
         }

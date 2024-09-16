@@ -26,8 +26,12 @@ public class AuthenticatedAspect {
     public Object callAuthentication(ProceedingJoinPoint joinPoint) throws Throwable {
         log.debug(">> AUTHENTICATED METHOD: {}", joinPoint.getSignature().getName());
 
-        Object[] args = joinPoint.getArgs();
-        String username = (String) args[0];
+        String username = authService.getUsernameOfAuthenticatedAccount();
+
+        if (username == null) {
+            log.debug("User is not authenticated.");
+            throw new AuthenticationFailedException("User is not authenticated.");
+        }
 
         Object returnValue = null;
 

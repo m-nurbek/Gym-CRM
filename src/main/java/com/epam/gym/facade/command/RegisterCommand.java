@@ -19,6 +19,7 @@ public class RegisterCommand implements Command {
         String[] usernameAndPassword = authService.register(firstName, lastName);
 
         shell.writeOutput("Registration successful.");
-        shell.writeOutput("Your username is %s and your password is %s.".formatted(usernameAndPassword[0], usernameAndPassword[1]));
+        shell.writeOutput("\nYOUR USERNAME: %s\nYOUR PASSWORD: %s\n".formatted(usernameAndPassword[0], usernameAndPassword[1]));
+        shell.writeOutput("Please remember your username and password.\nYou can proceed to login now✨✨✨");
     }
 }

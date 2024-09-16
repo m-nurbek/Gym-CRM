@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private synchronized String generateUniqueUsername(UserDto user) {
-        AtomicBigInteger serialNumber = new AtomicBigInteger(BigInteger.ZERO);
+        AtomicBigInteger serialNumber = new AtomicBigInteger(BigInteger.valueOf(-1));
         String username;
 
         do {

@@ -1,5 +1,6 @@
 package com.epam.gym.facade.command;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.service.CrudService;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
@@ -21,6 +22,7 @@ public class ListCommand implements Command {
     private Shell shell;
 
     @Override
+    @Authenticated
     public void execute() {
         int option = shell.printAndGetOption("trainee", "trainer", "training type", "training", "user");
 

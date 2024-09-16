@@ -19,7 +19,7 @@ public class LoginCommand implements Command {
         String password = shell.readInput("Enter the password: ");
 
         if (authService.authenticate(username, password)) {
-            shell.writeOutput("Login successful.");
+            shell.writeOutput("\nLogin successful!🥳");
 
             var userEntity = userService.findByUsername(username);
             assert userEntity.isPresent(); // userEntity has to be present since the user has been authenticated
@@ -27,9 +27,9 @@ public class LoginCommand implements Command {
             String firstName = userEntity.get().getFirstName();
             String lastName = userEntity.get().getLastName();
 
-            shell.writeOutput("Welcome, %s %s!".formatted(firstName, lastName));
+            shell.writeOutput("Welcome, %s %s!✨✨✨\n".formatted(firstName, lastName));
         } else {
-            shell.writeOutput("Login failed.");
+            shell.writeOutput("Login failed😢 Please check your username and password.");
         }
 
     }

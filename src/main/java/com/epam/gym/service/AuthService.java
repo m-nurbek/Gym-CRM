@@ -7,9 +7,9 @@ public interface AuthService {
 
     boolean logout(String username);
 
-    boolean removeUser(String username);
-
-    void removeAllUsers();
+    void logoutOfAllAccounts();
 
     String[] register(String firstName, String lastName);
+
+    String getUsernameOfAuthenticatedAccount();
 }

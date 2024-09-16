@@ -2,14 +2,12 @@ package com.epam.gym.service.serviceImpl;
 
 import com.epam.gym.aop.Loggable;
 import com.epam.gym.dto.UserDto;
-import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.AuthService;
 import com.epam.gym.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -21,19 +19,20 @@ public class AuthServiceImpl implements AuthService {
 
     // This map is used to store the authentication status of the user.
     // The key is the username and the value is the authentication status.
-    private final ConcurrentMap<String, Boolean> map = new ConcurrentHashMap<>();
-
-    @PostConstruct
-    void setUp() {
-        userRepository.findAll().forEach(user -> map.put(user.getUsername(), false));
-    }
+    // will contain only one entry at a time.
+    private final ConcurrentMap<String, Boolean> map = new ConcurrentHashMap<>(1);
 
     @Loggable
     @Override
     public boolean authenticate(String username, String password) {
+        if (isAuthenticated(username)) {
+            return true;
+        }
+
         boolean status = userRepository.isUsernameAndPasswordMatch(username, password);
 
         if (status) {
+            logoutOfAllAccounts();
             map.put(username, true);
         }
 
@@ -49,18 +48,11 @@ public class AuthServiceImpl implements AuthService {
     @Loggable
     @Override
     public boolean logout(String username) {
-        map.put(username, false);
-        return true;
-    }
-
-    @Loggable
-    @Override
-    public boolean removeUser(String username) {
         return map.remove(username);
     }
 
     @Override
-    public void removeAllUsers() {
+    public void logoutOfAllAccounts() {
         map.clear();
     }
 
@@ -71,5 +63,10 @@ public class AuthServiceImpl implements AuthService {
         );
 
         return new String[]{user.getUsername(), user.getPassword()};
+    }
+
+    @Override
+    public String getUsernameOfAuthenticatedAccount() {
+        return map.keySet().stream().findFirst().orElse(null);
     }
 }

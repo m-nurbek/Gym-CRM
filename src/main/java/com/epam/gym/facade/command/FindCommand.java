@@ -1,5 +1,7 @@
 package com.epam.gym.facade.command;
 
+import com.epam.gym.aop.Authenticated;
+import com.epam.gym.service.CrudService;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.TrainingService;
@@ -8,6 +10,8 @@ import com.epam.gym.service.UserService;
 import com.epam.gym.util.Shell;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.math.BigInteger;
 
 @Component
 @AllArgsConstructor
@@ -20,16 +24,17 @@ public class FindCommand implements Command{
     private Shell shell;
 
     @Override
+    @Authenticated
     public void execute() {
         int option = shell.printAndGetOption("trainee", "trainer", "training type", "training", "user");
 
 
         switch (option) {
             case 1 -> findEntity(traineeService);
-//            case 2 -> findEntity(trainerService);
-//            case 3 -> findEntity(trainingTypeService);
-//            case 4 -> findEntity(trainingService);
-//            case 5 -> findEntity(userService);
+            case 2 -> findEntity(trainerService);
+            case 3 -> findEntity(trainingTypeService);
+            case 4 -> findEntity(trainingService);
+            case 5 -> findEntity(userService);
             default -> shell.writeOutput("Canceled.");
         }
     }
@@ -57,16 +62,15 @@ public class FindCommand implements Command{
             }
         } catch (NumberFormatException e) {
             shell.writeOutput("Invalid input.");
-            return;
         }
     }
 
-//    private void findEntity(CrudService<?, BigInteger> service) {
-//        shell.writeOutput("Finding an entity...");
-//
-//        service.get(shell.readBigInteger("Enter the ID: ")).ifPresentOrElse(
-//                x -> shell.writeOutput(x.toString()),
-//                () -> shell.writeOutput("Entity not found.")
-//        );
-//    }
+    private void findEntity(CrudService<?, BigInteger> service) {
+        shell.writeOutput("Finding an entity...");
+
+        service.get(shell.readBigInteger("Enter the ID: ")).ifPresentOrElse(
+                x -> shell.writeOutput(x.toString()),
+                () -> shell.writeOutput("Entity not found.")
+        );
+    }
 }
