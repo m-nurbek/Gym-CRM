@@ -4,7 +4,6 @@ import com.epam.gym.entity.EntityInterface;
 import com.epam.gym.repository.HibernateRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;

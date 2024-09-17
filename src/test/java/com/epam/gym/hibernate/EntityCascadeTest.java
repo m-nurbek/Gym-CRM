@@ -146,7 +146,7 @@ public class EntityCascadeTest {
     }
 
     @Test
-    @DisplayName(value = "delete `trainingType` must delete 'training', 'trainer' and corresponind `user`")
+    @DisplayName(value = "delete `trainingType` must delete 'training', 'trainer' and corresponding `user`")
     void shouldCascadinglyDeleteTrainingType() {
         // when
         boolean isDeleted = trainingTypeRepository.deleteById(BigInteger.ONE);

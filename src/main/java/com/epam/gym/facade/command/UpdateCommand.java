@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -60,7 +59,7 @@ public class UpdateCommand implements Command {
             UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
 
             traineeService.update(
-                    new TraineeDto(id, dob, address, UserEntity.fromDto(user), List.of())
+                    new TraineeDto(id, dob, address, UserEntity.fromDto(user), Set.of(), Set.of())
             );
 
         } catch (Exception e) {
@@ -77,7 +76,7 @@ public class UpdateCommand implements Command {
             UserDto user = userService.get(shell.readBigInteger("Enter the user ID: ")).orElse(null);
 
             trainerService.update(
-                    new TrainerDto(id, TrainingTypeEntity.fromDto(specialization), UserEntity.fromDto(user), List.of()) // TODO: List.of()?
+                    new TrainerDto(id, TrainingTypeEntity.fromDto(specialization), UserEntity.fromDto(user), Set.of(), Set.of()) // TODO: Set.of()?
             );
 
         } catch (Exception e) {

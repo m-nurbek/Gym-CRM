@@ -47,10 +47,10 @@ public class TrainingTypeEntity implements EntityInterface<BigInteger> {
     @Enumerated(EnumType.STRING)
     private TrainingTypeEnum name;
 
-    @OneToMany(mappedBy = "specialization", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "specialization", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<TrainerEntity> trainers;
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<TrainingEntity> trainings;
 

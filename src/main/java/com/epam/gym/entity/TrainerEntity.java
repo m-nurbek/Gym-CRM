@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -22,8 +23,8 @@ import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,7 +46,7 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @Column(name = "ID")
     private BigInteger id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID")
     @ToString.Exclude
     private TrainingTypeEntity specialization;
@@ -55,12 +56,16 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @ToString.Exclude
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
-    List<TrainingEntity> trainings;
+    private Set<TrainingEntity> trainings;
+
+    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<TraineeEntity> trainees;
 
     public TrainerDto toDto() {
-        return new TrainerDto(id, specialization, user, trainings);
+        return new TrainerDto(id, specialization, user, trainings, trainees);
     }
 
     public static TrainerEntity fromDto(TrainerDto trainerDto) {
@@ -68,7 +73,7 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
             return null;
         }
 
-        return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization(), trainerDto.getUser(), trainerDto.getTrainings());
+        return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization(), trainerDto.getUser(), trainerDto.getTrainings(), trainerDto.getTrainees());
     }
 
     @Override

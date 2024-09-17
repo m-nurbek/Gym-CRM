@@ -28,8 +28,6 @@ VALUES (9, true, 'Grace', 'Taylor', 'password9', 'gracetaylor9');
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
 VALUES (10, true, 'Henry', 'Anderson', 'password10', 'henryanderson10');
 
--- Keep incrementing for 40 more tuples
-
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
 VALUES (11, true, 'Ivy', 'Thomas', 'password11', 'ivythomas11');
 
@@ -84,7 +82,6 @@ VALUES (27, true, 'Yara', 'Mitchell', 'password27', 'yaramitchell27');
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
 VALUES (28, false, 'Zane', 'Perez', 'password28', 'zaneperez28');
 
--- Continue until id 50
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
 VALUES (29, true, 'Abby', 'Sanchez', 'password29', 'abbysanchez29');
 

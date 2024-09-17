@@ -12,8 +12,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.gym.util.DtoEntityCreationUtil.getNewTraineeEntityInstance;
 import static com.epam.gym.util.DtoEntityCreationUtil.getNewUserEntityInstance;
@@ -218,8 +218,8 @@ public class HibernateRepositoryTest {
         // given
         var user1 = userRepository.findById(BigInteger.valueOf(1000 + 1));
         var user2 = userRepository.findById(BigInteger.valueOf(1000 + 2));
-        var trainee1 = getNewTraineeEntityInstance(1, user1.get(), List.of());
-        var trainee2 = getNewTraineeEntityInstance(2, user2.get(), List.of());
+        var trainee1 = getNewTraineeEntityInstance(1, user1.get(), Set.of(), Set.of());
+        var trainee2 = getNewTraineeEntityInstance(2, user2.get(), Set.of(), Set.of());
 
         // when
         traineeRepository.save(trainee1);

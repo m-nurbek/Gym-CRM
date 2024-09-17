@@ -1,5 +1,6 @@
 package com.epam.gym.dto;
 
+import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.ToString;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -20,5 +21,8 @@ public class TraineeDto implements Dto<BigInteger> {
     private LocalDate dob;
     private String address;
     private UserEntity user;
-    private List<TrainingEntity> trainings;
+    @ToString.Exclude
+    private Set<TrainingEntity> trainings;
+    @ToString.Exclude
+    private Set<TrainerEntity> trainers;
 }

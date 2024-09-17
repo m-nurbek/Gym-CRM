@@ -36,41 +36,45 @@ public class DtoEntityCreationUtil {
                 false, null, null);
     }
 
-    public static TraineeDto getNewTraineeDtoInstance(long index, UserEntity user, List<TrainingEntity> trainings) {
+    public static TraineeDto getNewTraineeDtoInstance(long index, UserEntity user, Set<TrainingEntity> trainings, Set<TrainerEntity> trainers) {
         return new TraineeDto(
                 BigInteger.valueOf(index),
                 LocalDate.of(2003, 1, (int) index % 30),
                 "Some Address%d".formatted(index),
                 user,
-                trainings
+                trainings,
+                trainers
         );
     }
 
-    public static TraineeEntity getNewTraineeEntityInstance(long index, UserEntity user, List<TrainingEntity> trainings) {
+    public static TraineeEntity getNewTraineeEntityInstance(long index, UserEntity user, Set<TrainingEntity> trainings, Set<TrainerEntity> trainers) {
         return new TraineeEntity(
                 BigInteger.valueOf(index),
                 LocalDate.of(2003, 1, (int) index % 30),
                 "Some Address%d".formatted(index),
                 user,
-                trainings
+                trainings,
+                trainers
         );
     }
 
-    public static TrainerDto getNewTrainerDtoInstance(long index, TrainingTypeEntity type, UserEntity user, List<TrainingEntity> trainings) {
+    public static TrainerDto getNewTrainerDtoInstance(long index, TrainingTypeEntity type, UserEntity user, Set<TrainingEntity> trainings, Set<TraineeEntity> trainees) {
         return new TrainerDto(
                 BigInteger.valueOf(index),
                 type,
                 user,
-                trainings
+                trainings,
+                trainees
         );
     }
 
-    public static TrainerEntity getNewTrainerEntityInstance(long index, TrainingTypeEntity type, UserEntity user, List<TrainingEntity> trainings) {
+    public static TrainerEntity getNewTrainerEntityInstance(long index, TrainingTypeEntity type, UserEntity user, Set<TrainingEntity> trainings, Set<TraineeEntity> trainees) {
         return new TrainerEntity(
                 BigInteger.valueOf(index),
                 type,
                 user,
-                trainings
+                trainings,
+                trainees
         );
     }
 

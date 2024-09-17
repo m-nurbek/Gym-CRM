@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Component
 @AllArgsConstructor
@@ -62,7 +62,7 @@ public class CreateCommand implements Command {
             }
 
             traineeService.save(
-                    new TraineeDto(null, dob, address, UserEntity.fromDto(user), List.of())
+                    new TraineeDto(null, dob, address, UserEntity.fromDto(user), Set.of(), Set.of())
             );
 
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class CreateCommand implements Command {
             }
 
             trainerService.save(
-                    new TrainerDto(null, TrainingTypeEntity.fromDto(specialization), UserEntity.fromDto(user), List.of())
+                    new TrainerDto(null, TrainingTypeEntity.fromDto(specialization), UserEntity.fromDto(user), Set.of(), Set.of())
             );
 
         } catch (Exception e) {

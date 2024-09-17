@@ -9,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -24,8 +26,8 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -57,12 +59,20 @@ public class TraineeEntity implements EntityInterface<BigInteger> {
     @ToString.Exclude
     private UserEntity user;
 
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    List<TrainingEntity> trainings;
+    private Set<TrainingEntity> trainings;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "TRAINEE_TRAINER",
+            joinColumns = @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID"))
+    @ToString.Exclude
+    private Set<TrainerEntity> trainers;
 
     public TraineeDto toDto() {
-        return new TraineeDto(id, dob, address, user, trainings);
+        return new TraineeDto(id, dob, address, user, trainings, trainers);
     }
 
     public static TraineeEntity fromDto(TraineeDto dto) {
@@ -70,7 +80,7 @@ public class TraineeEntity implements EntityInterface<BigInteger> {
             return null;
         }
 
-        return new TraineeEntity(dto.getId(), dto.getDob(), dto.getAddress(), dto.getUser(), dto.getTrainings());
+        return new TraineeEntity(dto.getId(), dto.getDob(), dto.getAddress(), dto.getUser(), dto.getTrainings(), dto.getTrainers());
     }
 
     @Override

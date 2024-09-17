@@ -1,5 +1,6 @@
 package com.epam.gym.dto;
 
+import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.TrainingTypeEntity;
 import com.epam.gym.entity.UserEntity;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.math.BigInteger;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -19,7 +20,11 @@ import java.util.List;
 @NoArgsConstructor
 public class TrainerDto implements Dto<BigInteger> {
     private BigInteger id;
+    @ToString.Exclude
     private TrainingTypeEntity specialization;
     private UserEntity user;
-    private List<TrainingEntity> trainings;
+    @ToString.Exclude
+    private Set<TrainingEntity> trainings;
+    @ToString.Exclude
+    private Set<TraineeEntity> trainees;
 }

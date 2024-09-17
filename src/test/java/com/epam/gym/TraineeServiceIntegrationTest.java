@@ -1,12 +1,18 @@
 package com.epam.gym;
 
 import com.epam.gym.config.ApplicationConfig;
+import com.epam.gym.entity.UserEntity;
 import com.epam.gym.service.TraineeService;
+import com.epam.gym.service.UserService;
+import com.epam.gym.util.DtoEntityCreationUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+
+import java.math.BigInteger;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -17,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class TraineeServiceIntegrationTest {
     @Autowired
     private TraineeService traineeService;
+    @Autowired
+    private UserService userService;
 
     @Test
     void shouldFindTraineeEntityByUsername() {
@@ -50,5 +58,75 @@ public class TraineeServiceIntegrationTest {
 
         // then
         assertThat(trainee).isEmpty();
+    }
+
+    @Test
+    void shouldSaveTraineeEntity1() {
+        // given
+        var trainee = DtoEntityCreationUtil.getNewTraineeDtoInstance(1, null, Set.of(), Set.of());
+        trainee.setId(null);
+
+        // when
+        var savedTrainee = traineeService.save(trainee);
+
+        // then
+        assertAll(
+                "Assertions for save trainee",
+                () -> assertThat(savedTrainee).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isEqualTo(BigInteger.valueOf(1001))
+        );
+    }
+
+    @Test
+    void shouldSaveTraineeEntity2() {
+        // given
+        var user = DtoEntityCreationUtil.getNewUserDtoInstance(40);
+        var trainee = DtoEntityCreationUtil.getNewTraineeDtoInstance(1, UserEntity.fromDto(user), Set.of(), Set.of());
+        trainee.setId(null);
+
+        // when
+        var savedTrainee = traineeService.save(trainee);
+
+        // then
+        var u = userService.get(BigInteger.valueOf(40)).orElse(null);
+        assert u != null;
+
+        assertAll(
+                "Assertions for save trainee",
+                () -> assertThat(savedTrainee).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isEqualTo(BigInteger.valueOf(1001)),
+                () -> assertThat(savedTrainee.getUser()).isEqualTo(UserEntity.fromDto(u)),
+                () -> assertThat(u.getTrainee().toDto().getId()).isEqualTo(savedTrainee.getId()),
+                () -> assertThat(u.getTrainee().toDto().getAddress()).isEqualTo(savedTrainee.getAddress())
+        );
+    }
+
+    @Test
+    void shouldCorrectlyGiveManyToManyData() {
+        // when
+        var trainers = traineeService.getTrainers(BigInteger.ONE);
+
+        // then
+        assertAll(
+                "Assertions for many-to-many data",
+                () -> assertThat(trainers.size()).isEqualTo(1)
+        );
+    }
+
+    @Test
+    void shouldReturnUnassignedTrainers() {
+        // given
+        var username = "johndoe1";
+
+        // when
+        var trainers = traineeService.getUnassignedTrainersByUsername(username);
+
+        // then
+        assertAll(
+                "Assertions for unassigned trainers",
+                () -> assertThat(trainers.size()).isEqualTo(24) // because for user with username "johndoe1" there is only one assigned trainer out of 25
+        );
     }
 }

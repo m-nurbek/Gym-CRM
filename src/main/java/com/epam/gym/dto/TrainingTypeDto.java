@@ -19,6 +19,8 @@ public class TrainingTypeDto implements Dto<BigInteger> {
     private BigInteger id;
     private TrainingTypeEnum name;
 
+    @ToString.Exclude
     private Set<TrainerEntity> trainers;
+    @ToString.Exclude
     private Set<TrainingEntity> trainings;
 }

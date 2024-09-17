@@ -4,7 +4,6 @@ import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.UserRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -15,13 +14,12 @@ public class UserRepositoryImpl extends HibernateRepositoryImpl<UserEntity, BigI
     @PersistenceContext
     private Session session;
 
-    public UserRepositoryImpl(SessionFactory sessionFactory) {
+    public UserRepositoryImpl() {
         super();
     }
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-
         var foundEntity = session.createQuery("from UserEntity where username = :username", UserEntity.class)
                 .setParameter("username", username)
                 .uniqueResult();

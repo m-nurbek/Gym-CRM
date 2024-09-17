@@ -20,7 +20,8 @@ public class UserDto implements Dto<BigInteger> {
     private String username;
     private String password;
     private Boolean isActive;
-
+    @ToString.Exclude
     private TraineeEntity trainee;
+    @ToString.Exclude
     private TrainerEntity trainer;
 }

@@ -3,6 +3,7 @@ package com.epam.gym.service.serviceImpl;
 import com.epam.gym.dto.TraineeDto;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.entity.TraineeEntity;
+import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.repository.TraineeRepository;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
@@ -14,6 +15,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -41,6 +43,23 @@ public class TraineeServiceImpl implements TraineeService {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Set<TrainerEntity> getTrainers(BigInteger id) {
+        Optional<TraineeEntity> traineeEntity = traineeRepository.findById(id);
+
+        if (traineeEntity.isPresent()) {
+            traineeEntity.get().getTrainers().size();
+            return traineeEntity.get().getTrainers();
+        }
+
+        return Set.of();
+    }
+
+    @Override
+    public Set<TrainerEntity> getUnassignedTrainersByUsername(String username) {
+        return traineeRepository.getUnassignedTrainersByUsername(username);
     }
 
     @Override

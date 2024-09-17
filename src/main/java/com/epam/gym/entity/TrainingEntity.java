@@ -54,15 +54,15 @@ public class TrainingEntity implements EntityInterface<BigInteger> {
     private int duration;
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TRAINEE_ID", referencedColumnName = "ID")
     private TraineeEntity trainee;
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TRAINER_ID", referencedColumnName = "ID")
     private TrainerEntity trainer;
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TYPE", referencedColumnName = "ID")
     private TrainingTypeEntity type;
 
