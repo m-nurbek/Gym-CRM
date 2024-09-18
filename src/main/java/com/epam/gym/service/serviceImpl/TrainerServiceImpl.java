@@ -2,11 +2,16 @@ package com.epam.gym.service.serviceImpl;
 
 import com.epam.gym.dto.TrainerDto;
 import com.epam.gym.dto.UserDto;
+import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainerEntity;
+import com.epam.gym.entity.TrainingEntity;
+import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.TrainerRepository;
+import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,17 +19,20 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
 public class TrainerServiceImpl implements TrainerService {
     private final UserService userService;
     private final TrainerRepository trainerRepository;
+    private final TraineeService traineeService;
 
     @Autowired
-    public TrainerServiceImpl(UserService userService, TrainerRepository trainerRepository) {
+    public TrainerServiceImpl(UserService userService, TrainerRepository trainerRepository, @Lazy TraineeService traineeService) {
         this.userService = userService;
         this.trainerRepository = trainerRepository;
+        this.traineeService = traineeService;
     }
 
     @Override
@@ -41,6 +49,53 @@ public class TrainerServiceImpl implements TrainerService {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<UserEntity> getUserProfile(BigInteger id) {
+        Optional<TrainerEntity> trainer = trainerRepository.findById(id);
+
+        return trainer.map(TrainerEntity::getUser);
+    }
+
+    @Override
+    public Set<TrainingEntity> getTrainingsByUsername(String username) {
+        var trainer = findByUsername(username);
+
+        if (trainer.isPresent()) {
+            trainer.get().getTrainings().size();
+            return trainer.get().getTrainings();
+        }
+
+        return Set.of();
+    }
+
+    @Override
+    public boolean assignTrainee(BigInteger trainerId, BigInteger traineeId) {
+        var trainer = get(trainerId);
+        var trainee = traineeService.get(traineeId);
+
+        if (trainer.isPresent() && trainee.isPresent()) {
+            TrainerDto trainerDto = trainer.get();
+            trainerDto.getTrainees().add(TraineeEntity.fromDto(trainee.get()));
+            return update(trainerDto);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean unassignTrainee(BigInteger trainerId, BigInteger traineeId) {
+        var trainer = get(trainerId);
+        var trainee = traineeService.get(traineeId);
+
+        if (trainer.isPresent() && trainee.isPresent()) {
+            TrainerDto trainerDto = trainer.get();
+            trainerDto.getTrainees().remove(TraineeEntity.fromDto(trainee.get()));
+            return update(trainerDto);
+        }
+
+        return false;
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.epam.gym.repository.impl;
 
 import com.epam.gym.entity.UserEntity;
+import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.repository.UserRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class UserRepositoryImpl extends HibernateRepositoryImpl<UserEntity, BigInteger> implements UserRepository {
     @PersistenceContext
     private Session session;
+    private final TrainerRepository trainerRepository;
 
-    public UserRepositoryImpl() {
+    public UserRepositoryImpl(TrainerRepository trainerRepository) {
         super();
+        this.trainerRepository = trainerRepository;
     }
 
     @Override
@@ -67,5 +71,23 @@ public class UserRepositoryImpl extends HibernateRepositoryImpl<UserEntity, BigI
                 .uniqueResult();
 
         return foundEntity != null;
+    }
+
+    @Override
+    public boolean deleteById(BigInteger id) {
+        Assert.notNull(id, ID_MUST_NOT_BE_NULL);
+
+        var entity = session.get(UserEntity.class, id);
+
+        if (entity != null) {
+            if (entity.getTrainer() != null) {
+                trainerRepository.deleteById(entity.getTrainer().getId());
+            }
+            
+            session.remove(entity);
+            return true;
+        }
+
+        return false;
     }
 }

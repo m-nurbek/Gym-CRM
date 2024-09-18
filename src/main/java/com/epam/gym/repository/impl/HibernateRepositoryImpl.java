@@ -18,9 +18,9 @@ public class HibernateRepositoryImpl<T extends EntityInterface<ID>, ID> implemen
     private Session session;
     private final Class<T> entityClass;
 
-    private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
-    private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
-    private static final String ENTITIES_MUST_NOT_BE_NULL = "Entities must not be null";
+    static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
+    static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
+    static final String ENTITIES_MUST_NOT_BE_NULL = "Entities must not be null";
 
     public HibernateRepositoryImpl() {
         entityClass = getDomainClass();

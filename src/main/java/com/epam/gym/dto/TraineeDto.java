@@ -20,6 +20,7 @@ public class TraineeDto implements Dto<BigInteger> {
     private BigInteger id;
     private LocalDate dob;
     private String address;
+    @ToString.Exclude
     private UserEntity user;
     @ToString.Exclude
     private Set<TrainingEntity> trainings;
