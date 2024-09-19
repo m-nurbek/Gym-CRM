@@ -16,6 +16,7 @@ public class CommandFactory {
     private final LoginCommand loginCommand;
     private final LogoutCommand logoutCommand;
     private final AppointmentCommand appointmentCommand;
+    private final AccountCommand accountCommand;
 
     public Command getCommand(String command) {
         return switch (command) {
@@ -28,6 +29,7 @@ public class CommandFactory {
             case Shell.LOGIN -> loginCommand;
             case Shell.LOGOUT -> logoutCommand;
             case Shell.APPOINTMENTS -> appointmentCommand;
+            case Shell.ACCOUNT -> accountCommand;
             default -> null;
         };
     }

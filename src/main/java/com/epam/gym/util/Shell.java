@@ -25,6 +25,7 @@ public class Shell implements AutoCloseable {
     public static final String LOGIN = "login";
     public static final String LOGOUT = "logout";
     public static final String APPOINTMENTS = "appointments";
+    public static final String ACCOUNT = "account";
 
     public Shell() {
         writeOutput("Welcome to the Gym CRM system!");
@@ -32,11 +33,42 @@ public class Shell implements AutoCloseable {
     }
 
     public boolean isValidCommand(String input) {
-        return equals(input, APPOINTMENTS)
+        return equals(input, APPOINTMENTS) || equals(input, ACCOUNT)
                 || equals(input, REGISTER) || equals(input, LOGIN) || equals(input, LOGOUT)
                 || equals(input, CREATE) || equals(input, FIND) || equals(input, UPDATE)
                 || equals(input, DELETE) || equals(input, EXIT) || equals(input, HELP)
                 || equals(input, LIST);
+    }
+
+    public void printHelp() {
+        writeOutput("============== HELP ==============");
+        writeOutput("Available commands:");
+        writeOutput("""
+                          * FIND - find an entity
+                          * CREATE - create a new entity
+                          * UPDATE - update an entity
+                          * DELETE - delete an entity
+                          * LIST - list all entities
+
+                          --------------------------------
+
+                          Authentication commands:
+                          * REGISTER - register a new account
+                          * LOGIN - log in to the system
+                          * LOGOUT - log out of the system
+
+                          --------------------------------
+
+                          Account related commands:
+                          * ACCOUNT - activate or deactivate an account
+                          * APPOINTMENTS - manage appointments
+
+                          --------------------------------
+
+                          * EXIT - exit the application
+
+                          Commands are case-insensitive. Use the command HELP to display this message.
+                """);
     }
 
     public String readInput() {
@@ -102,21 +134,6 @@ public class Shell implements AutoCloseable {
 
     public void writePrompt() {
         System.out.print(PROMPT);
-    }
-
-    public void printHelp() {
-        writeOutput("============== HELP ==============");
-        writeOutput("Available commands:");
-        writeOutput("""
-                         FIND - find an entity
-                         CREATE - create a new entity
-                         UPDATE - update an entity
-                         DELETE - delete an entity
-                         LIST - list all entities
-                         EXIT - exit the application
-
-                         Commands are case-insensitive. Use the command HELP to display this message.
-                """);
     }
 
     public void listOptions(String... options) {
