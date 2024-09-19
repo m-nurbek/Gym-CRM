@@ -1,5 +1,6 @@
 package com.epam.gym.facade.command;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.service.CrudService;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
@@ -13,14 +14,15 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class ListCommand implements Command {
-    private TraineeService traineeService;
-    private TrainerService trainerService;
-    private TrainingTypeService trainingTypeService;
-    private TrainingService trainingService;
-    private UserService userService;
-    private Shell shell;
+    private final TraineeService traineeService;
+    private final TrainerService trainerService;
+    private final TrainingTypeService trainingTypeService;
+    private final TrainingService trainingService;
+    private final UserService userService;
+    private final Shell shell;
 
     @Override
+    @Authenticated
     public void execute() {
         int option = shell.printAndGetOption("trainee", "trainer", "training type", "training", "user");
 

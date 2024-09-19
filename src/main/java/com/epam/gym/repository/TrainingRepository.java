@@ -1,15 +1,15 @@
 package com.epam.gym.repository;
 
+import com.epam.gym.entity.TraineeEntity;
+import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Repository
-public class TrainingRepository extends MapRepositoryImpl<TrainingEntity, BigInteger> {
-    @Autowired
-    public TrainingRepository(Storage<TrainingEntity, BigInteger> storage) {
-        super(storage);
-    }
+public interface TrainingRepository extends HibernateRepository<TrainingEntity, BigInteger> {
+
+    Optional<TrainingEntity> findByTraineeAndTrainer(TraineeEntity traineeEntity, TrainerEntity trainerEntity);
 }

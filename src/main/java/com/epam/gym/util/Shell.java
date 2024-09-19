@@ -6,7 +6,7 @@ import javax.annotation.PreDestroy;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 @Component
@@ -21,6 +21,11 @@ public class Shell implements AutoCloseable {
     public static final String EXIT = "exit";
     public static final String HELP = "help";
     public static final String LIST = "list";
+    public static final String REGISTER = "register";
+    public static final String LOGIN = "login";
+    public static final String LOGOUT = "logout";
+    public static final String APPOINTMENTS = "appointments";
+    public static final String ACCOUNT = "account";
 
     public Shell() {
         writeOutput("Welcome to the Gym CRM system!");
@@ -28,7 +33,42 @@ public class Shell implements AutoCloseable {
     }
 
     public boolean isValidCommand(String input) {
-        return equals(input, CREATE) || equals(input, FIND) || equals(input, UPDATE) || equals(input, DELETE) || equals(input, EXIT) || equals(input, HELP) || equals(input, LIST);
+        return equals(input, APPOINTMENTS) || equals(input, ACCOUNT)
+                || equals(input, REGISTER) || equals(input, LOGIN) || equals(input, LOGOUT)
+                || equals(input, CREATE) || equals(input, FIND) || equals(input, UPDATE)
+                || equals(input, DELETE) || equals(input, EXIT) || equals(input, HELP)
+                || equals(input, LIST);
+    }
+
+    public void printHelp() {
+        writeOutput("============== HELP ==============");
+        writeOutput("Available commands:");
+        writeOutput("""
+                          * FIND - find an entity
+                          * CREATE - create a new entity
+                          * UPDATE - update an entity
+                          * DELETE - delete an entity
+                          * LIST - list all entities
+
+                          --------------------------------
+
+                          Authentication commands:
+                          * REGISTER - register a new account
+                          * LOGIN - log in to the system
+                          * LOGOUT - log out of the system
+
+                          --------------------------------
+
+                          Account related commands:
+                          * ACCOUNT - activate or deactivate an account
+                          * APPOINTMENTS - manage appointments
+
+                          --------------------------------
+
+                          * EXIT - exit the application
+
+                          Commands are case-insensitive. Use the command HELP to display this message.
+                """);
     }
 
     public String readInput() {
@@ -41,22 +81,21 @@ public class Shell implements AutoCloseable {
         return scanner.nextLine().trim();
     }
 
-    public Date readDate(String prompt) {
+    public LocalDate readDate(String prompt) {
         String date = readInput(prompt);
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         if (date.matches("\\d{4}-\\d{2}-\\d{2}")) {
             try {
-                return formatter.parse(date);
+                return DateConversionUtil.convertDateToLocalDate(formatter.parse(date));
             } catch (ParseException e) {
                 writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
                 return readDate(prompt);
             }
-        } else {
-            writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
-            return readDate(prompt);
         }
+
+        writeOutput("Invalid date format. Please enter the date in the format yyyy-MM-dd.");
+        return readDate(prompt);
     }
 
     public BigInteger readBigInteger(String prompt) {
@@ -95,21 +134,6 @@ public class Shell implements AutoCloseable {
 
     public void writePrompt() {
         System.out.print(PROMPT);
-    }
-
-    public void printHelp() {
-        writeOutput("============== HELP ==============");
-        writeOutput("Available commands:");
-        writeOutput("""
-                         FIND - find an entity
-                         CREATE - create a new entity
-                         UPDATE - update an entity
-                         DELETE - delete an entity
-                         LIST - list all entities
-                         EXIT - exit the application
-
-                         Commands are case-insensitive. Use the command HELP to display this message.
-                """);
     }
 
     public void listOptions(String... options) {

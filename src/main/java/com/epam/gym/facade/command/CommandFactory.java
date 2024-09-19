@@ -7,11 +7,16 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class CommandFactory {
-    private CreateCommand createCommand;
-    private FindCommand findCommand;
-    private UpdateCommand updateCommand;
-    private DeleteCommand deleteCommand;
-    private ListCommand listCommand;
+    private final CreateCommand createCommand;
+    private final FindCommand findCommand;
+    private final UpdateCommand updateCommand;
+    private final DeleteCommand deleteCommand;
+    private final ListCommand listCommand;
+    private final RegisterCommand registerCommand;
+    private final LoginCommand loginCommand;
+    private final LogoutCommand logoutCommand;
+    private final AppointmentCommand appointmentCommand;
+    private final AccountCommand accountCommand;
 
     public Command getCommand(String command) {
         return switch (command) {
@@ -20,6 +25,11 @@ public class CommandFactory {
             case Shell.UPDATE -> updateCommand;
             case Shell.DELETE -> deleteCommand;
             case Shell.LIST -> listCommand;
+            case Shell.REGISTER -> registerCommand;
+            case Shell.LOGIN -> loginCommand;
+            case Shell.LOGOUT -> logoutCommand;
+            case Shell.APPOINTMENTS -> appointmentCommand;
+            case Shell.ACCOUNT -> accountCommand;
             default -> null;
         };
     }

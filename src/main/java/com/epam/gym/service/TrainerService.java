@@ -1,74 +1,22 @@
 package com.epam.gym.service;
 
-import com.epam.gym.aop.Loggable;
 import com.epam.gym.dto.TrainerDto;
-import com.epam.gym.entity.TrainerEntity;
-import com.epam.gym.repository.TrainingTypeRepository;
-import com.epam.gym.repository.TrainerRepository;
-import com.epam.gym.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.epam.gym.entity.TrainingEntity;
+import com.epam.gym.entity.UserEntity;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-@Service
-public class TrainerService implements CrudService<TrainerDto, BigInteger> {
-    private final TrainerRepository trainerRepository;
-    private final UserRepository userRepository;
-    private final TrainingTypeRepository trainingTypeRepository;
+public interface TrainerService extends CrudService<TrainerDto, BigInteger> {
 
-    @Autowired
-    public TrainerService(TrainerRepository trainerRepository, UserRepository userRepository, TrainingTypeRepository trainingTypeRepository) {
-        this.trainerRepository = trainerRepository;
-        this.userRepository = userRepository;
-        this.trainingTypeRepository = trainingTypeRepository;
-    }
+    Optional<TrainerDto> findByUsername(String username);
 
-    @Override
-    @Loggable
-    public TrainerDto add(TrainerDto trainerDto) {
-        TrainerEntity trainerEntity = TrainerEntity.fromDto(trainerDto);
-        TrainerEntity t = trainerRepository.save(trainerEntity);
+    Optional<UserEntity> getUserProfile(BigInteger id);
 
-        return t.toDto(trainingTypeRepository, userRepository);
-    }
+    Set<TrainingEntity> getTrainingsByUsername(String username);
 
-    @Override
-    @Loggable
-    public TrainerDto update(TrainerDto trainerDto) {
-        if (trainerDto == null || trainerDto.getId() == null) {
-            return null;
-        }
+    boolean assignTrainee(BigInteger trainerId, BigInteger traineeId);
 
-        TrainerEntity trainerEntity = TrainerEntity.fromDto(trainerDto);
-        trainerRepository.update(trainerEntity.getId(), trainerEntity);
-
-        return get(trainerEntity.getId()).orElse(null);
-    }
-
-    @Override
-    @Loggable
-    public void delete(BigInteger id) {
-        trainerRepository.deleteById(id);
-    }
-
-    @Override
-    @Loggable
-    public Optional<TrainerDto> get(BigInteger id) {
-        return trainerRepository.findById(id).map(trainerEntity -> trainerEntity.toDto(trainingTypeRepository, userRepository));
-    }
-
-    @Override
-    @Loggable
-    public List<TrainerDto> getAll() {
-        List<TrainerEntity> trainerEntities = new ArrayList<>();
-        trainerRepository.findAll().forEach(trainerEntities::add);
-
-        return trainerEntities.stream()
-                .map(trainerEntity -> trainerEntity.toDto(trainingTypeRepository, userRepository))
-                .toList();
-    }
+    boolean unassignTrainee(BigInteger trainerId, BigInteger traineeId);
 }

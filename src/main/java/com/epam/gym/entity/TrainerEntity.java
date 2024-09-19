@@ -1,54 +1,98 @@
 package com.epam.gym.entity;
 
 import com.epam.gym.dto.TrainerDto;
-import com.epam.gym.dto.TrainingTypeDto;
-import com.epam.gym.dto.UserDto;
-import com.epam.gym.repository.TrainingTypeRepository;
-import com.epam.gym.repository.UserRepository;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.proxy.HibernateProxy;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
+import java.util.Set;
 
-@RequiredArgsConstructor
-@Data
-public class TrainerEntity implements Entity<BigInteger> {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "TRAINER")
+public class TrainerEntity implements EntityInterface<BigInteger> {
+    @Value("${table-generator.initial-value}")
+    private static final int ID_INITIAL_VALUE = 1000;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "trainer_table_seq")
+    @TableGenerator(
+            name = "trainer_table_seq",
+            table = "id_gen_table",
+            pkColumnName = "gen_name",
+            valueColumnName = "gen_val",
+            initialValue = ID_INITIAL_VALUE,
+            allocationSize = 1)
+    @Column(name = "ID")
     private BigInteger id;
-    @NonNull
-    private BigInteger specialization; // training type
-    @NonNull
-    private BigInteger userId;
 
-    @JsonCreator
-    public TrainerEntity(
-            @JsonProperty("id") BigInteger id,
-            @JsonProperty("specialization") BigInteger specialization,
-            @JsonProperty("userId") BigInteger userId
-    ) {
-        this.id = id;
-        this.specialization = specialization;
-        this.userId = userId;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID")
+    @ToString.Exclude
+    private TrainingTypeEntity specialization;
 
-    public TrainerDto toDto(TrainingTypeRepository trainingTypeRepository, UserRepository userRepository) {
-        AtomicReference<TrainingTypeDto> trainingTypeDto = new AtomicReference<>();
-        AtomicReference<UserDto> userDto = new AtomicReference<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+    @ToString.Exclude
+    private UserEntity user;
 
-        trainingTypeRepository.findById(specialization).ifPresent(s -> trainingTypeDto.set(s.toDto()));
-        userRepository.findById(userId).ifPresent(u -> userDto.set(u.toDto()));
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<TrainingEntity> trainings;
 
-        return new TrainerDto(id, trainingTypeDto.get(), userDto.get());
+    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<TraineeEntity> trainees;
+
+    public TrainerDto toDto() {
+        return new TrainerDto(id, specialization, user, trainings, trainees);
     }
 
     public static TrainerEntity fromDto(TrainerDto trainerDto) {
-        return new TrainerEntity(
-                trainerDto.getId(),
-                Entity.getIdFromDto(trainerDto.getSpecialization()),
-                Entity.getIdFromDto(trainerDto.getUser())
-        );
+        if (trainerDto == null) {
+            return null;
+        }
+
+        return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization(), trainerDto.getUser(), trainerDto.getTrainings(), trainerDto.getTrainees());
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        TrainerEntity that = (TrainerEntity) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

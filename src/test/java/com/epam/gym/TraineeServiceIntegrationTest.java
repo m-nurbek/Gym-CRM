@@ -1,9 +1,10 @@
 package com.epam.gym;
 
 import com.epam.gym.config.ApplicationConfig;
-import com.epam.gym.dto.TraineeDto;
+import com.epam.gym.entity.UserEntity;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
+import com.epam.gym.util.DtoEntityCreationUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -11,158 +12,121 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
-import java.text.ParseException;
-import java.util.Date;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringJUnitConfig(classes = ApplicationConfig.class)
-@TestPropertySource(locations = "classpath:application-test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class TraineeServiceIntegrationTest {
-    private final TraineeService traineeService;
-    private final UserService userService;
-
     @Autowired
-    public TraineeServiceIntegrationTest(TraineeService traineeService, UserService userService) {
-        this.traineeService = traineeService;
-        this.userService = userService;
-    }
+    private TraineeService traineeService;
+    @Autowired
+    private UserService userService;
 
     @Test
-    public void shouldFindTrainee() {
+    void shouldFindTraineeEntityByUsername() {
         // given
-        BigInteger traineeId = BigInteger.ONE;
-        BigInteger traineeId50 = BigInteger.valueOf(24L);
+        String username1 = "johndoe1";
+        String username3 = "alicesmith3";
+        var address1 = "123 Main St, Cityville";
+        var address3 = "789 Oak St, Villageham";
 
         // when
-        var foundTrainee = traineeService.get(traineeId).orElse(null);
-        var foundTrainee2 = traineeService.get(traineeId50).orElse(null);
+        var trainee1 = traineeService.findByUsername(username1);
+        var trainee3 = traineeService.findByUsername(username3);
 
         // then
-        assertThat(foundTrainee).isNotNull();
-        assertThat(foundTrainee2).isNotNull();
+        assertAll(
+                "Assertions for find trainee by username",
+                () -> assertThat(trainee1).isPresent(),
+                () -> assertThat(trainee3).isPresent(),
+                () -> assertThat(trainee1.get().getAddress()).isEqualTo(address1),
+                () -> assertThat(trainee3.get().getAddress()).isEqualTo(address3)
+        );
     }
 
     @Test
-    public void shouldNotFindTrainee() {
+    void shouldNotFindTraineeEntityByUsername() {
         // given
-        BigInteger traineeId0 = BigInteger.ZERO;
-        BigInteger traineeId51 = BigInteger.valueOf(25L);
+        String username = "nonexistent";
 
         // when
-        var foundTrainee0 = traineeService.get(traineeId0).orElse(null);
-        var foundTrainee51 = traineeService.get(traineeId51).orElse(null);
+        var trainee = traineeService.findByUsername(username);
 
         // then
-        assertThat(foundTrainee0).isNull();
-        assertThat(foundTrainee51).isNull();
+        assertThat(trainee).isEmpty();
     }
 
     @Test
-    public void shouldAddTrainee() throws ParseException {
+    void shouldSaveTraineeEntity1() {
         // given
-        var trainee = TraineeDto.builder().address("Address 1").dob(new Date(2001, 1, 1)).user(userService.get(BigInteger.ONE).orElse(null)).build();
+        var trainee = DtoEntityCreationUtil.getNewTraineeDtoInstance(1, null, Set.of(), Set.of());
+        trainee.setId(null);
 
         // when
-        var addedTrainee = traineeService.add(trainee);
+        var savedTrainee = traineeService.save(trainee);
 
         // then
-        assertThat(addedTrainee).isNotNull();
-        trainee.setId(BigInteger.valueOf(25L)); // id is auto-generated
-        assertThat(addedTrainee).isEqualTo(trainee);
+        assertAll(
+                "Assertions for save trainee",
+                () -> assertThat(savedTrainee).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isEqualTo(BigInteger.valueOf(1001))
+        );
     }
 
     @Test
-    public void shouldNotAddTrainee() {
+    void shouldSaveTraineeEntity2() {
         // given
-        var trainee = TraineeDto.builder().id(BigInteger.ONE).address("NEW ADDRESS").dob(new Date(2001, 6, 1)).user(userService.get(BigInteger.valueOf(24L)).orElse(null)).build();
+        var user = DtoEntityCreationUtil.getNewUserDtoInstance(40);
+        var trainee = DtoEntityCreationUtil.getNewTraineeDtoInstance(1, UserEntity.fromDto(user), Set.of(), Set.of());
+        trainee.setId(null);
 
         // when
-        var addedTrainee = traineeService.add(trainee);
+        var savedTrainee = traineeService.save(trainee);
 
         // then
-        assertThat(addedTrainee).isNotNull();
-        assertThat(addedTrainee).isNotEqualTo(trainee);
+        var u = userService.get(BigInteger.valueOf(40)).orElse(null);
+        assert u != null;
+
+        assertAll(
+                "Assertions for save trainee",
+                () -> assertThat(savedTrainee).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isNotNull(),
+                () -> assertThat(savedTrainee.getId()).isEqualTo(BigInteger.valueOf(1001)),
+                () -> assertThat(savedTrainee.getUser()).isEqualTo(UserEntity.fromDto(u)),
+                () -> assertThat(u.getTrainee().toDto().getId()).isEqualTo(savedTrainee.getId()),
+                () -> assertThat(u.getTrainee().toDto().getAddress()).isEqualTo(savedTrainee.getAddress())
+        );
     }
 
     @Test
-    public void shouldUpdateTrainee() {
+    void shouldCorrectlyGiveManyToManyData() {
+        // when
+        var trainers = traineeService.getTrainers(BigInteger.ONE);
+
+        // then
+        assertAll(
+                "Assertions for many-to-many data",
+                () -> assertThat(trainers.size()).isEqualTo(1)
+        );
+    }
+
+    @Test
+    void shouldReturnUnassignedTrainers() {
         // given
-        BigInteger traineeId = BigInteger.ONE;
-        var trainee = traineeService.get(traineeId).orElse(null);
-        assert trainee != null;
+        var username = "johndoe1";
 
         // when
-        trainee.setAddress("UpdatedAddress");
-        trainee.setDob(new Date(2002, 2, 2));
-        TraineeDto updatedTrainee = traineeService.update(trainee);
+        var trainers = traineeService.getUnassignedTrainersByUsername(username);
 
         // then
-        assertThat(updatedTrainee).isNotNull();
-        assertThat(updatedTrainee.getId()).isEqualTo(traineeId);
-        assertThat(updatedTrainee.getAddress()).isEqualTo("UpdatedAddress");
-        assertThat(updatedTrainee.getDob()).isEqualTo(new Date(2002, 2, 2));
-        assertThat(traineeService.get(traineeId).orElse(null)).isEqualTo(updatedTrainee);
-    }
-
-    @Test
-    public void shouldNotUpdateTrainee() {
-        // given
-        BigInteger traineeId = BigInteger.valueOf(25L);
-        var trainee = TraineeDto.builder().id(traineeId).address("Address 1").dob(new Date(2001, 1, 1)).user(userService.get(BigInteger.ONE).orElse(null)).build();
-
-        // when
-        var updatedTrainee = traineeService.update(trainee);
-
-        // then
-        assertThat(updatedTrainee).isNull();
-    }
-
-    @Test
-    public void shouldDeleteTrainee() {
-        // given
-        BigInteger traineeId = BigInteger.ONE;
-
-        // when
-        traineeService.delete(traineeId);
-
-        // then
-        assertThat(traineeService.get(traineeId).orElse(null)).isNull();
-    }
-
-    @Test
-    public void shouldNotDeleteTrainee() {
-        // given
-        BigInteger traineeId = BigInteger.valueOf(25L);
-
-        // when
-        traineeService.delete(traineeId);
-
-        // then
-        assertThat(traineeService.get(traineeId).orElse(null)).isNull();
-    }
-
-    @Test
-    public void shouldGetAllTrainees() {
-        // when
-        var trainees = traineeService.getAll();
-
-        // then
-        assertThat(trainees).isNotNull();
-        assertThat(trainees).isNotEmpty();
-    }
-
-    @Test
-    public void shouldGetAllOnEmptyRepositoryCorrectly() {
-        // given
-        traineeService.getAll().forEach(t -> traineeService.delete(t.getId())); // deleted all trainees
-
-        // when
-        var trainees = traineeService.getAll();
-
-        // then
-        assertThat(trainees).isNotNull();
-        assertThat(trainees).isEmpty();
+        assertAll(
+                "Assertions for unassigned trainers",
+                () -> assertThat(trainers.size()).isEqualTo(24) // because for user with username "johndoe1" there is only one assigned trainer out of 25
+        );
     }
 }

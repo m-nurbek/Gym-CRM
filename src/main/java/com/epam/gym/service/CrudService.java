@@ -4,13 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CrudService<T, ID> {
-    T add(T obj);
+    T save(T obj);
 
-    T update(T obj);
+    boolean update(T obj);
 
-    void delete(ID id);
+    boolean delete(ID id);
 
     Optional<T> get(ID id);
 
     List<T> getAll();
+
+    long count();
 }

@@ -14,7 +14,7 @@ public class Facade {
 
     public void run() {
         while (true) {
-            String input = shell.readInput();
+            String input = shell.readInput().toLowerCase();
 
             if (!shell.isValidCommand(input)) {
                 shell.writeOutput("Invalid command. Type 'help' to see the list of available commands.");
@@ -33,7 +33,11 @@ public class Facade {
             Command command = commandFactory.getCommand(input);
 
             if (command != null) {
-                command.execute();
+                try {
+                    command.execute();
+                } catch (Exception e) {
+                    shell.writeOutput("An error occurred: " + e.getMessage());
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.epam.gym.util;
 
 import lombok.experimental.UtilityClass;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -15,7 +16,7 @@ public class UserProfileUtil {
      * A cryptographically strong random number minimally complies with
      * the statistical random number generator tests specified in FIPS 140-2.
      * Additionally, SecureRandom must produce non-deterministic output.
-     * Therefore any seed material passed to a SecureRandom object must be unpredictable,
+     * Therefore, any seed material passed to a SecureRandom object must be unpredictable,
      * and all SecureRandom output sequences must be cryptographically strong.
      */
     private static final Random RANDOM = new SecureRandom();
@@ -34,7 +35,7 @@ public class UserProfileUtil {
         return password.toString();
     }
 
-    public static String generateUsername(String firstName, String lastName, int serialNumber) {
-        return serialNumber > 0 ? String.format("%s.%s%d", firstName, lastName, serialNumber) : String.format("%s.%s", firstName, lastName);
+    public static String generateUsername(String firstName, String lastName, BigInteger serialNumber) {
+        return serialNumber.compareTo(BigInteger.ZERO) > 0 ? String.format("%s.%s%d", firstName, lastName, serialNumber) : String.format("%s.%s", firstName, lastName);
     }
 }

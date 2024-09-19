@@ -1,5 +1,6 @@
 package com.epam.gym.facade.command;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.service.CrudService;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
@@ -15,14 +16,15 @@ import java.math.BigInteger;
 @Component
 @AllArgsConstructor
 public class FindCommand implements Command {
-    private TraineeService traineeService;
-    private TrainerService trainerService;
-    private TrainingTypeService trainingTypeService;
-    private TrainingService trainingService;
-    private UserService userService;
-    private Shell shell;
+    private final TraineeService traineeService;
+    private final TrainerService trainerService;
+    private final TrainingTypeService trainingTypeService;
+    private final TrainingService trainingService;
+    private final UserService userService;
+    private final Shell shell;
 
     @Override
+    @Authenticated
     public void execute() {
         int option = shell.printAndGetOption("trainee", "trainer", "training type", "training", "user");
 
@@ -32,7 +34,33 @@ public class FindCommand implements Command {
             case 3 -> findEntity(trainingTypeService);
             case 4 -> findEntity(trainingService);
             case 5 -> findEntity(userService);
-            case -1 -> shell.writeOutput("Canceled.");
+            default -> shell.writeOutput("Canceled.");
+        }
+    }
+
+    private void findEntity(TraineeService service) {
+        var output = shell.readInput("Find by ID or by username(1/2)? ");
+
+        try {
+            int option = Integer.parseInt(output);
+
+            if (option == 1) {
+                shell.writeOutput("Finding a trainee by ID...");
+                service.get(shell.readBigInteger("Enter the ID: ")).ifPresentOrElse(
+                        x -> shell.writeOutput(x.toString()),
+                        () -> shell.writeOutput("Trainee not found.")
+                );
+            } else if (option == 2) {
+                shell.writeOutput("Finding a trainee by username...");
+                service.findByUsername(shell.readInput("Enter the username: ")).ifPresentOrElse(
+                        x -> shell.writeOutput(x.toString()),
+                        () -> shell.writeOutput("Trainee not found.")
+                );
+            } else {
+                shell.writeOutput("Invalid input.");
+            }
+        } catch (NumberFormatException e) {
+            shell.writeOutput("Invalid input.");
         }
     }
 

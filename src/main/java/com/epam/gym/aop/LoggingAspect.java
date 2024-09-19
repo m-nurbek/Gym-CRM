@@ -19,20 +19,25 @@ public class LoggingAspect {
         // Do nothing because of setting up a pointcut for Spring AOP.
     }
 
-    @Before(value = "executeLogging()")
+    @Pointcut("execution(* com.epam.gym.service.*.*(..))")
+    public void servicePointcut() {
+        // Do nothing because of setting up a pointcut for Spring AOP.
+    }
+
+    @Before(value = "executeLogging() || servicePointcut()")
     public void logBefore(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         String methodName = joinPoint.getSignature().getName();
         log.debug(">> CALLED METHOD: {}() with args: {}", methodName, args);
     }
 
-    @AfterReturning(value = "executeLogging()", returning = "result")
+    @AfterReturning(value = "executeLogging() || servicePointcut()", returning = "result")
     public void logAfter(JoinPoint joinPoint, Object result) {
         String methodName = joinPoint.getSignature().getName();
         log.debug("<< METHOD RETURNED: {}() result: {}", methodName, result);
     }
 
-    @AfterThrowing(pointcut = "executeLogging()", throwing = "exception")
+    @AfterThrowing(pointcut = "executeLogging() || servicePointcut()", throwing = "exception")
     public void logException(JoinPoint joinPoint, Throwable exception) {
         String methodName = joinPoint.getSignature().getName();
         log.debug("!! ERROR: {}() - {}", methodName, exception.getMessage());

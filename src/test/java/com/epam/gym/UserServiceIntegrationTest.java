@@ -3,6 +3,8 @@ package com.epam.gym;
 import com.epam.gym.config.ApplicationConfig;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.service.UserService;
+import com.epam.gym.util.DtoEntityCreationUtil;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -10,182 +12,216 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringJUnitConfig(classes = ApplicationConfig.class)
-@TestPropertySource(locations = "classpath:application-test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class UserServiceIntegrationTest {
-    private final UserService userService;
-
     @Autowired
-    public UserServiceIntegrationTest(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @Test
-    public void shouldFindUser() {
+    void shouldFindByUsername() {
         // given
-        BigInteger userId = BigInteger.ONE;
-        BigInteger userId50 = BigInteger.valueOf(50L);
+        String username1 = "alicesmith3";
+        String username2 = "gracetaylor9";
 
         // when
-        UserDto foundUser = userService.get(userId).orElse(null);
-        UserDto foundUser50 = userService.get(userId50).orElse(null);
+        Optional<UserDto> u1 = userService.findByUsername(username1);
+        Optional<UserDto> u2 = userService.findByUsername(username2);
 
         // then
-        assertThat(foundUser).isNotNull();
-        assertThat(foundUser50).isNotNull();
+        assertAll(
+                "Assertions for find user by username",
+                () -> assertThat(u1).isPresent(),
+                () -> assertThat(u2).isPresent(),
+                () -> assertThat(u1.get().getUsername()).isEqualTo(username1),
+                () -> assertThat(u2.get().getUsername()).isEqualTo(username2)
+        );
     }
 
     @Test
-    public void shouldNotFindUser() {
+    void shouldNotFindByWrongUsername() {
         // given
-        BigInteger userId0 = BigInteger.ZERO;
-        BigInteger userId51 = BigInteger.valueOf(51L);
+        String username = "nonexistent";
 
         // when
-        UserDto foundUser0 = userService.get(userId0).orElse(null);
-        UserDto foundUser51 = userService.get(userId51).orElse(null);
+        Optional<UserDto> u = userService.findByUsername(username);
 
         // then
-        assertThat(foundUser0).isNull();
-        assertThat(foundUser51).isNull();
+        assertThat(u).isEmpty();
     }
 
     @Test
-    public void shouldAddUser() {
+    void shouldUpdateTheUserProfile() {
         // given
-        UserDto user = UserDto.builder().firstName("NewUser").lastName("NewUserSurname").isActive(true).build();
-        UserDto user2 = UserDto.builder().firstName("NewUser").lastName("NewUserSurname").isActive(true).build();
-        UserDto user3 = UserDto.builder().firstName("NewUser").lastName("NewUserSurname").isActive(true).build();
+        Optional<UserDto> u = userService.findByUsername("alicesmith3");
 
         // when
-        UserDto addedUser = userService.add(user);
-        UserDto addedUser2 = userService.add(user2);
-        UserDto addedUser3 = userService.add(user3);
+        u.ifPresent(user -> {
+            user.setFirstName("NEW FIRSTNAME");
+            user.setLastName("NEW LASTNAME");
+            user.setUsername("UPDATED EMAIL");
+            user.setIsActive(false);
+        });
+
+        boolean isUpdated = userService.updateProfile(u.get());
 
         // then
-        assertThat(addedUser).isNotNull();
-        assertThat(addedUser.getId()).isNotNull();
-        assertThat(addedUser.getFirstName()).isEqualTo("NewUser");
-        assertThat(addedUser.getLastName()).isEqualTo("NewUserSurname");
-        assertThat(addedUser.isActive()).isTrue();
-        assertThat(addedUser.getUsername()).isNotNull();
-        assertThat(addedUser.getPassword()).isNotNull();
-        assertThat(addedUser.getId()).isEqualTo(BigInteger.valueOf(51));
-        assertThat(addedUser.getUsername()).isEqualTo("NewUser.NewUserSurname");
-        assertThat(userService.get(addedUser.getId()).orElse(null)).isEqualTo(addedUser);
+        var userByEmail = userService.findByUsername("UPDATED EMAIL");
 
-        assertThat(addedUser2).isNotNull();
-        assertThat(addedUser2.getId()).isNotNull();
-        assertThat(addedUser2.getFirstName()).isEqualTo("NewUser");
-        assertThat(addedUser2.getLastName()).isEqualTo("NewUserSurname");
-        assertThat(addedUser2.isActive()).isTrue();
-        assertThat(addedUser2.getUsername()).isNotNull();
-        assertThat(addedUser2.getPassword()).isNotNull();
-        assertThat(addedUser2.getId()).isEqualTo(BigInteger.valueOf(52));
-        assertThat(addedUser2.getUsername()).isEqualTo("NewUser.NewUserSurname1");
-        assertThat(userService.get(addedUser2.getId()).orElse(null)).isEqualTo(addedUser2);
-
-
-        assertThat(addedUser3).isNotNull();
-        assertThat(addedUser3.getUsername()).isEqualTo("NewUser.NewUserSurname2");
+        assertAll(
+                "Assertions for update user profile",
+                () -> assertThat(isUpdated).isTrue(),
+                () -> assertThat(userByEmail).isPresent(),
+                () -> assertThat(userByEmail.get().getFirstName()).isEqualTo("NEW FIRSTNAME"),
+                () -> assertThat(userByEmail.get().getLastName()).isEqualTo("NEW LASTNAME"),
+                () -> assertThat(userByEmail.get().getUsername()).isEqualTo("UPDATED EMAIL"),
+                () -> assertThat(userByEmail.get().getIsActive()).isTrue() // should not update the active state
+        );
     }
 
     @Test
-    public void shouldNotAddUser() {
+    @DisplayName("Should not update the user profile if the ID is not found")
+    void shouldNotUpdateTheUserProfile() {
         // given
-        UserDto user = UserDto.builder().id(BigInteger.ONE).firstName("NewUser").lastName("NewUserSurname").isActive(true).build();
+        Optional<UserDto> u = userService.findByUsername("alicesmith3");
+
+        u.ifPresent((user) -> {
+            user.setId(BigInteger.valueOf(9999));
+            user.setFirstName("NEW FIRSTNAME");
+            user.setLastName("NEW LASTNAME");
+            user.setUsername("UPDATED EMAIL");
+            user.setIsActive(true);
+        });
 
         // when
-        UserDto addedUser = userService.add(user);
+        boolean isUpdated = userService.updateProfile(u.get());
 
         // then
-        assertThat(addedUser).isNotNull();
-        assertThat(addedUser).isNotEqualTo(user);
+        assertThat(isUpdated).isFalse();
     }
 
     @Test
-    public void shouldUpdateUser() {
+    void shouldChangeThePassword() {
         // given
-        BigInteger userId = BigInteger.ONE;
-        UserDto user = userService.get(userId).orElse(null);
-        assert user != null;
+        UserDto u = userService.findByUsername("frankmoore8").orElse(null);
+        assert u != null;
 
         // when
-        user.setFirstName("UpdatedFirstname");
-        user.setLastName("UpdatedLastname");
-        user.setActive(false);
-        UserDto updatedUser = userService.update(user);
+        boolean isChanged = userService.changePassword(u.getId(), "password8", "NEW PASSWORD");
 
         // then
-        assertThat(updatedUser).isNotNull();
-        assertThat(updatedUser.getId()).isEqualTo(userId);
-        assertThat(updatedUser.getFirstName()).isEqualTo("UpdatedFirstname");
-        assertThat(updatedUser.getLastName()).isEqualTo("UpdatedLastname");
-        assertThat(updatedUser.isActive()).isFalse();
-        assertThat(userService.get(userId).orElse(null)).isEqualTo(updatedUser);
+        Optional<UserDto> user = userService.findByUsername("frankmoore8");
+        assertAll(
+                "Assertions for change password",
+                () -> assertThat(isChanged).isTrue(),
+                () -> assertThat(user).isPresent(),
+                () -> assertThat(user.get().getPassword()).isEqualTo("NEW PASSWORD")
+        );
     }
 
     @Test
-    public void shouldNotUpdateUser() {
+    @DisplayName("Should not change the password if the old password is incorrect")
+    void shouldNotChangeThePassword() {
         // given
-        BigInteger userId = BigInteger.valueOf(51L);
-        UserDto user = UserDto.builder().id(userId).firstName("NewUser").lastName("NewUserSurname").isActive(true).build();
+        UserDto u = userService.findByUsername("frankmoore8").orElse(null);
+        assert u != null;
 
         // when
-        UserDto updatedUser = userService.update(user);
+        boolean isChanged = userService.changePassword(u.getId(), "wrong password", "NEW PASSWORD");
 
         // then
-        assertThat(updatedUser).isNull();
+        assertAll(
+                "Assertions for change password",
+                () -> assertThat(isChanged).isFalse(),
+                () -> assertThat(userService.findByUsername("frankmoore8").get().getPassword()).isNotEqualTo("NEW PASSWORD")
+        );
     }
 
     @Test
-    public void shouldDeleteUser() {
+    void shouldChangeTheActiveState() {
         // given
-        BigInteger userId = BigInteger.ONE;
+        UserDto u = userService.findByUsername("frankmoore8").orElse(null);
+        assert u != null;
 
         // when
-        userService.delete(userId);
+        boolean isActive = u.getIsActive();
+        boolean isChanged = userService.updateActiveState(u.getId(), !isActive);
 
         // then
-        assertThat(userService.get(userId).orElse(null)).isNull();
+        Optional<UserDto> user = userService.findByUsername("frankmoore8");
+        assertAll(
+                "Assertions for change active state",
+                () -> assertThat(isChanged).isTrue(),
+                () -> assertThat(user).isPresent(),
+                () -> assertThat(user.get().getIsActive()).isNotEqualTo(isActive)
+        );
     }
 
     @Test
-    public void shouldNotDeleteUser() {
+    void shouldSaveUser() {
         // given
-        BigInteger userId = BigInteger.valueOf(51L);
+        UserDto user = DtoEntityCreationUtil.getNewUserDtoInstance(51);
 
+        System.out.println(user);
         // when
-        userService.delete(userId);
+        userService.save(user);
 
         // then
-        assertThat(userService.get(userId).orElse(null)).isNull();
+        Optional<UserDto> savedUser = userService.findByUsername(user.getUsername());
+        assertAll(
+                "Assertions for save user",
+                () -> assertThat(savedUser).isPresent(),
+                () -> assertThat(savedUser.get().getUsername()).isEqualTo(user.getUsername()),
+                () -> assertThat(savedUser.get().getFirstName()).isEqualTo(user.getFirstName()),
+                () -> assertThat(savedUser.get().getLastName()).isEqualTo(user.getLastName()),
+                () -> assertThat(userService.count()).isEqualTo(51)
+        );
     }
 
     @Test
-    public void shouldGetAllUsers() {
+    void shouldGetAllUsers() {
         // when
         var users = userService.getAll();
 
         // then
-        assertThat(users).isNotNull();
-        assertThat(users).isNotEmpty();
+        assertAll(
+                "Assertions for get all users",
+                () -> assertThat(users).isNotEmpty(),
+                () -> assertThat(users.size()).isEqualTo(50)
+        );
     }
 
     @Test
-    public void shouldGetAllOnEmptyRepositoryCorrectly() {
+    void shouldDeleteUser() {
         // given
-        userService.getAll().forEach(u -> userService.delete(u.getId())); // deleted all users
+        UserDto user = DtoEntityCreationUtil.getNewUserDtoInstance(51);
+        userService.save(user);
 
         // when
-        var users = userService.getAll();
+        boolean isDeleted = userService.delete(BigInteger.valueOf(1001)); // generation of new ids starts from 1000
 
         // then
-        assertThat(users).isNotNull();
-        assertThat(users).isEmpty();
+        Optional<UserDto> deletedUser = userService.findByUsername(user.getUsername());
+        assertAll(
+                "Assertions for delete user",
+                () -> assertThat(isDeleted).isTrue(),
+                () -> assertThat(deletedUser).isEmpty(),
+                () -> assertThat(userService.count()).isEqualTo(50)
+        );
+    }
+
+    @Test
+    void shouldNotDeleteUser() {
+        // when
+        boolean isDeleted = userService.delete(BigInteger.valueOf(1001)); // generation of new ids starts from 1000
+
+        // then
+        assertThat(isDeleted).isFalse();
     }
 }
