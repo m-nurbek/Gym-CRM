@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for logging method calls.
+ * The method annotated with this annotation will be logged.
+ * The log will contain the method name and the arguments passed to the method.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

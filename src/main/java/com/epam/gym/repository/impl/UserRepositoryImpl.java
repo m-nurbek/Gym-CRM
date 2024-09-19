@@ -83,7 +83,7 @@ public class UserRepositoryImpl extends HibernateRepositoryImpl<UserEntity, BigI
             if (entity.getTrainer() != null) {
                 trainerRepository.deleteById(entity.getTrainer().getId());
             }
-            
+
             session.remove(entity);
             return true;
         }

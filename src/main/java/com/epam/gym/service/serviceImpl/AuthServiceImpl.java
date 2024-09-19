@@ -17,9 +17,11 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    // This map is used to store the authentication status of the user.
-    // The key is the username and the value is the authentication status.
-    // will contain only one entry at a time.
+    /*
+     * This map is used to store the authentication status of the user.
+     * The key is the username and the value is the authentication status.
+     * will contain only one entry at a time.
+     */
     private final ConcurrentMap<String, Boolean> map = new ConcurrentHashMap<>(1);
 
     @Loggable

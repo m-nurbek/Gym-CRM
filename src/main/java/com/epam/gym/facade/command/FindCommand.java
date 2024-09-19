@@ -15,7 +15,7 @@ import java.math.BigInteger;
 
 @Component
 @AllArgsConstructor
-public class FindCommand implements Command{
+public class FindCommand implements Command {
     private TraineeService traineeService;
     private TrainerService trainerService;
     private TrainingTypeService trainingTypeService;
@@ -27,7 +27,6 @@ public class FindCommand implements Command{
     @Authenticated
     public void execute() {
         int option = shell.printAndGetOption("trainee", "trainer", "training type", "training", "user");
-
 
         switch (option) {
             case 1 -> findEntity(traineeService);

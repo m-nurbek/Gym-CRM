@@ -4,7 +4,6 @@ import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.repository.TrainerRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
@@ -27,12 +26,12 @@ public class TrainerRepositoryImpl extends HibernateRepositoryImpl<TrainerEntity
 
         if (entity != null) {
             session.createNativeQuery("""
-                DELETE FROM trainee_trainer as t1
-                WHERE t1.trainer_id = :trainerIdToDelete AND NOT EXISTS (
-                    SELECT t2.trainer_id FROM trainee_trainer as t2
-                    WHERE t2.trainer_id != :trainerIdToDelete AND t2.trainee_id = t1.trainee_id
-                );
-            """, TrainerEntity.class).setParameter("trainerIdToDelete", id).executeUpdate();
+                        DELETE FROM trainee_trainer as t1
+                        WHERE t1.trainer_id = :trainerIdToDelete AND NOT EXISTS (
+                            SELECT t2.trainer_id FROM trainee_trainer as t2
+                            WHERE t2.trainer_id != :trainerIdToDelete AND t2.trainee_id = t1.trainee_id
+                        );
+                    """, TrainerEntity.class).setParameter("trainerIdToDelete", id).executeUpdate();
             return true;
         }
 

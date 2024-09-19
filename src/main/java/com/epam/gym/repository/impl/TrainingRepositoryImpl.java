@@ -6,7 +6,6 @@ import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.repository.TrainingRepository;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;

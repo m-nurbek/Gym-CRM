@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for authenticated method calls.
+ * The method annotated with this annotation can only be called by authenticated users.
+ * If the user is not authenticated, the method will not be executed.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

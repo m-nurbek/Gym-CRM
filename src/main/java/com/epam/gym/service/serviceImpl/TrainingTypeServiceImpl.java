@@ -2,7 +2,6 @@ package com.epam.gym.service.serviceImpl;
 
 import com.epam.gym.dto.TrainingTypeDto;
 import com.epam.gym.entity.TrainingTypeEntity;
-import com.epam.gym.entity.TrainingTypeEnum;
 import com.epam.gym.repository.TrainingTypeRepository;
 import com.epam.gym.service.TrainingTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
