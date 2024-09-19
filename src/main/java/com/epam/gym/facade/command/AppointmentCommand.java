@@ -19,7 +19,7 @@ public class AppointmentCommand implements Command {
     private final TrainingService trainingService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
-    private AuthService authService;
+    private final AuthService authService;
 
     @Override
     @Authenticated

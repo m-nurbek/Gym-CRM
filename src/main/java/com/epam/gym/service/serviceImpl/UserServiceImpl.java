@@ -6,6 +6,7 @@ import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.UserService;
 import com.epam.gym.util.AtomicBigInteger;
 import com.epam.gym.util.UserProfileUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +18,9 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public Optional<UserDto> findByUsername(String username) {

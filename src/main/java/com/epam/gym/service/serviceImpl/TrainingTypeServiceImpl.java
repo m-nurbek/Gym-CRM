@@ -4,6 +4,7 @@ import com.epam.gym.dto.TrainingTypeDto;
 import com.epam.gym.entity.TrainingTypeEntity;
 import com.epam.gym.repository.TrainingTypeRepository;
 import com.epam.gym.service.TrainingTypeService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +16,9 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class TrainingTypeServiceImpl implements TrainingTypeService {
     private final TrainingTypeRepository trainingTypeRepository;
-
-    @Autowired
-    public TrainingTypeServiceImpl(TrainingTypeRepository trainingTypeRepository) {
-        this.trainingTypeRepository = trainingTypeRepository;
-    }
 
     @Override
     public TrainingTypeDto save(TrainingTypeDto type) {

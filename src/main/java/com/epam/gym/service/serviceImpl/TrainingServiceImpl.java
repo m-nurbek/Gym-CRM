@@ -10,6 +10,7 @@ import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.TrainingService;
 import com.epam.gym.service.TrainingTypeService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,19 +23,12 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
     private final TrainingRepository trainingRepository;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final TrainingTypeService trainingTypeService;
-
-    @Autowired
-    public TrainingServiceImpl(TrainingRepository trainingRepository, TraineeService traineeService, TrainerService trainerService, TrainingTypeService trainingTypeService) {
-        this.trainingRepository = trainingRepository;
-        this.traineeService = traineeService;
-        this.trainerService = trainerService;
-        this.trainingTypeService = trainingTypeService;
-    }
 
     @Override
     public TrainingDto save(TrainingDto training) {
