@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -34,6 +35,9 @@ import java.util.Set;
 @Entity
 @Table(name = "TRAINER")
 public class TrainerEntity implements EntityInterface<BigInteger> {
+    @Value("${table-generator.initial-value}")
+    private static final int ID_INITIAL_VALUE = 1000;
+
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "trainer_table_seq")
     @TableGenerator(
@@ -41,7 +45,7 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
             table = "id_gen_table",
             pkColumnName = "gen_name",
             valueColumnName = "gen_val",
-            initialValue = 1000,
+            initialValue = ID_INITIAL_VALUE,
             allocationSize = 1)
     @Column(name = "ID")
     private BigInteger id;
