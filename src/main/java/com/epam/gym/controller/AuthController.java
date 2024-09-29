@@ -29,7 +29,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
     }
 
-    // TODO: Implement the logout method
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         String username = authService.getUsernameOfAuthenticatedAccount();

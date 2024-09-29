@@ -1,5 +1,6 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.model.request.TrainingAddRequestModel;
 import com.epam.gym.service.TrainingService;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class TrainingController {
 
     // POST input: traineeUsername, trainerUsername, TrainingName, TrainingDate, TrainingDuration
     // response: 200 OK
+    @Authenticated
     @PostMapping
     public ResponseEntity<String> addTraining(@RequestBody TrainingAddRequestModel model) {
         boolean success = trainingService.save(model);

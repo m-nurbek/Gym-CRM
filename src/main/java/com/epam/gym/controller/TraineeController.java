@@ -1,5 +1,6 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.model.request.TraineeUpdateRequestModel;
 import com.epam.gym.dto.model.response.SimpleTrainerResponseModel;
 import com.epam.gym.dto.model.response.TraineeResponseModel;
@@ -31,6 +32,7 @@ public class TraineeController {
 
     // GET input: username!
     // response: firstname, lastname, dob, address, isActive, trainerList[username, firstName, lastName, specialization]
+    @Authenticated
     @GetMapping("/{username}")
     public ResponseEntity<TraineeResponseModel> getProfile(@PathVariable String username) {
         var response = traineeService.findByUsernameToResponse(username);
@@ -44,6 +46,7 @@ public class TraineeController {
 
     // PUT input: username!, firstname!, lastname!, dob, address, isActive!
     // response: username, firstName, lastName, dob, address, isActive, trainerList[username, firstName, lastName, specialization]
+    @Authenticated
     @PutMapping("/{username}")
     public ResponseEntity<TraineeUpdateResponseModel> updateProfile(
             @PathVariable String username,
@@ -60,6 +63,7 @@ public class TraineeController {
 
     // DELETE input: username!
     // response: 200 OK
+    @Authenticated
     @DeleteMapping("/{username}")
     public ResponseEntity<String> deleteProfile(@PathVariable String username) {
         boolean success = traineeService.deleteByUsername(username);
@@ -73,6 +77,7 @@ public class TraineeController {
 
     // GET input: username!
     // response: trainerList[username, firstName, lastName, specialization]
+    @Authenticated
     @GetMapping("/trainers/{username}")
     public ResponseEntity<Set<SimpleTrainerResponseModel>> getNotAssignedActiveTrainers(@PathVariable String username) {
         if (traineeService.findByUsername(username).isEmpty()) {
@@ -85,6 +90,7 @@ public class TraineeController {
 
     // PUT input: username!, trainerList[username!]!
     // response: trainerList[username, firstName, lastName, specialization]
+    @Authenticated
     @PutMapping("/update-trainers/{username}")
     public ResponseEntity<Set<SimpleTrainerResponseModel>> updateTrainersList(
             @PathVariable String username,
@@ -101,6 +107,7 @@ public class TraineeController {
     // GET input: username!, periodFrom, periodTo, traineeOrTrainerName, trainingType
     // response: training -> name, date, type, duration, traineeOrTrainerName
     // TODO: add period filter
+    @Authenticated
     @GetMapping("/trainings/{username}")
     public ResponseEntity<Set<TrainingResponseModel>> getTrainingsList(@PathVariable String username) {
         if (traineeService.findByUsername(username).isEmpty()) {
@@ -113,6 +120,7 @@ public class TraineeController {
 
     // PATCH input: username!, isActive!
     // response: 200 OK
+    @Authenticated
     @PatchMapping("/active-state/{username}")
     public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         boolean success = userService.updateActiveState(username, isActive);

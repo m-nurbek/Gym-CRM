@@ -1,5 +1,6 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
 import com.epam.gym.dto.model.response.TrainerResponseModel;
 import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
@@ -28,6 +29,7 @@ public class TrainerController {
 
     // GET input: username!
     // response: firstName, lastName, specialization, isActive, traineesList[username, firstName, lastName]
+    @Authenticated
     @GetMapping("/{username}")
     public ResponseEntity<TrainerResponseModel> getProfile(@PathVariable String username) {
         var response = trainerService.findByUsernameToResponse(username);
@@ -42,6 +44,7 @@ public class TrainerController {
     // PUT input: username!, firstName!, lastName!, specialization(read only), isActive!
     // response: username, firstName, lastName, specialization, isActive, traineesList[username, firstName, lastName]
     // TODO: review this (specialization - read only)
+    @Authenticated
     @PutMapping("/{username}")
     public ResponseEntity<TrainerUpdateResponseModel> updateProfile(
             @PathVariable String username,
@@ -59,6 +62,7 @@ public class TrainerController {
     // GET input: username!, periodFrom, periodTo, traineeName
     // response: training -> name, date, type, duration, traineeName
     // TODO: add period
+    @Authenticated
     @GetMapping("/trainings/{username}")
     public ResponseEntity<Set<TrainingResponseModel>> getTrainingsList(@PathVariable String username) {
         if (trainerService.findByUsername(username).isEmpty()) {
@@ -71,6 +75,7 @@ public class TrainerController {
 
     // PATCH input: username!, isActive!
     // response: 200 OK
+    @Authenticated
     @PatchMapping("/active-state/{username}")
     public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         boolean success = userService.updateActiveState(username, isActive);
