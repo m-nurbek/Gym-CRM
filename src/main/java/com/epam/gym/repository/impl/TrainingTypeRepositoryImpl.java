@@ -48,4 +48,9 @@ public class TrainingTypeRepositoryImpl extends HibernateRepositoryImpl<Training
 
         return Optional.ofNullable(query.uniqueResult());
     }
+
+    @Override
+    public Optional<TrainingTypeEntity> findByName(TrainingTypeEnum name) {
+        return findByName(name.toString());
+    }
 }

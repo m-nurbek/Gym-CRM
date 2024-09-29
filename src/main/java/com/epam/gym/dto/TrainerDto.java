@@ -4,6 +4,8 @@ import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.TrainingTypeEntity;
 import com.epam.gym.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,4 +30,11 @@ public class TrainerDto implements Dto<BigInteger> {
     private Set<TrainingEntity> trainings;
     @ToString.Exclude
     private Set<TraineeEntity> trainees;
+
+    @JsonCreator
+    public TrainerDto(
+            @JsonProperty("specialization") TrainingTypeEntity specialization
+    ) {
+        this.specialization = specialization;
+    }
 }

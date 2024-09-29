@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@ComponentScan("com.epam")
+@ComponentScan("com.epam.gym")
 @PropertySource("classpath:application.properties")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@Import({DataSourceConfig.class, HibernateConfig.class, TransactionConfig.class})
+@Import({DataSourceConfig.class, HibernateConfig.class, TransactionConfig.class, WebConfig.class})
 public class ApplicationConfig {
 }

@@ -7,7 +7,6 @@ import com.epam.gym.service.UserService;
 import com.epam.gym.util.AtomicBigInteger;
 import com.epam.gym.util.UserProfileUtil;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +28,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean changePassword(String username, String oldPassword, String newPassword) {
+        var user = userRepository.findByUsername(username);
+        return changePasswordForUser(user, oldPassword, newPassword);
+    }
+
+    @Override
     public boolean changePassword(BigInteger id, String oldPassword, String newPassword) {
         var user = userRepository.findById(id);
+        return changePasswordForUser(user, oldPassword, newPassword);
+    }
 
+    private boolean changePasswordForUser(Optional<UserEntity> user, String oldPassword, String newPassword) {
         if (user.isEmpty() || !user.get().getPassword().equals(oldPassword)) {
             return false;
         }
 
-        return userRepository.updatePassword(id, newPassword);
+        return userRepository.updatePassword(user.get().getId(), newPassword);
     }
 
     @Override
@@ -59,6 +67,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateActiveState(BigInteger id, boolean isActive) {
         return userRepository.updateActiveState(id, isActive);
+    }
+
+    @Override
+    public boolean updateActiveState(String username, boolean isActive) {
+        var u = findByUsername(username);
+
+        if (u.isEmpty()) {
+            return false;
+        }
+
+        return updateActiveState(u.get().getId(), isActive);
     }
 
     @Override

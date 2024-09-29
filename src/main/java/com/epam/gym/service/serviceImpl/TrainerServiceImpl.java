@@ -2,13 +2,20 @@ package com.epam.gym.service.serviceImpl;
 
 import com.epam.gym.dto.TrainerDto;
 import com.epam.gym.dto.UserDto;
+import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
+import com.epam.gym.dto.model.response.SimpleTraineeResponseModel;
+import com.epam.gym.dto.model.response.TrainerResponseModel;
+import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
+import com.epam.gym.dto.model.response.TrainingResponseModel;
 import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
+import com.epam.gym.entity.TrainingTypeEntity;
 import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
+import com.epam.gym.service.TrainingTypeService;
 import com.epam.gym.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -20,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,12 +35,18 @@ public class TrainerServiceImpl implements TrainerService {
     private final UserService userService;
     private final TrainerRepository trainerRepository;
     private final TraineeService traineeService;
+    private final TrainingTypeService trainingTypeService;
 
     @Autowired
-    public TrainerServiceImpl(UserService userService, TrainerRepository trainerRepository, @Lazy TraineeService traineeService) {
+    public TrainerServiceImpl(
+            UserService userService,
+            TrainerRepository trainerRepository,
+            @Lazy TraineeService traineeService,
+            TrainingTypeService trainingTypeService) {
         this.userService = userService;
         this.trainerRepository = trainerRepository;
         this.traineeService = traineeService;
+        this.trainingTypeService = trainingTypeService;
     }
 
     @Override
@@ -52,6 +66,66 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    public Optional<TrainerResponseModel> findByUsernameToResponse(String username) {
+        Optional<TrainerDto> trainerDto = findByUsername(username);
+
+        if (trainerDto.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return trainerDto.map(t -> new TrainerResponseModel(
+                t.getUser().getFirstName(),
+                t.getUser().getLastName(),
+                t.getSpecialization().getName().name(),
+                t.getUser().getIsActive(),
+                t.getTrainees().stream().map(
+                        trainee -> new SimpleTraineeResponseModel(
+                                trainee.getUser().getUsername(),
+                                trainee.getUser().getFirstName(),
+                                trainee.getUser().getLastName())
+                ).toList()));
+    }
+
+    @Override
+    public Optional<TrainerUpdateResponseModel> update(String username, TrainerUpdateRequestModel model) {
+        Optional<TrainerDto> trainerDto = findByUsername(username);
+        Optional<TrainingTypeEntity> typeEntity = trainingTypeService.getTrainingTypeName(model.specialization()).map(TrainingTypeEntity::fromDto);
+
+        if (trainerDto.isEmpty() || typeEntity.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var trainer = trainerDto.get();
+        trainer.getUser().setFirstName(model.firstName());
+        trainer.getUser().setLastName(model.lastName());
+        trainer.setSpecialization(typeEntity.get());
+        trainer.getUser().setIsActive(model.isActive());
+
+        boolean success = update(trainer);
+
+        if (!success) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+                new TrainerUpdateResponseModel(
+                        trainer.getUser().getUsername(),
+                        trainer.getUser().getFirstName(),
+                        trainer.getUser().getLastName(),
+                        trainer.getSpecialization().getName().name(),
+                        trainer.getUser().getIsActive(),
+                        trainer.getTrainees().stream()
+                                .map(t -> new SimpleTraineeResponseModel(
+                                        t.getUser().getUsername(),
+                                        t.getUser().getFirstName(),
+                                        t.getUser().getLastName()
+                                ))
+                                .toList()
+                )
+        );
+    }
+
+    @Override
     public Optional<UserEntity> getUserProfile(BigInteger id) {
         Optional<TrainerEntity> trainer = trainerRepository.findById(id);
 
@@ -68,6 +142,25 @@ public class TrainerServiceImpl implements TrainerService {
         }
 
         return Set.of();
+    }
+
+    @Override
+    public Set<TrainingResponseModel> getTrainingsByUsernameToResponse(String username) {
+        Set<TrainingEntity> trainingEntities = getTrainingsByUsername(username);
+
+        return trainingEntities.stream()
+                .map(t -> {
+                    var trainee = t.getTrainee().getUser();
+
+                    return new TrainingResponseModel(
+                            t.getName(),
+                            t.getDate(),
+                            t.getType().getName().name(),
+                            t.getDuration(),
+                            "%s %s".formatted(trainee.getFirstName(), trainee.getLastName())
+                    );
+                })
+                .collect(Collectors.toSet());
     }
 
     @Override
