@@ -3,6 +3,7 @@ package com.epam.gym.controller;
 import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.model.request.TrainingAddRequestModel;
 import com.epam.gym.service.TrainingService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class TrainingController {
     // response: 200 OK
     @Authenticated
     @PostMapping
-    public ResponseEntity<String> addTraining(@RequestBody TrainingAddRequestModel model) {
+    public ResponseEntity<String> addTraining(@Valid @RequestBody TrainingAddRequestModel model) {
         boolean success = trainingService.save(model);
 
         if (!success) {

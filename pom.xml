@@ -33,7 +33,13 @@
         <postgres.version>42.7.4</postgres.version>
         <spring.webmvc.version>6.1.13</spring.webmvc.version>
         <jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
-        <tomcat-embed-core.version>10.1.30</tomcat-embed-core.version> <!-- Ensure compatibility with your Spring version -->
+        <tomcat-embed-core.version>10.1.30
+        </tomcat-embed-core.version> <!-- Ensure compatibility with your Spring version -->
+        <hamcrest.version>2.2</hamcrest.version>
+        <json-path.version>2.9.0</json-path.version>
+        <jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
+        <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+        <jakarta.el-api.version>6.0.1</jakarta.el-api.version>
 
         <!--  Plugin versions  -->
         <jacoco.version>0.8.12</jacoco.version>
@@ -43,7 +49,7 @@
     </properties>
 
     <dependencies>
-        <!--  Web  -->
+        <!--  WEB  -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -64,7 +70,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Database & ORM -->
+        <!--  DATABASE & ORM  -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -89,26 +95,27 @@
             <version>${postgres.version}</version>
         </dependency>
 
-        <!-- Logging -->
+        <!--  LOGGING  -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
 
-        <!--    AOP    -->
+        <!--  AOP  -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring-aop.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectjweaver.version}</version>
         </dependency>
 
-        <!--   Jackson DataBind     -->
+        <!--  JACKSON DataBind  -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -121,7 +128,7 @@
             <version>${jackson.version}</version>
         </dependency>
 
-        <!--  TESTING   -->
+        <!--  TESTING dependencies  -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -155,7 +162,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!--  Spring dependencies   -->
+        <!--  SPRING dependencies   -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
@@ -174,7 +181,7 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <!--  Miscellaneous  -->
+        <!--  MISCELLANEOUS  -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -185,15 +192,37 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
-            <version>2.2</version>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.7.0</version>
+            <version>${json-path.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!--  VALIDATION dependencies  -->
+        <!-- Bean Validation API -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta.validation-api.version}</version>
+        </dependency>
+
+        <!-- Hibernate Validator (Implementation of Bean Validation) -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+        </dependency>
+
+        <!-- For using validation annotations like @Email, @NotNull, etc. -->
+        <dependency>
+            <groupId>jakarta.el</groupId>
+            <artifactId>jakarta.el-api</artifactId>
+            <version>${jakarta.el-api.version}</version>
         </dependency>
     </dependencies>
 

@@ -6,6 +6,7 @@ import com.epam.gym.dto.model.request.TrainerRegistrationModel;
 import com.epam.gym.dto.model.request.UserCredentialModel;
 import com.epam.gym.dto.model.request.UserRegistrationModel;
 import com.epam.gym.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserCredentialModel credential) {
+    public ResponseEntity<String> login(@Valid @RequestBody UserCredentialModel credential) {
         if (authService.authenticate(credential.username(), credential.password())) {
             return ResponseEntity.ok("Login successful");
         }
@@ -45,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/user")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationModel user) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationModel user) {
         String[] usernameAndPassword = authService.register(user.firstName(), user.lastName());
 
         return new ResponseEntity<>("""
@@ -58,7 +59,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/trainee")
-    public ResponseEntity<String> registerTrainee(@RequestBody TraineeRegistrationModel trainee) {
+    public ResponseEntity<String> registerTrainee(@Valid @RequestBody TraineeRegistrationModel trainee) {
         String[] usernameAndPassword = authService.registerTrainee(trainee.firstName(), trainee.lastName(), trainee.dob(), trainee.address());
 
         return new ResponseEntity<>("""
@@ -71,7 +72,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/trainer")
-    public ResponseEntity<String> registerTrainer(@RequestBody TrainerRegistrationModel trainer) {
+    public ResponseEntity<String> registerTrainer(@Valid @RequestBody TrainerRegistrationModel trainer) {
         String[] usernameAndPassword = authService.registerTrainer(trainer.firstName(), trainer.lastName(), trainer.specialization());
 
         return new ResponseEntity<>("""
@@ -84,7 +85,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/change-password")
-    public ResponseEntity<String> changeLogin(@RequestBody ChangeLoginModel changedLogin) {
+    public ResponseEntity<String> changeLogin(@Valid @RequestBody ChangeLoginModel changedLogin) {
         boolean success = authService.changePassword(changedLogin.username(), changedLogin.oldPassword(), changedLogin.newPassword());
 
         if (success) {

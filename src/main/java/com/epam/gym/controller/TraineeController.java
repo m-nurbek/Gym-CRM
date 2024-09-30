@@ -8,6 +8,7 @@ import com.epam.gym.dto.model.response.TraineeUpdateResponseModel;
 import com.epam.gym.dto.model.response.TrainingResponseModel;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class TraineeController {
     @PutMapping("/{username}")
     public ResponseEntity<TraineeUpdateResponseModel> updateProfile(
             @PathVariable String username,
-            @RequestBody TraineeUpdateRequestModel requestModel
+            @Valid @RequestBody TraineeUpdateRequestModel requestModel
     ) {
         var response = traineeService.update(username, requestModel);
 
@@ -94,7 +95,7 @@ public class TraineeController {
     @PutMapping("/update-trainers/{username}")
     public ResponseEntity<Set<SimpleTrainerResponseModel>> updateTrainersList(
             @PathVariable String username,
-            @RequestBody List<String> trainerUsernameList
+            @Valid @RequestBody List<String> trainerUsernameList
     ) {
         if (traineeService.findByUsername(username).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -122,7 +123,7 @@ public class TraineeController {
     // response: 200 OK
     @Authenticated
     @PatchMapping("/active-state/{username}")
-    public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
+    public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @Valid @RequestBody Boolean isActive) {
         boolean success = userService.updateActiveState(username, isActive);
 
         return success ? new ResponseEntity<>("Successfully updated the active state of the trainee profile", HttpStatus.OK)

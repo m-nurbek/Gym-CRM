@@ -7,6 +7,7 @@ import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
 import com.epam.gym.dto.model.response.TrainingResponseModel;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class TrainerController {
     @PutMapping("/{username}")
     public ResponseEntity<TrainerUpdateResponseModel> updateProfile(
             @PathVariable String username,
-            @RequestBody TrainerUpdateRequestModel requestModel
+            @Valid @RequestBody TrainerUpdateRequestModel requestModel
     ) {
         var response = trainerService.update(username, requestModel);
 
@@ -77,7 +78,7 @@ public class TrainerController {
     // response: 200 OK
     @Authenticated
     @PatchMapping("/active-state/{username}")
-    public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
+    public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @Valid @RequestBody Boolean isActive) {
         boolean success = userService.updateActiveState(username, isActive);
 
         return success ? new ResponseEntity<>("Successfully updated the active state of the trainer profile", HttpStatus.OK)

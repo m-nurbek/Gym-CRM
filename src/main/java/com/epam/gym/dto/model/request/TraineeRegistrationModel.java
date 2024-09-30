@@ -1,11 +1,25 @@
 package com.epam.gym.dto.model.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
 public record TraineeRegistrationModel(
+        @NotBlank(message = "First name is required")
+        @Size(min = 2, message = "First name must have at least 2 characters")
         String firstName,
+
+        @NotBlank(message = "Last name is required")
+        @Size(min = 2, message = "Last name must have at least 2 characters")
         String lastName,
+
+        @Past(message = "Date of birth must be in the past")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate dob,
+
         String address
 ) {
 }
