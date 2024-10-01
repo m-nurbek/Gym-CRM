@@ -1,8 +1,7 @@
-package com.epam.gym;
+package com.epam.gym.service;
 
 import com.epam.gym.config.ApplicationConfig;
 import com.epam.gym.dto.UserDto;
-import com.epam.gym.service.UserService;
 import com.epam.gym.util.DtoEntityCreationUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

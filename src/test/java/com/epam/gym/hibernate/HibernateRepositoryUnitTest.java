@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringJUnitConfig(classes = ApplicationConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @TestPropertySource(locations = "classpath:application-test2.properties")
-public class HibernateRepositoryTest {
+public class HibernateRepositoryUnitTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired

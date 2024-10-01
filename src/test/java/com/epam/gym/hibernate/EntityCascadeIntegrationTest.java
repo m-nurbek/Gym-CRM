@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringJUnitConfig(classes = ApplicationConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class EntityCascadeTest {
+public class EntityCascadeIntegrationTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired

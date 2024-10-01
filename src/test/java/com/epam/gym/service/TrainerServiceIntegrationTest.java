@@ -1,7 +1,6 @@
-package com.epam.gym;
+package com.epam.gym.service;
 
 import com.epam.gym.config.ApplicationConfig;
-import com.epam.gym.service.TrainerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
