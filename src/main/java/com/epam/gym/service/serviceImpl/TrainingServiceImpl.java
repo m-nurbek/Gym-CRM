@@ -81,15 +81,12 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public boolean save(TrainingAddRequestModel model) {
-        var t = trainingTypeService.getTrainingTypeName(model.trainingName());
         var trainee = traineeService.findByUsername(model.traineeUsername());
         var trainer = trainerService.findByUsername(model.trainerUsername());
 
-        if (t.isEmpty() || trainee.isEmpty() || trainer.isEmpty()) {
+        if (trainee.isEmpty() || trainer.isEmpty()) {
             return false;
         }
-
-        var trainingType = TrainingTypeEntity.fromDto(t.get());
 
         traineeService.assignTrainer(trainee.get().getId(), trainer.get().getId());
 
@@ -100,7 +97,7 @@ public class TrainingServiceImpl implements TrainingService {
                 model.duration(),
                 TraineeEntity.fromDto(trainee.get()),
                 TrainerEntity.fromDto(trainer.get()),
-                trainingType
+                trainer.get().getSpecialization()
         );
 
         trainingRepository.save(trainingEntity);

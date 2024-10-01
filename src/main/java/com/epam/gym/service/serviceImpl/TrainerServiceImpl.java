@@ -193,18 +193,27 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public TrainerDto save(TrainerDto trainer) {
+        if (trainer.getUser() != null && !trainer.getUser().isValid()) {
+            throw new IllegalArgumentException("Invalid user");
+        }
+
         var trainerEntity = trainerRepository.save(TrainerEntity.fromDto(trainer));
         return trainerEntity.toDto();
     }
 
     @Override
     public boolean update(TrainerDto trainer) {
+        if (trainer.getUser() != null && !trainer.getUser().isValid()) {
+            throw new IllegalArgumentException("Invalid user");
+        }
+
         Optional<TrainerEntity> trainerEntityOptional = trainerRepository.findById(trainer.getId());
 
         if (trainerEntityOptional.isPresent()) {
             TrainerEntity trainerEntity = trainerEntityOptional.get();
             trainerEntity.setUser(trainer.getUser());
             trainerEntity.setTrainings(trainer.getTrainings());
+            trainerEntity.setTrainees(trainer.getTrainees());
             trainerEntity.setSpecialization(trainer.getSpecialization());
 
             return trainerRepository.update(trainerEntity);

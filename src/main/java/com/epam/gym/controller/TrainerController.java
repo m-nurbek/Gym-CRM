@@ -78,7 +78,7 @@ public class TrainerController {
     // response: 200 OK
     @Authenticated
     @PatchMapping("/active-state/{username}")
-    public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @Valid @RequestBody Boolean isActive) {
+    public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         boolean success = userService.updateActiveState(username, isActive);
 
         return success ? new ResponseEntity<>("Successfully updated the active state of the trainer profile", HttpStatus.OK)

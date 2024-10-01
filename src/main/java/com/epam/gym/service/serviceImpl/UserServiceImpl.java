@@ -28,6 +28,58 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isTrainee(String username) {
+        Optional<UserEntity> userEntityOptional = userRepository.findByUsername(username);
+
+        if (userEntityOptional.isEmpty()) {
+            return false;
+        }
+
+        UserEntity u = userEntityOptional.get();
+
+        return u.getTrainee() != null;
+    }
+
+    @Override
+    public boolean isTrainer(String username) {
+        Optional<UserEntity> userEntityOptional = userRepository.findByUsername(username);
+
+        if (userEntityOptional.isEmpty()) {
+            return false;
+        }
+
+        UserEntity u = userEntityOptional.get();
+
+        return u.getTrainer() != null;
+    }
+
+    @Override
+    public boolean isTrainee(BigInteger id) {
+        Optional<UserEntity> userEntityOptional = userRepository.findById(id);
+
+        if (userEntityOptional.isEmpty()) {
+            return false;
+        }
+
+        UserEntity u = userEntityOptional.get();
+
+        return u.getTrainee() != null;
+    }
+
+    @Override
+    public boolean isTrainer(BigInteger id) {
+        Optional<UserEntity> userEntityOptional = userRepository.findById(id);
+
+        if (userEntityOptional.isEmpty()) {
+            return false;
+        }
+
+        UserEntity u = userEntityOptional.get();
+
+        return u.getTrainer() != null;
+    }
+
+    @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
         var user = userRepository.findByUsername(username);
         return changePasswordForUser(user, oldPassword, newPassword);
@@ -85,7 +137,13 @@ public class UserServiceImpl implements UserService {
         userDto.setUsername(generateUniqueUsername(userDto));
         userDto.setPassword(UserProfileUtil.generatePassword());
 
-        var userEntity = userRepository.save(UserEntity.fromDto(userDto));
+        UserEntity userEntity = UserEntity.fromDto(userDto);
+
+        if (!userEntity.isValid()) {
+            throw new IllegalArgumentException("Invalid user");
+        }
+
+        userEntity = userRepository.save(userEntity);
         return userEntity.toDto();
     }
 
@@ -113,6 +171,10 @@ public class UserServiceImpl implements UserService {
             userEntity.setIsActive(updatedUser.getIsActive());
             userEntity.setTrainer(updatedUser.getTrainer());
             userEntity.setTrainee(updatedUser.getTrainee());
+
+            if (!userEntity.isValid()) {
+                throw new IllegalArgumentException("Invalid user");
+            }
 
             return userRepository.update(userEntity);
         }

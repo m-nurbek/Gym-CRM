@@ -1,6 +1,7 @@
 package com.epam.gym.service.serviceImpl;
 
 import com.epam.gym.dto.TraineeDto;
+import com.epam.gym.dto.TrainerDto;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.model.request.TraineeUpdateRequestModel;
 import com.epam.gym.dto.model.response.SimpleTrainerResponseModel;
@@ -210,11 +211,24 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public boolean assignTrainer(BigInteger traineeId, BigInteger trainerId) {
+        Optional<TraineeDto> trainee = get(traineeId);
+        Optional<TrainerDto> trainer = trainerService.get(trainerId);
+
+        if (trainee.isPresent() && trainer.isPresent()) {
+            trainee.get().getTrainers().add(TrainerEntity.fromDto(trainer.get()));
+            return update(trainee.get());
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean unassignTrainer(BigInteger traineeId, BigInteger trainerId) {
         var trainee = get(traineeId);
         var trainer = trainerService.get(trainerId);
 
         if (trainee.isPresent() && trainer.isPresent()) {
-            trainee.get().getTrainers().add(TrainerEntity.fromDto(trainer.get()));
+            trainee.get().getTrainers().remove(TrainerEntity.fromDto(trainer.get()));
             return update(trainee.get());
         }
 
@@ -235,6 +249,7 @@ public class TraineeServiceImpl implements TraineeService {
                 .filter(Optional::isPresent)
                 .map(optionalTrainer -> TrainerEntity.fromDto(optionalTrainer.get()))
                 .collect(Collectors.toSet());
+
         t.setTrainers(trainersFromUsernames);
 
         return update(t) ?
@@ -250,26 +265,21 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public boolean unassignTrainer(BigInteger traineeId, BigInteger trainerId) {
-        var trainee = get(traineeId);
-        var trainer = trainerService.get(trainerId);
-
-        if (trainee.isPresent() && trainer.isPresent()) {
-            trainee.get().getTrainers().remove(TrainerEntity.fromDto(trainer.get()));
-            return update(trainee.get());
+    public TraineeDto save(TraineeDto trainee) {
+        if (trainee.getUser() != null && !trainee.getUser().isValid()) {
+            throw new IllegalArgumentException("Invalid user");
         }
 
-        return false;
-    }
-
-    @Override
-    public TraineeDto save(TraineeDto trainee) {
         var traineeEntity = traineeRepository.save(TraineeEntity.fromDto(trainee));
         return traineeEntity.toDto();
     }
 
     @Override
     public boolean update(TraineeDto trainee) {
+        if (trainee.getUser() != null && !trainee.getUser().isValid()) {
+            throw new IllegalArgumentException("Invalid user");
+        }
+
         Optional<TraineeEntity> traineeEntityOptional = traineeRepository.findById(trainee.getId());
 
         if (traineeEntityOptional.isPresent()) {
@@ -277,6 +287,7 @@ public class TraineeServiceImpl implements TraineeService {
             traineeEntity.setAddress(trainee.getAddress());
             traineeEntity.setDob(trainee.getDob());
             traineeEntity.setUser(trainee.getUser());
+            traineeEntity.setTrainers(trainee.getTrainers());
             traineeEntity.setTrainings(trainee.getTrainings());
 
             return traineeRepository.update(traineeEntity);

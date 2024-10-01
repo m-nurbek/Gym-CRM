@@ -6,6 +6,17 @@ info:
 servers:
   - url: "http://localhost:8080/api"
 paths:
+  /v1:
+    get:
+      summary: "GET v1"
+      operationId: "home"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
   /v1/auth/login:
     post:
       summary: "POST v1/auth/login"
@@ -23,10 +34,16 @@ paths:
             '*/*':
               schema:
                 type: "string"
-  /v1/auth/login/change-password:
+  /v1/auth/login/change-password/{username}:
     post:
-      summary: "POST v1/auth/login/change-password"
+      summary: "POST v1/auth/login/change-password/{username}"
       operationId: "changeLogin"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       requestBody:
         content:
           application/json:
@@ -368,8 +385,6 @@ components:
     ChangeLoginModel:
       type: "object"
       properties:
-        username:
-          type: "string"
         oldPassword:
           type: "string"
         newPassword:

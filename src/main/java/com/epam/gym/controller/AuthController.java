@@ -1,5 +1,6 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.model.request.ChangeLoginModel;
 import com.epam.gym.dto.model.request.TraineeRegistrationModel;
 import com.epam.gym.dto.model.request.TrainerRegistrationModel;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
     }
 
+    @Authenticated
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         String username = authService.getUsernameOfAuthenticatedAccount();
@@ -84,9 +87,10 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/login/change-password")
-    public ResponseEntity<String> changeLogin(@Valid @RequestBody ChangeLoginModel changedLogin) {
-        boolean success = authService.changePassword(changedLogin.username(), changedLogin.oldPassword(), changedLogin.newPassword());
+    @Authenticated
+    @PostMapping("/login/change-password/{username}")
+    public ResponseEntity<String> changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginModel changedLogin) {
+        boolean success = authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword());
 
         if (success) {
             return new ResponseEntity<>("Changed password successfully!", HttpStatus.OK);
