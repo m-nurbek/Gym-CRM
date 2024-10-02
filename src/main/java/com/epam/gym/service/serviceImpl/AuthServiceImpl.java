@@ -7,7 +7,6 @@ import com.epam.gym.dto.UserDto;
 import com.epam.gym.entity.TrainingTypeEntity;
 import com.epam.gym.entity.TrainingTypeEnum;
 import com.epam.gym.entity.UserEntity;
-import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.AuthService;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
@@ -23,7 +22,6 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final UserRepository userRepository;
     private final UserService userService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
@@ -43,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
             return true;
         }
 
-        boolean status = userRepository.isUsernameAndPasswordMatch(username, password);
+        boolean status = userService.isUsernameAndPasswordMatch(username, password);
 
         if (status) {
             logoutOfAllAccounts();

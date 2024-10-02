@@ -28,6 +28,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isUsernameAndPasswordMatch(String username, String password) {
+        return userRepository.isUsernameAndPasswordMatch(username, password);
+    }
+
+    @Override
     public boolean isTrainee(String username) {
         Optional<UserEntity> userEntityOptional = userRepository.findByUsername(username);
 
@@ -108,7 +113,6 @@ public class UserServiceImpl implements UserService {
             userEntity.setUsername(updatedUser.getUsername());
             userEntity.setFirstName(updatedUser.getFirstName());
             userEntity.setLastName(updatedUser.getLastName());
-            userEntity.setUsername(updatedUser.getUsername());
 
             return userRepository.update(userEntity);
         }
@@ -167,7 +171,6 @@ public class UserServiceImpl implements UserService {
             userEntity.setUsername(updatedUser.getUsername());
             userEntity.setFirstName(updatedUser.getFirstName());
             userEntity.setLastName(updatedUser.getLastName());
-            userEntity.setUsername(updatedUser.getUsername());
             userEntity.setIsActive(updatedUser.getIsActive());
             userEntity.setTrainer(updatedUser.getTrainer());
             userEntity.setTrainee(updatedUser.getTrainee());

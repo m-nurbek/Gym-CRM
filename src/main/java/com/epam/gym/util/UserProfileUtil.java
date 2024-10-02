@@ -1,9 +1,12 @@
 package com.epam.gym.util;
 
+import com.epam.gym.dto.model.request.UserCredentialModel;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Optional;
 import java.util.Random;
 
 @UtilityClass
@@ -37,5 +40,24 @@ public class UserProfileUtil {
 
     public static String generateUsername(String firstName, String lastName, BigInteger serialNumber) {
         return serialNumber.compareTo(BigInteger.ZERO) > 0 ? String.format("%s.%s%d", firstName, lastName, serialNumber) : String.format("%s.%s", firstName, lastName);
+    }
+
+    public static Optional<UserCredentialModel> retrieveCredentialsFromBasicAuthHeader(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Basic ")) {
+            int fromIndex = "Basic ".length();
+            String base64Credentials = authHeader.substring(fromIndex);
+
+            byte[] credentialsDecoded = Base64.getDecoder().decode(base64Credentials);
+            String credentials = new String(credentialsDecoded); // credentials = username:password
+
+            final String[] values = credentials.split(":", 2);
+
+            String username = values[0];
+            String password = values[1];
+
+            return Optional.of(new UserCredentialModel(username, password));
+        }
+
+        return Optional.empty();
     }
 }

@@ -10,6 +10,8 @@ public interface UserService extends CrudService<UserDto, BigInteger> {
 
     Optional<UserDto> findByUsername(String username);
 
+    boolean isUsernameAndPasswordMatch(String username, String password);
+
     boolean isTrainee(String username);
 
     boolean isTrainer(String username);

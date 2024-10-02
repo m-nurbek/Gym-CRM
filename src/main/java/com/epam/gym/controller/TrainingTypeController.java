@@ -1,6 +1,5 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.model.response.TrainingTypeResponseModel;
 import com.epam.gym.service.TrainingTypeService;
 import lombok.AllArgsConstructor;
@@ -20,7 +19,6 @@ public class TrainingTypeController {
 
     // GET input: -
     // response: training types [type, typeId]
-    @Authenticated
     @GetMapping
     public ResponseEntity<Set<TrainingTypeResponseModel>> getTrainingTypes() {
         var response = trainingTypeService.getAllToResponse();

@@ -7,7 +7,7 @@ import com.epam.gym.dto.model.request.TraineeUpdateRequestModel;
 import com.epam.gym.dto.model.response.SimpleTrainerResponseModel;
 import com.epam.gym.dto.model.response.TraineeResponseModel;
 import com.epam.gym.dto.model.response.TraineeUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseModel;
+import com.epam.gym.dto.model.response.TrainingResponseForTraineeModel;
 import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +96,11 @@ public class TraineeServiceImpl implements TraineeService {
         traineeDto.getUser().setFirstName(model.firstName());
         traineeDto.getUser().setLastName(model.lastName());
         traineeDto.setDob(model.dob());
-        traineeDto.setAddress(model.address());
+
+        if (model.address() != null) {
+            traineeDto.setAddress(model.address());
+        }
+
         traineeDto.getUser().setIsActive(model.isActive());
 
         boolean success = update(traineeDto);
@@ -191,14 +196,18 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public Set<TrainingResponseModel> getTrainingsByUsernameToResponse(String username) {
+    public Set<TrainingResponseForTraineeModel> getTrainingsByUsernameToResponse(String username, LocalDate periodFrom, LocalDate periodTo, String trainerName, String trainingType) {
         Set<TrainingEntity> trainingEntities = getTrainingsByUsername(username);
 
         return trainingEntities.stream()
+                .filter(t -> (periodFrom == null || !t.getDate().isBefore(periodFrom)) &&
+                        (periodTo == null || !t.getDate().isAfter(periodTo)) &&
+                        (trainerName == null || t.getTrainer().getUser().getUsername().equalsIgnoreCase(trainerName)) &&
+                        (trainingType == null || t.getType().getName().name().equalsIgnoreCase(trainingType)))
                 .map(t -> {
                     var trainer = t.getTrainer().getUser();
 
-                    return new TrainingResponseModel(
+                    return new TrainingResponseForTraineeModel(
                             t.getName(),
                             t.getDate(),
                             t.getType().getName().name(),

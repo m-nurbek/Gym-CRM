@@ -5,11 +5,12 @@ import com.epam.gym.dto.model.request.TraineeUpdateRequestModel;
 import com.epam.gym.dto.model.response.SimpleTrainerResponseModel;
 import com.epam.gym.dto.model.response.TraineeResponseModel;
 import com.epam.gym.dto.model.response.TraineeUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseModel;
+import com.epam.gym.dto.model.response.TrainingResponseForTraineeModel;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +35,7 @@ public interface TraineeService extends CrudService<TraineeDto, BigInteger> {
 
     Set<TrainingEntity> getTrainingsByUsername(String username);
 
-    Set<TrainingResponseModel> getTrainingsByUsernameToResponse(String username);
+    Set<TrainingResponseForTraineeModel> getTrainingsByUsernameToResponse(String username, LocalDate periodFrom, LocalDate periodTo, String trainerName, String trainingType);
 
     boolean assignTrainer(BigInteger traineeId, BigInteger trainerId);
 

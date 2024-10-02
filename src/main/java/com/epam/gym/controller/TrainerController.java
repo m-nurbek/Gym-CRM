@@ -1,10 +1,9 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.aop.Authenticated;
 import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
 import com.epam.gym.dto.model.response.TrainerResponseModel;
 import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseModel;
+import com.epam.gym.dto.model.response.TrainingResponseForTrainerModel;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @RestController
@@ -30,7 +31,6 @@ public class TrainerController {
 
     // GET input: username!
     // response: firstName, lastName, specialization, isActive, traineesList[username, firstName, lastName]
-    @Authenticated
     @GetMapping("/{username}")
     public ResponseEntity<TrainerResponseModel> getProfile(@PathVariable String username) {
         var response = trainerService.findByUsernameToResponse(username);
@@ -44,8 +44,6 @@ public class TrainerController {
 
     // PUT input: username!, firstName!, lastName!, specialization(read only), isActive!
     // response: username, firstName, lastName, specialization, isActive, traineesList[username, firstName, lastName]
-    // TODO: review this (specialization - read only)
-    @Authenticated
     @PutMapping("/{username}")
     public ResponseEntity<TrainerUpdateResponseModel> updateProfile(
             @PathVariable String username,
@@ -63,20 +61,23 @@ public class TrainerController {
     // GET input: username!, periodFrom, periodTo, traineeName
     // response: training -> name, date, type, duration, traineeName
     // TODO: add period
-    @Authenticated
     @GetMapping("/trainings/{username}")
-    public ResponseEntity<Set<TrainingResponseModel>> getTrainingsList(@PathVariable String username) {
+    public ResponseEntity<Set<TrainingResponseForTrainerModel>> getTrainingsList(
+            @PathVariable String username,
+            @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
+            @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
+            @RequestParam(value = "traineeName", required = false) String traineeName) {
+
         if (trainerService.findByUsername(username).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        var response = trainerService.getTrainingsByUsernameToResponse(username);
+        var response = trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // PATCH input: username!, isActive!
     // response: 200 OK
-    @Authenticated
     @PatchMapping("/active-state/{username}")
     public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         boolean success = userService.updateActiveState(username, isActive);

@@ -6,7 +6,7 @@ import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
 import com.epam.gym.dto.model.response.SimpleTraineeResponseModel;
 import com.epam.gym.dto.model.response.TrainerResponseModel;
 import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseModel;
+import com.epam.gym.dto.model.response.TrainingResponseForTrainerModel;
 import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -89,16 +90,20 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Optional<TrainerUpdateResponseModel> update(String username, TrainerUpdateRequestModel model) {
         Optional<TrainerDto> trainerDto = findByUsername(username);
-        Optional<TrainingTypeEntity> typeEntity = trainingTypeService.getTrainingTypeName(model.specialization()).map(TrainingTypeEntity::fromDto);
 
-        if (trainerDto.isEmpty() || typeEntity.isEmpty()) {
+        if (trainerDto.isEmpty()) {
             return Optional.empty();
         }
 
         var trainer = trainerDto.get();
         trainer.getUser().setFirstName(model.firstName());
         trainer.getUser().setLastName(model.lastName());
-        trainer.setSpecialization(typeEntity.get());
+
+        if (model.specialization() != null) {
+            Optional<TrainingTypeEntity> typeEntity = trainingTypeService.getTrainingTypeName(model.specialization()).map(TrainingTypeEntity::fromDto);
+            typeEntity.ifPresent(trainer::setSpecialization);
+        }
+
         trainer.getUser().setIsActive(model.isActive());
 
         boolean success = update(trainer);
@@ -145,14 +150,17 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Set<TrainingResponseModel> getTrainingsByUsernameToResponse(String username) {
+    public Set<TrainingResponseForTrainerModel> getTrainingsByUsernameToResponse(String username, LocalDate periodFrom, LocalDate periodTo, String traineeName) {
         Set<TrainingEntity> trainingEntities = getTrainingsByUsername(username);
 
         return trainingEntities.stream()
+                .filter(t -> (periodFrom == null || !t.getDate().isBefore(periodFrom)) &&
+                        (periodTo == null || !t.getDate().isAfter(periodTo)) &&
+                        (traineeName == null || t.getTrainee().getUser().getUsername().equalsIgnoreCase(traineeName)))
                 .map(t -> {
                     var trainee = t.getTrainee().getUser();
 
-                    return new TrainingResponseModel(
+                    return new TrainingResponseForTrainerModel(
                             t.getName(),
                             t.getDate(),
                             t.getType().getName().name(),
