@@ -73,6 +73,10 @@ public class UserEntity implements EntityInterface<BigInteger> {
         return new UserEntity(dto.getId(), dto.getFirstName(), dto.getLastName(), dto.getUsername(), dto.getPassword(), dto.getIsActive(), dto.getTrainee(), dto.getTrainer());
     }
 
+    public boolean isValid() {
+        return !(this.trainer != null && this.trainee != null);
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

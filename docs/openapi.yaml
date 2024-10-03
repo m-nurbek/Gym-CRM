@@ -1,0 +1,600 @@
+openapi: "3.1.0"
+info:
+  title: "Gym_CRM API"
+  description: "Gym_CRM API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8080/api"
+paths:
+  /v1/auth/change-password/{username}:
+    post:
+      summary: "POST v1/auth/change-password/{username}"
+      operationId: "changeLogin"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeLoginModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /v1/auth/login:
+    post:
+      summary: "POST v1/auth/login"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentialModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /v1/auth/register/trainee:
+    post:
+      summary: "POST v1/auth/register/trainee"
+      operationId: "registerTrainee"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TraineeRegistrationModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /v1/auth/register/trainer:
+    post:
+      summary: "POST v1/auth/register/trainer"
+      operationId: "registerTrainer"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainerRegistrationModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /v1/trainees/active-state/{username}:
+    patch:
+      summary: "PATCH v1/trainees/active-state/{username}"
+      operationId: "changeProfileActiveState"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "boolean"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /v1/trainees/trainers/{username}:
+    get:
+      summary: "GET v1/trainees/trainers/{username}"
+      operationId: "getNotAssignedActiveTrainers"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/SimpleTrainerResponseModel"
+  /v1/trainees/trainings/{username}:
+    get:
+      summary: "GET v1/trainees/trainings/{username}"
+      operationId: "getTrainingsList"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "periodFrom"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "periodTo"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "trainerName"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "trainingType"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TrainingResponseForTraineeModel"
+  /v1/trainees/update-trainers/{username}:
+    put:
+      summary: "PUT v1/trainees/update-trainers/{username}"
+      operationId: "updateTrainersList"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/SimpleTrainerResponseModel"
+  /v1/trainees/{username}:
+    get:
+      summary: "GET v1/trainees/{username}"
+      operationId: "getProfile"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TraineeResponseModel"
+    put:
+      summary: "PUT v1/trainees/{username}"
+      operationId: "updateProfile"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TraineeUpdateRequestModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TraineeUpdateResponseModel"
+    delete:
+      summary: "DELETE v1/trainees/{username}"
+      operationId: "deleteProfile"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "204":
+          description: "No Content"
+  /v1/trainers/active-state/{username}:
+    patch:
+      summary: "PATCH v1/trainers/active-state/{username}"
+      operationId: "changeProfileActiveState"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "boolean"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /v1/trainers/trainings/{username}:
+    get:
+      summary: "GET v1/trainers/trainings/{username}"
+      operationId: "getTrainingsList"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "periodFrom"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "periodTo"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "traineeName"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TrainingResponseForTrainerModel"
+  /v1/trainers/{username}:
+    get:
+      summary: "GET v1/trainers/{username}"
+      operationId: "getProfile"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TrainerResponseModel"
+    put:
+      summary: "PUT v1/trainers/{username}"
+      operationId: "updateProfile"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainerUpdateRequestModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TrainerUpdateResponseModel"
+  /v1/trainings:
+    post:
+      summary: "POST v1/trainings"
+      operationId: "addTraining"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainingAddRequestModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /v1/training-types:
+    get:
+      summary: "GET v1/training-types"
+      operationId: "getTrainingTypes"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TrainingTypeResponseModel"
+components:
+  schemas:
+    ChangeLoginModel:
+      type: "object"
+      properties:
+        oldPassword:
+          type: "string"
+        newPassword:
+          type: "string"
+    UserCredentialModel:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+    TraineeRegistrationModel:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        dob:
+          type: "string"
+          format: "date"
+        address:
+          type: "string"
+    TrainerRegistrationModel:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        specialization:
+          type: "string"
+          enum:
+            - "STRENGTH_TRAINING"
+            - "CARDIO"
+            - "HIGH_INTENSITY_INTERVAL_TRAINING"
+            - "CIRCUIT_TRAINING"
+            - "BODYBUILDING"
+            - "CROSSFIT"
+            - "POWERLIFTING"
+            - "OLYMPIC_WEIGHTLIFTING"
+            - "FUNCTIONAL_TRAINING"
+            - "CALISTHENICS"
+            - "PILATES"
+            - "YOGA"
+            - "SPINNING"
+            - "BOXING"
+            - "SWIMMING"
+            - "KETTLEBELL_TRAINING"
+            - "AEROBICS"
+            - "ZUMBA"
+            - "REHABILITATION_TRAINING"
+            - "FLEXIBILITY_TRAINING"
+    SimpleTrainerResponseModel:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        specialization:
+          type: "string"
+    TrainingResponseForTraineeModel:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        date:
+          type: "string"
+          format: "date"
+        type:
+          type: "string"
+        duration:
+          type: "integer"
+          format: "int32"
+        trainerName:
+          type: "string"
+    TraineeResponseModel:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        dob:
+          type: "string"
+          format: "date"
+        address:
+          type: "string"
+        isActive:
+          type: "boolean"
+        trainerList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SimpleTrainerResponseModel"
+    TraineeUpdateRequestModel:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        dob:
+          type: "string"
+          format: "date"
+        address:
+          type: "string"
+        isActive:
+          type: "boolean"
+    TraineeUpdateResponseModel:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        dob:
+          type: "string"
+          format: "date"
+        address:
+          type: "string"
+        isActive:
+          type: "boolean"
+        trainerList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SimpleTrainerResponseModel"
+    TrainingResponseForTrainerModel:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        date:
+          type: "string"
+          format: "date"
+        type:
+          type: "string"
+        duration:
+          type: "integer"
+          format: "int32"
+        traineeName:
+          type: "string"
+    SimpleTraineeResponseModel:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+    TrainerResponseModel:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        specialization:
+          type: "string"
+        isActive:
+          type: "boolean"
+        traineeList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SimpleTraineeResponseModel"
+    TrainerUpdateRequestModel:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        specialization:
+          type: "string"
+          enum:
+            - "STRENGTH_TRAINING"
+            - "CARDIO"
+            - "HIGH_INTENSITY_INTERVAL_TRAINING"
+            - "CIRCUIT_TRAINING"
+            - "BODYBUILDING"
+            - "CROSSFIT"
+            - "POWERLIFTING"
+            - "OLYMPIC_WEIGHTLIFTING"
+            - "FUNCTIONAL_TRAINING"
+            - "CALISTHENICS"
+            - "PILATES"
+            - "YOGA"
+            - "SPINNING"
+            - "BOXING"
+            - "SWIMMING"
+            - "KETTLEBELL_TRAINING"
+            - "AEROBICS"
+            - "ZUMBA"
+            - "REHABILITATION_TRAINING"
+            - "FLEXIBILITY_TRAINING"
+        isActive:
+          type: "boolean"
+    TrainerUpdateResponseModel:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        specialization:
+          type: "string"
+        isActive:
+          type: "boolean"
+        traineeList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SimpleTraineeResponseModel"
+    TrainingAddRequestModel:
+      type: "object"
+      properties:
+        traineeUsername:
+          type: "string"
+        trainerUsername:
+          type: "string"
+        trainingName:
+          type: "string"
+        date:
+          type: "string"
+          format: "date"
+        duration:
+          type: "integer"
+          format: "int32"
+    BigInteger:
+      type: "object"
+      properties: { }
+    TrainingTypeResponseModel:
+      type: "object"
+      properties:
+        type:
+          type: "string"
+        typeId:
+          $ref: "#/components/schemas/BigInteger"

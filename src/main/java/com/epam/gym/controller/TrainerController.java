@@ -1,0 +1,70 @@
+package com.epam.gym.controller;
+
+import com.epam.gym.controller.exception.NotFoundException;
+import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
+import com.epam.gym.dto.model.response.TrainerResponseModel;
+import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
+import com.epam.gym.dto.model.response.TrainingResponseForTrainerModel;
+import com.epam.gym.service.TrainerService;
+import com.epam.gym.service.UserService;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.util.Set;
+
+@RestController
+@RequestMapping("/v1/trainers")
+@AllArgsConstructor
+public class TrainerController {
+    private final TrainerService trainerService;
+    private final UserService userService;
+
+    @GetMapping("/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public TrainerResponseModel getProfile(@PathVariable String username) throws NotFoundException {
+        return trainerService.findByUsernameToResponse(username).orElseThrow(NotFoundException::new);
+    }
+
+    @PutMapping("/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public TrainerUpdateResponseModel updateProfile(
+            @PathVariable String username,
+            @Valid @RequestBody TrainerUpdateRequestModel requestModel
+    ) throws NotFoundException {
+        return trainerService.update(username, requestModel).orElseThrow(NotFoundException::new);
+    }
+
+    @GetMapping("/trainings/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<TrainingResponseForTrainerModel> getTrainingsList(
+            @PathVariable String username,
+            @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
+            @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
+            @RequestParam(value = "traineeName", required = false) String traineeName) throws NotFoundException {
+
+        if (trainerService.findByUsername(username).isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        return trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName);
+    }
+
+    @PatchMapping("/active-state/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) throws NotFoundException {
+        if (!userService.updateActiveState(username, isActive)) {
+            throw new NotFoundException();
+        }
+    }
+}

@@ -3,6 +3,8 @@ package com.epam.gym.dto;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,4 +28,13 @@ public class TraineeDto implements Dto<BigInteger> {
     private Set<TrainingEntity> trainings;
     @ToString.Exclude
     private Set<TrainerEntity> trainers;
+
+    @JsonCreator
+    public TraineeDto(
+            @JsonProperty("dob") LocalDate dob,
+            @JsonProperty("address") String address
+    ) {
+        this.dob = dob;
+        this.address = address;
+    }
 }

@@ -22,7 +22,12 @@ public class AuthenticatedAspect {
         // Do nothing because of setting up a pointcut for Spring AOP.
     }
 
-    @Around(value = "executeAuthentication()")
+    @Pointcut("execution(* com.epam.gym.controller.*.*(..))")
+    public void controllerPointcut() {
+        // Do nothing because of setting up a pointcut for Spring AOP.
+    }
+
+    @Around(value = "executeAuthentication() && !controllerPointcut()")
     public Object callAuthentication(ProceedingJoinPoint joinPoint) throws Throwable {
         log.debug(">> AUTHENTICATED METHOD: {}", joinPoint.getSignature().getName());
 
@@ -47,5 +52,4 @@ public class AuthenticatedAspect {
 
         return returnValue;
     }
-
 }
