@@ -22,10 +22,10 @@ public class MainWebInitializer extends AbstractAnnotationConfigDispatcherServle
 
         var authFilter = servletContext.addFilter("authenticationFilter", new DelegatingFilterProxy("authenticationFilter"));
         authFilter.addMappingForUrlPatterns(null, false,
-                "/v1/trainee/*",
-                "/v1/trainer/*",
-                "/v1/training/*",
-                "/v1/training-type/*",
+                "/v1/trainees/*",
+                "/v1/trainers/*",
+                "/v1/trainings/*",
+                "/v1/training-types/*",
                 "/v1/auth/change-password/*");
     }
 

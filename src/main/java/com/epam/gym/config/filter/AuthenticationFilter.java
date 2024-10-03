@@ -24,7 +24,6 @@ public class AuthenticationFilter implements Filter {
     private final WebAuthService webAuthService;
 
     @Override
-    // TODO: throw Unauthorized exception
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         log.debug("Starting authentication filter");
 
@@ -35,14 +34,15 @@ public class AuthenticationFilter implements Filter {
         Optional<UserCredentialModel> credentials = UserProfileUtil.retrieveCredentialsFromBasicAuthHeader(authHeader);
 
         if (credentials.isPresent() && webAuthService.authenticate(credentials.get().username(), credentials.get().password())) {
-            log.debug("Successfully passed the authentication filter");
             filterChain.doFilter(servletRequest, servletResponse);
+
+            log.debug("Successfully passed the authentication filter");
             return;
         }
 
+        log.error("Failed to pass authentication filter");
         httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         httpResponse.getWriter().write("Authentication failed");
         httpResponse.getWriter().close();
-        log.debug("Failed to pass authentication filter");
     }
 }

@@ -1,5 +1,6 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.model.request.TraineeUpdateRequestModel;
 import com.epam.gym.dto.model.response.SimpleTrainerResponseModel;
 import com.epam.gym.dto.model.response.TraineeResponseModel;
@@ -9,9 +10,7 @@ import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,103 +26,80 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-// TODO: change to trainees
 @RestController
-@RequestMapping("/v1/trainee")
+@RequestMapping("/v1/trainees")
 @AllArgsConstructor
-@Slf4j
 public class TraineeController {
     private final TraineeService traineeService;
     private final UserService userService;
 
-    // GET input: username!
-    // response: firstname, lastname, dob, address, isActive, trainerList[username, firstName, lastName, specialization]
     @GetMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
     public TraineeResponseModel getProfile(@PathVariable String username) throws Exception {
-        return traineeService.findByUsernameToResponse(username).orElseThrow(() -> new Exception("NOT FOUND"));
+        return traineeService.findByUsernameToResponse(username).orElseThrow(NotFoundException::new);
     }
 
-    // PUT input: username!, firstname!, lastname!, dob, address, isActive!
-    // response: username, firstName, lastName, dob, address, isActive, trainerList[username, firstName, lastName, specialization]
     @PutMapping("/{username}")
-    public ResponseEntity<TraineeUpdateResponseModel> updateProfile(
+    @ResponseStatus(HttpStatus.OK)
+    public TraineeUpdateResponseModel updateProfile(
             @PathVariable String username,
             @Valid @RequestBody TraineeUpdateRequestModel requestModel
-    ) {
-        var response = traineeService.update(username, requestModel);
-
-        if (response.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(response.get(), HttpStatus.OK);
+    ) throws NotFoundException {
+        return traineeService.update(username, requestModel).orElseThrow(NotFoundException::new);
     }
 
-    // DELETE input: username!
-    // response: 200 OK
     @DeleteMapping("/{username}")
-    public ResponseEntity<String> deleteProfile(@PathVariable String username) {
-        boolean success = traineeService.deleteByUsername(username);
-
-        if (success) {
-            return new ResponseEntity<>("Successfully deleted trainee profile", HttpStatus.OK);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProfile(@PathVariable String username) throws NotFoundException {
+        if (!traineeService.deleteByUsername(username)) {
+            throw new NotFoundException();
         }
-
-        return new ResponseEntity<>("Failed to delete trainee profile", HttpStatus.NOT_FOUND);
     }
 
-    // GET input: username!
-    // response: trainerList[username, firstName, lastName, specialization]
     @GetMapping("/trainers/{username}")
-    public ResponseEntity<Set<SimpleTrainerResponseModel>> getNotAssignedActiveTrainers(@PathVariable String username) {
+    @ResponseStatus(HttpStatus.OK)
+    public Set<SimpleTrainerResponseModel> getNotAssignedActiveTrainers(@PathVariable String username) throws NotFoundException {
         if (traineeService.findByUsername(username).isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new NotFoundException();
         }
 
-        var unassignedTrainersList = traineeService.getUnassignedTrainersByUsernameToResponse(username);
-        return new ResponseEntity<>(unassignedTrainersList, HttpStatus.OK);
+        return traineeService.getUnassignedTrainersByUsernameToResponse(username);
     }
 
-    // PUT input: username!, trainerList[username!]!
-    // response: trainerList[username, firstName, lastName, specialization]
     @PutMapping("/update-trainers/{username}")
-    public ResponseEntity<Set<SimpleTrainerResponseModel>> updateTrainersList(
+    @ResponseStatus(HttpStatus.OK)
+    public Set<SimpleTrainerResponseModel> updateTrainersList(
             @PathVariable String username,
             @Valid @RequestBody List<String> trainerUsernameList
-    ) {
+    ) throws NotFoundException {
         if (traineeService.findByUsername(username).isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new NotFoundException();
         }
 
-        var response = traineeService.updateTrainerListByUsername(username, trainerUsernameList);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return traineeService.updateTrainerListByUsername(username, trainerUsernameList);
     }
 
     @GetMapping("/trainings/{username}")
-    public ResponseEntity<Set<TrainingResponseForTraineeModel>> getTrainingsList(
+    @ResponseStatus(HttpStatus.OK)
+    public Set<TrainingResponseForTraineeModel> getTrainingsList(
             @PathVariable String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
             @RequestParam(value = "trainerName", required = false) String trainerName,
-            @RequestParam(value = "trainingType", required = false) String trainingType) {
+            @RequestParam(value = "trainingType", required = false) String trainingType) throws NotFoundException {
 
         if (traineeService.findByUsername(username).isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new NotFoundException();
         }
 
-        var response = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
     }
 
-    // PATCH input: username!, isActive!
-    // response: 200 OK
     @PatchMapping("/active-state/{username}")
-    public ResponseEntity<String> changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
-        boolean success = userService.updateActiveState(username, isActive);
-
-        return success ? new ResponseEntity<>("Successfully updated the active state of the trainee profile", HttpStatus.OK)
-                : new ResponseEntity<>("Failed to update the active state of the trainee profile", HttpStatus.NOT_FOUND);
+    @ResponseStatus(HttpStatus.OK)
+    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) throws NotFoundException {
+        if (!userService.updateActiveState(username, isActive)) {
+            throw new NotFoundException();
+        }
     }
-
 }

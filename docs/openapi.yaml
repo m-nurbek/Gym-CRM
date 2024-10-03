@@ -6,37 +6,9 @@ info:
 servers:
   - url: "http://localhost:8080/api"
 paths:
-  /v1:
-    get:
-      summary: "GET v1"
-      operationId: "home"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/auth/login:
+  /v1/auth/change-password/{username}:
     post:
-      summary: "POST v1/auth/login"
-      operationId: "login"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserCredentialModel"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/auth/login/change-password/{username}:
-    post:
-      summary: "POST v1/auth/login/change-password/{username}"
+      summary: "POST v1/auth/change-password/{username}"
       operationId: "changeLogin"
       parameters:
         - name: "username"
@@ -53,21 +25,19 @@ paths:
       responses:
         "200":
           description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/auth/logout:
+  /v1/auth/login:
     post:
-      summary: "POST v1/auth/logout"
-      operationId: "logout"
+      summary: "POST v1/auth/login"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentialModel"
+        required: true
       responses:
         "200":
           description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
   /v1/auth/register/trainee:
     post:
       summary: "POST v1/auth/register/trainee"
@@ -102,26 +72,9 @@ paths:
             '*/*':
               schema:
                 type: "string"
-  /v1/auth/register/user:
-    post:
-      summary: "POST v1/auth/register/user"
-      operationId: "registerUser"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserRegistrationModel"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/trainee/active-state/{username}:
+  /v1/trainees/active-state/{username}:
     patch:
-      summary: "PATCH v1/trainee/active-state/{username}"
+      summary: "PATCH v1/trainees/active-state/{username}"
       operationId: "changeProfileActiveState"
       parameters:
         - name: "username"
@@ -138,13 +91,9 @@ paths:
       responses:
         "200":
           description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/trainee/trainers/{username}:
+  /v1/trainees/trainers/{username}:
     get:
-      summary: "GET v1/trainee/trainers/{username}"
+      summary: "GET v1/trainees/trainers/{username}"
       operationId: "getNotAssignedActiveTrainers"
       parameters:
         - name: "username"
@@ -161,14 +110,36 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/SimpleTrainerResponseModel"
-  /v1/trainee/trainings/{username}:
+  /v1/trainees/trainings/{username}:
     get:
-      summary: "GET v1/trainee/trainings/{username}"
+      summary: "GET v1/trainees/trainings/{username}"
       operationId: "getTrainingsList"
       parameters:
         - name: "username"
           in: "path"
           required: true
+          schema:
+            type: "string"
+        - name: "periodFrom"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "periodTo"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "trainerName"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "trainingType"
+          in: "query"
+          required: false
           schema:
             type: "string"
       responses:
@@ -179,10 +150,10 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/TrainingResponseModel"
-  /v1/trainee/update-trainers/{username}:
+                  $ref: "#/components/schemas/TrainingResponseForTraineeModel"
+  /v1/trainees/update-trainers/{username}:
     put:
-      summary: "PUT v1/trainee/update-trainers/{username}"
+      summary: "PUT v1/trainees/update-trainers/{username}"
       operationId: "updateTrainersList"
       parameters:
         - name: "username"
@@ -207,9 +178,9 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/SimpleTrainerResponseModel"
-  /v1/trainee/{username}:
+  /v1/trainees/{username}:
     get:
-      summary: "GET v1/trainee/{username}"
+      summary: "GET v1/trainees/{username}"
       operationId: "getProfile"
       parameters:
         - name: "username"
@@ -225,7 +196,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TraineeResponseModel"
     put:
-      summary: "PUT v1/trainee/{username}"
+      summary: "PUT v1/trainees/{username}"
       operationId: "updateProfile"
       parameters:
         - name: "username"
@@ -247,7 +218,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TraineeUpdateResponseModel"
     delete:
-      summary: "DELETE v1/trainee/{username}"
+      summary: "DELETE v1/trainees/{username}"
       operationId: "deleteProfile"
       parameters:
         - name: "username"
@@ -256,15 +227,11 @@ paths:
           schema:
             type: "string"
       responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/trainer/active-state/{username}:
+        "204":
+          description: "No Content"
+  /v1/trainers/active-state/{username}:
     patch:
-      summary: "PATCH v1/trainer/active-state/{username}"
+      summary: "PATCH v1/trainers/active-state/{username}"
       operationId: "changeProfileActiveState"
       parameters:
         - name: "username"
@@ -281,18 +248,31 @@ paths:
       responses:
         "200":
           description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/trainer/trainings/{username}:
+  /v1/trainers/trainings/{username}:
     get:
-      summary: "GET v1/trainer/trainings/{username}"
+      summary: "GET v1/trainers/trainings/{username}"
       operationId: "getTrainingsList"
       parameters:
         - name: "username"
           in: "path"
           required: true
+          schema:
+            type: "string"
+        - name: "periodFrom"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "periodTo"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+        - name: "traineeName"
+          in: "query"
+          required: false
           schema:
             type: "string"
       responses:
@@ -303,10 +283,10 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/TrainingResponseModel"
-  /v1/trainer/{username}:
+                  $ref: "#/components/schemas/TrainingResponseForTrainerModel"
+  /v1/trainers/{username}:
     get:
-      summary: "GET v1/trainer/{username}"
+      summary: "GET v1/trainers/{username}"
       operationId: "getProfile"
       parameters:
         - name: "username"
@@ -322,7 +302,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TrainerResponseModel"
     put:
-      summary: "PUT v1/trainer/{username}"
+      summary: "PUT v1/trainers/{username}"
       operationId: "updateProfile"
       parameters:
         - name: "username"
@@ -343,9 +323,9 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/TrainerUpdateResponseModel"
-  /v1/training:
+  /v1/trainings:
     post:
-      summary: "POST v1/training"
+      summary: "POST v1/trainings"
       operationId: "addTraining"
       requestBody:
         content:
@@ -356,13 +336,9 @@ paths:
       responses:
         "200":
           description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-  /v1/training-type:
+  /v1/training-types:
     get:
-      summary: "GET v1/training-type"
+      summary: "GET v1/training-types"
       operationId: "getTrainingTypes"
       responses:
         "200":
@@ -375,19 +351,19 @@ paths:
                   $ref: "#/components/schemas/TrainingTypeResponseModel"
 components:
   schemas:
-    UserCredentialModel:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        password:
-          type: "string"
     ChangeLoginModel:
       type: "object"
       properties:
         oldPassword:
           type: "string"
         newPassword:
+          type: "string"
+    UserCredentialModel:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
           type: "string"
     TraineeRegistrationModel:
       type: "object"
@@ -431,13 +407,6 @@ components:
             - "ZUMBA"
             - "REHABILITATION_TRAINING"
             - "FLEXIBILITY_TRAINING"
-    UserRegistrationModel:
-      type: "object"
-      properties:
-        firstName:
-          type: "string"
-        lastName:
-          type: "string"
     SimpleTrainerResponseModel:
       type: "object"
       properties:
@@ -449,7 +418,7 @@ components:
           type: "string"
         specialization:
           type: "string"
-    TrainingResponseModel:
+    TrainingResponseForTraineeModel:
       type: "object"
       properties:
         name:
@@ -462,7 +431,7 @@ components:
         duration:
           type: "integer"
           format: "int32"
-        traineeOrTrainerName:
+        trainerName:
           type: "string"
     TraineeResponseModel:
       type: "object"
@@ -516,6 +485,21 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/SimpleTrainerResponseModel"
+    TrainingResponseForTrainerModel:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        date:
+          type: "string"
+          format: "date"
+        type:
+          type: "string"
+        duration:
+          type: "integer"
+          format: "int32"
+        traineeName:
+          type: "string"
     SimpleTraineeResponseModel:
       type: "object"
       properties:

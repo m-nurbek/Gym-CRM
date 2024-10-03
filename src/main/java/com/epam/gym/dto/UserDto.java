@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 @Data
 @Builder
@@ -30,11 +29,11 @@ public class UserDto implements Dto<BigInteger> {
 
     @JsonCreator
     public UserDto(
-                   @JsonProperty("firstName") String firstName,
-                   @JsonProperty("lastName") String lastName,
-                   @JsonProperty("username") String username,
-                   @JsonProperty("password") String password,
-                   @JsonProperty("isActive") Boolean isActive
+            @JsonProperty("firstName") String firstName,
+            @JsonProperty("lastName") String lastName,
+            @JsonProperty("username") String username,
+            @JsonProperty("password") String password,
+            @JsonProperty("isActive") Boolean isActive
     ) {
         this.firstName = firstName;
         this.lastName = lastName;

@@ -1,5 +1,7 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.controller.exception.BadRequestException;
+import com.epam.gym.controller.exception.UnauthorizedException;
 import com.epam.gym.dto.model.request.ChangeLoginModel;
 import com.epam.gym.dto.model.request.TraineeRegistrationModel;
 import com.epam.gym.dto.model.request.TrainerRegistrationModel;
@@ -8,11 +10,11 @@ import com.epam.gym.service.serviceImpl.WebAuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,48 +24,42 @@ public class AuthController {
     private final WebAuthServiceImpl authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserCredentialModel credential) {
-        if (authService.authenticate(credential.username(), credential.password())) {
-            return ResponseEntity.ok("Login successful");
+    @ResponseStatus(HttpStatus.OK)
+    public void login(@Valid @RequestBody UserCredentialModel credential) throws UnauthorizedException {
+        if (!authService.authenticate(credential.username(), credential.password())) {
+            throw new UnauthorizedException();
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
     }
 
     @PostMapping("/register/trainee")
-    public ResponseEntity<String> registerTrainee(@Valid @RequestBody TraineeRegistrationModel trainee) {
+    @ResponseStatus(HttpStatus.OK)
+    public String registerTrainee(@Valid @RequestBody TraineeRegistrationModel trainee) {
         String[] usernameAndPassword = authService.registerTrainee(trainee.firstName(), trainee.lastName(), trainee.dob(), trainee.address());
 
-        return new ResponseEntity<>("""
+        return """
                         Registration successful.
                         YOUR USERNAME: %s
                         YOUR PASSWORD: %s
-                """.formatted(usernameAndPassword[0], usernameAndPassword[1]),
-                HttpStatus.OK
-        );
+                """.formatted(usernameAndPassword[0], usernameAndPassword[1]);
     }
 
     @PostMapping("/register/trainer")
-    public ResponseEntity<String> registerTrainer(@Valid @RequestBody TrainerRegistrationModel trainer) {
+    @ResponseStatus(HttpStatus.OK)
+    public String registerTrainer(@Valid @RequestBody TrainerRegistrationModel trainer) {
         String[] usernameAndPassword = authService.registerTrainer(trainer.firstName(), trainer.lastName(), trainer.specialization());
 
-        return new ResponseEntity<>("""
+        return """
                         Registration successful.
                         YOUR USERNAME: %s
                         YOUR PASSWORD: %s
-                """.formatted(usernameAndPassword[0], usernameAndPassword[1]),
-                HttpStatus.OK
-        );
+                """.formatted(usernameAndPassword[0], usernameAndPassword[1]);
     }
 
     @PostMapping("/change-password/{username}")
-    public ResponseEntity<String> changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginModel changedLogin) {
-        boolean success = authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword());
-
-        if (success) {
-            return new ResponseEntity<>("Changed password successfully!", HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public void changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginModel changedLogin) throws BadRequestException {
+        if (!authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword())) {
+            throw new BadRequestException();
         }
-
-        return new ResponseEntity<>("Failed to change password", HttpStatus.BAD_REQUEST);
     }
 }

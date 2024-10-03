@@ -44,7 +44,7 @@ public class TraineeControllerIntegrationTest {
         authenticate(username, password);
 
         // when & then
-        mockMvc.perform(get("/v1/trainee/" + username).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/v1/trainees/" + username).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.firstName").value("John"))
@@ -65,7 +65,7 @@ public class TraineeControllerIntegrationTest {
         boolean isActive = true;
 
         // when & then
-        mockMvc.perform(put("/v1/trainee/" + username)
+        mockMvc.perform(put("/v1/trainees/" + username)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -97,8 +97,8 @@ public class TraineeControllerIntegrationTest {
         authenticate(username, password);
 
         // when & then
-        mockMvc.perform(delete("/v1/trainee/" + username))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/v1/trainees/" + username))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -111,7 +111,7 @@ public class TraineeControllerIntegrationTest {
         String username2 = "non-existent-user";
 
         // when & then
-        mockMvc.perform(delete("/v1/trainee/" + username2))
+        mockMvc.perform(delete("/v1/trainees/" + username2))
                 .andExpect(status().isNotFound());
     }
 
