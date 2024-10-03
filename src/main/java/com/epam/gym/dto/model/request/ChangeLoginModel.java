@@ -2,7 +2,6 @@ package com.epam.gym.dto.model.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 public record ChangeLoginModel(
         @NotBlank(message = "Password is required")

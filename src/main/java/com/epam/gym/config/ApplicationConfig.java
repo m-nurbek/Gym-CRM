@@ -10,6 +10,6 @@ import org.springframework.context.annotation.PropertySource;
 @ComponentScan("com.epam.gym")
 @PropertySource("classpath:application.properties")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@Import({DataSourceConfig.class, HibernateConfig.class, TransactionConfig.class, WebConfig.class})
+@Import({HibernateConfig.class, WebConfig.class})
 public class ApplicationConfig {
 }

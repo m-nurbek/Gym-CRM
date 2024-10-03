@@ -9,6 +9,7 @@ import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,15 +20,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+// TODO: change to trainees
 @RestController
 @RequestMapping("/v1/trainee")
 @AllArgsConstructor
+@Slf4j
 public class TraineeController {
     private final TraineeService traineeService;
     private final UserService userService;
@@ -35,14 +39,9 @@ public class TraineeController {
     // GET input: username!
     // response: firstname, lastname, dob, address, isActive, trainerList[username, firstName, lastName, specialization]
     @GetMapping("/{username}")
-    public ResponseEntity<TraineeResponseModel> getProfile(@PathVariable String username) {
-        var response = traineeService.findByUsernameToResponse(username);
-
-        if (response.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(response.get(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public TraineeResponseModel getProfile(@PathVariable String username) throws Exception {
+        return traineeService.findByUsernameToResponse(username).orElseThrow(() -> new Exception("NOT FOUND"));
     }
 
     // PUT input: username!, firstname!, lastname!, dob, address, isActive!
@@ -101,9 +100,6 @@ public class TraineeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // GET input: username!, periodFrom, periodTo, traineeName, trainingType
-    // response: training -> name, date, type, duration, traineeName
-    // TODO: add period filter
     @GetMapping("/trainings/{username}")
     public ResponseEntity<Set<TrainingResponseForTraineeModel>> getTrainingsList(
             @PathVariable String username,
