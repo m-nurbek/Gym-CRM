@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
@@ -34,7 +35,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "TRAINER")
-public class TrainerEntity implements EntityInterface<BigInteger> {
+public class TrainerEntity {
     @Value("${table-generator.initial-value}")
     private static final int ID_INITIAL_VALUE = 1000;
 
@@ -67,6 +68,13 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<TraineeEntity> trainees;
+
+    @PreRemove
+    public void removeTrainees() {
+        for (TraineeEntity trainee : trainees) {
+            trainee.getTrainers().remove(this);
+        }
+    }
 
     public TrainerDto toDto() {
         return new TrainerDto(id, specialization, user, trainings, trainees);

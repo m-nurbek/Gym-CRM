@@ -1,5 +1,6 @@
 package com.epam.gym.service.serviceImpl;
 
+import com.epam.gym.controller.exception.ConflictException;
 import com.epam.gym.dto.TrainerDto;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
@@ -7,11 +8,9 @@ import com.epam.gym.dto.model.response.SimpleTraineeResponseModel;
 import com.epam.gym.dto.model.response.TrainerResponseModel;
 import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
 import com.epam.gym.dto.model.response.TrainingResponseForTrainerModel;
-import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.TrainingTypeEntity;
-import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
@@ -24,8 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,8 +30,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class TrainerServiceImpl implements TrainerService {
-    private final UserService userService;
     private final TrainerRepository trainerRepository;
+    private final UserService userService;
     private final TraineeService traineeService;
     private final TrainingTypeService trainingTypeService;
 
@@ -51,11 +48,16 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    public Optional<TrainerDto> findById(BigInteger id) {
+        return trainerRepository.findById(id).map(TrainerEntity::toDto);
+    }
+
+    @Override
     public Optional<TrainerDto> findByUsername(String username) {
         Optional<UserDto> userDto = userService.findByUsername(username);
 
         if (userDto.isPresent()) {
-            var trainer = trainerRepository.findById(userDto.get().getId());
+            Optional<TrainerEntity> trainer = trainerRepository.findById(userDto.get().getTrainer().getId());
 
             if (trainer.isPresent()) {
                 TrainerEntity trainerEntity = trainer.get();
@@ -95,7 +97,7 @@ public class TrainerServiceImpl implements TrainerService {
             return Optional.empty();
         }
 
-        var trainer = trainerDto.get();
+        TrainerDto trainer = trainerDto.get();
         trainer.getUser().setFirstName(model.firstName());
         trainer.getUser().setLastName(model.lastName());
 
@@ -131,18 +133,11 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Optional<UserEntity> getUserProfile(BigInteger id) {
-        Optional<TrainerEntity> trainer = trainerRepository.findById(id);
-
-        return trainer.map(TrainerEntity::getUser);
-    }
-
-    @Override
     public Set<TrainingEntity> getTrainingsByUsername(String username) {
-        var trainer = findByUsername(username);
+        Optional<TrainerDto> trainer = findByUsername(username);
 
         if (trainer.isPresent()) {
-            trainer.get().getTrainings().size();
+            trainer.get().getTrainings().size(); // TODO: review the need for this here
             return trainer.get().getTrainings();
         }
 
@@ -172,85 +167,30 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public boolean assignTrainee(BigInteger trainerId, BigInteger traineeId) {
-        var trainer = get(trainerId);
-        var trainee = traineeService.get(traineeId);
-
-        if (trainer.isPresent() && trainee.isPresent()) {
-            TrainerDto trainerDto = trainer.get();
-            trainerDto.getTrainees().add(TraineeEntity.fromDto(trainee.get()));
-            return update(trainerDto);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean unassignTrainee(BigInteger trainerId, BigInteger traineeId) {
-        var trainer = get(trainerId);
-        var trainee = traineeService.get(traineeId);
-
-        if (trainer.isPresent() && trainee.isPresent()) {
-            TrainerDto trainerDto = trainer.get();
-            trainerDto.getTrainees().remove(TraineeEntity.fromDto(trainee.get()));
-            return update(trainerDto);
-        }
-
-        return false;
-    }
-
-    @Override
     public TrainerDto save(TrainerDto trainer) {
         if (trainer.getUser() != null && !trainer.getUser().isValid()) {
-            throw new IllegalArgumentException("Invalid user");
+            throw new ConflictException("Invalid user");
         }
 
-        var trainerEntity = trainerRepository.save(TrainerEntity.fromDto(trainer));
-        return trainerEntity.toDto();
+        return trainerRepository.save(TrainerEntity.fromDto(trainer)).toDto();
     }
 
     @Override
     public boolean update(TrainerDto trainer) {
         if (trainer.getUser() != null && !trainer.getUser().isValid()) {
-            throw new IllegalArgumentException("Invalid user");
+            throw new ConflictException("Invalid user");
         }
 
-        Optional<TrainerEntity> trainerEntityOptional = trainerRepository.findById(trainer.getId());
-
-        if (trainerEntityOptional.isPresent()) {
-            TrainerEntity trainerEntity = trainerEntityOptional.get();
-            trainerEntity.setUser(trainer.getUser());
-            trainerEntity.setTrainings(trainer.getTrainings());
-            trainerEntity.setTrainees(trainer.getTrainees());
-            trainerEntity.setSpecialization(trainer.getSpecialization());
-
-            return trainerRepository.update(trainerEntity);
+        if (!trainerRepository.existsById(trainer.getId())) {
+            return false;
         }
 
-        return false;
-    }
-
-    @Override
-    public boolean delete(BigInteger id) {
-        return trainerRepository.deleteById(id);
-    }
-
-    @Override
-    public Optional<TrainerDto> get(BigInteger id) {
-        var trainer = trainerRepository.findById(id);
-        return trainer.map(TrainerEntity::toDto);
-    }
-
-    @Override
-    public List<TrainerDto> getAll() {
-        List<TrainerEntity> trainerEntities = new ArrayList<>();
-        trainerRepository.findAll().forEach(trainerEntities::add);
-
-        return trainerEntities.stream().map(TrainerEntity::toDto).toList();
-    }
-
-    @Override
-    public long count() {
-        return trainerRepository.count();
+        // TODO: review the need for userService here
+        userService.updateProfile(UserDto.builder()
+                .firstName(trainer.getUser().getFirstName())
+                .lastName(trainer.getUser().getLastName())
+                .build());
+        trainerRepository.update(trainer.getId(), trainer.getUser(), trainer.getSpecialization());
+        return true;
     }
 }

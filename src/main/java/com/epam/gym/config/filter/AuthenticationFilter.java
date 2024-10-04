@@ -8,18 +8,26 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
-@Component(value = "authenticationFilter")
+@Order(1)
 @AllArgsConstructor
+@WebFilter(urlPatterns = {
+        "/api/v1/trainees/*",
+        "/api/v1/trainers/*",
+        "/api/v1/trainings/*",
+        "/api/v1/training-types/*",
+        "/api/v1/auth/change-password/*"})
 public class AuthenticationFilter implements Filter {
     private final WebAuthService webAuthService;
 

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/v1/training-types")
+@RequestMapping("/api/v1/training-types")
 @AllArgsConstructor
 public class TrainingTypeController {
     private final TrainingTypeService trainingTypeService;

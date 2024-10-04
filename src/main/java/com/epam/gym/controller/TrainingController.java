@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/trainings")
+@RequestMapping("/api/v1/trainings")
 @AllArgsConstructor
 public class TrainingController {
     private final TrainingService trainingService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void addTraining(@Valid @RequestBody TrainingAddRequestModel model) throws BadRequestException {
+    public void addTraining(@Valid @RequestBody TrainingAddRequestModel model) {
         if (!trainingService.save(model)) {
             throw new BadRequestException();
         }

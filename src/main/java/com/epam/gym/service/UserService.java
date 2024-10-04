@@ -6,19 +6,11 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService extends CrudService<UserDto, BigInteger> {
+public interface UserService {
 
     Optional<UserDto> findByUsername(String username);
 
     boolean isUsernameAndPasswordMatch(String username, String password);
-
-    boolean isTrainee(String username);
-
-    boolean isTrainer(String username);
-
-    boolean isTrainee(BigInteger id);
-
-    boolean isTrainer(BigInteger id);
 
     boolean changePassword(String username, String oldPassword, String newPassword);
 

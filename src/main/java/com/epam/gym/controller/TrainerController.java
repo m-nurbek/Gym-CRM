@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/v1/trainers")
+@RequestMapping("/api/v1/trainers")
 @AllArgsConstructor
 public class TrainerController {
     private final TrainerService trainerService;
@@ -32,7 +32,7 @@ public class TrainerController {
 
     @GetMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public TrainerResponseModel getProfile(@PathVariable String username) throws NotFoundException {
+    public TrainerResponseModel getProfile(@PathVariable String username) {
         return trainerService.findByUsernameToResponse(username).orElseThrow(NotFoundException::new);
     }
 
@@ -41,7 +41,7 @@ public class TrainerController {
     public TrainerUpdateResponseModel updateProfile(
             @PathVariable String username,
             @Valid @RequestBody TrainerUpdateRequestModel requestModel
-    ) throws NotFoundException {
+    ) {
         return trainerService.update(username, requestModel).orElseThrow(NotFoundException::new);
     }
 
@@ -51,7 +51,7 @@ public class TrainerController {
             @PathVariable String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
-            @RequestParam(value = "traineeName", required = false) String traineeName) throws NotFoundException {
+            @RequestParam(value = "traineeName", required = false) String traineeName) {
 
         if (trainerService.findByUsername(username).isEmpty()) {
             throw new NotFoundException();
@@ -62,7 +62,7 @@ public class TrainerController {
 
     @PatchMapping("/active-state/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) throws NotFoundException {
+    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         if (!userService.updateActiveState(username, isActive)) {
             throw new NotFoundException();
         }

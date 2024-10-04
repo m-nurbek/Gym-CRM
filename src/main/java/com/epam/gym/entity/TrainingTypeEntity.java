@@ -32,7 +32,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "TRAINING_TYPE")
-public class TrainingTypeEntity implements EntityInterface<BigInteger> {
+public class TrainingTypeEntity {
     @Value("${table-generator.initial-value}")
     private static final int ID_INITIAL_VALUE = 1000;
 

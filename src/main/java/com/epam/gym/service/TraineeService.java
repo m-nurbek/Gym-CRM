@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface TraineeService extends CrudService<TraineeDto, BigInteger> {
+public interface TraineeService {
+
+    Optional<TraineeDto> findById(BigInteger id);
 
     Optional<TraineeDto> findByUsername(String username);
 
@@ -41,5 +43,7 @@ public interface TraineeService extends CrudService<TraineeDto, BigInteger> {
 
     Set<SimpleTrainerResponseModel> updateTrainerListByUsername(String username, List<String> trainerUsernames);
 
-    boolean unassignTrainer(BigInteger traineeId, BigInteger trainerId);
+    TraineeDto save(TraineeDto traineeDto);
+
+    boolean update(TraineeDto traineeDto);
 }

@@ -28,7 +28,7 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "USER_TABLE")
-public class UserEntity implements EntityInterface<BigInteger> {
+public class UserEntity {
     @Value("${table-generator.initial-value}")
     private static final int ID_INITIAL_VALUE = 1000;
 

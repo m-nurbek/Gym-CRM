@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/auth")
+@RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class AuthController {
     private final WebAuthServiceImpl authService;
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public void login(@Valid @RequestBody UserCredentialModel credential) throws UnauthorizedException {
+    public void login(@Valid @RequestBody UserCredentialModel credential) {
         if (!authService.authenticate(credential.username(), credential.password())) {
             throw new UnauthorizedException();
         }
@@ -57,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/change-password/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public void changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginModel changedLogin) throws BadRequestException {
+    public void changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginModel changedLogin) {
         if (!authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword())) {
             throw new BadRequestException();
         }

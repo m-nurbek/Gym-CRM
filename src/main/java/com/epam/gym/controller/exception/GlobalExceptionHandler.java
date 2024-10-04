@@ -46,4 +46,10 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<String> handleConflictException(ConflictException ex) {
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
 }

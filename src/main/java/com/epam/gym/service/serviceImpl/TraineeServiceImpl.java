@@ -1,5 +1,6 @@
 package com.epam.gym.service.serviceImpl;
 
+import com.epam.gym.controller.exception.ConflictException;
 import com.epam.gym.dto.TraineeDto;
 import com.epam.gym.dto.TrainerDto;
 import com.epam.gym.dto.UserDto;
@@ -15,7 +16,6 @@ import com.epam.gym.repository.TraineeRepository;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-@Slf4j
 public class TraineeServiceImpl implements TraineeService {
     private final UserService userService;
     private final TraineeRepository traineeRepository;
@@ -45,11 +43,16 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    public Optional<TraineeDto> findById(BigInteger id) {
+        return traineeRepository.findById(id).map(TraineeEntity::toDto);
+    }
+
+    @Override
     public Optional<TraineeDto> findByUsername(String username) {
         Optional<UserDto> userDto = userService.findByUsername(username);
 
         if (userDto.isPresent()) {
-            var trainee = traineeRepository.findById(userDto.get().getId());
+            Optional<TraineeEntity> trainee = traineeRepository.findById(userDto.get().getTrainee().getId());
 
             if (trainee.isPresent()) {
                 TraineeEntity traineeEntity = trainee.get();
@@ -62,13 +65,13 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public Optional<TraineeResponseModel> findByUsernameToResponse(String username) {
-        var trainee = findByUsername(username);
+        Optional<TraineeDto> trainee = findByUsername(username);
 
         if (trainee.isEmpty()) {
             return Optional.empty();
         }
 
-        var t = trainee.get();
+        TraineeDto t = trainee.get();
         TraineeResponseModel response = new TraineeResponseModel(
                 t.getUser().getFirstName(),
                 t.getUser().getLastName(),
@@ -134,12 +137,16 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public boolean deleteByUsername(String username) {
         Optional<TraineeDto> trainee = findByUsername(username);
+        return trainee.filter(traineeDto -> delete(traineeDto.getId())).isPresent();
+    }
 
-        if (trainee.isEmpty()) {
+    private boolean delete(BigInteger id) {
+        if (!traineeRepository.existsById(id)) {
             return false;
         }
 
-        return delete(trainee.get().getId());
+        traineeRepository.deleteById(id);
+        return true;
     }
 
     @Override
@@ -147,7 +154,7 @@ public class TraineeServiceImpl implements TraineeService {
         Optional<TraineeEntity> traineeEntity = traineeRepository.findById(id);
 
         if (traineeEntity.isPresent()) {
-            traineeEntity.get().getTrainers().size();
+            traineeEntity.get().getTrainers().size(); // TODO: review the need for this here
             return traineeEntity.get().getTrainers();
         }
 
@@ -159,7 +166,7 @@ public class TraineeServiceImpl implements TraineeService {
         Optional<TraineeDto> trainee = findByUsername(username);
 
         if (trainee.isPresent()) {
-            trainee.get().getTrainers().size();
+            trainee.get().getTrainers().size(); // TODO: review the need for this here
             return trainee.get().getTrainers();
         }
 
@@ -190,7 +197,7 @@ public class TraineeServiceImpl implements TraineeService {
         var trainee = findByUsername(username);
 
         if (trainee.isPresent()) {
-            trainee.get().getTrainings().size();
+            trainee.get().getTrainings().size(); // TODO: review the need for this here
             return trainee.get().getTrainings();
         }
 
@@ -222,8 +229,8 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public boolean assignTrainer(BigInteger traineeId, BigInteger trainerId) {
-        Optional<TraineeDto> trainee = get(traineeId);
-        Optional<TrainerDto> trainer = trainerService.get(trainerId);
+        Optional<TraineeDto> trainee = findById(traineeId);
+        Optional<TrainerDto> trainer = trainerService.findById(trainerId);
 
         if (trainee.isPresent() && trainer.isPresent()) {
             trainee.get().getTrainers().add(TrainerEntity.fromDto(trainer.get()));
@@ -234,16 +241,31 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public boolean unassignTrainer(BigInteger traineeId, BigInteger trainerId) {
-        var trainee = get(traineeId);
-        var trainer = trainerService.get(trainerId);
-
-        if (trainee.isPresent() && trainer.isPresent()) {
-            trainee.get().getTrainers().remove(TrainerEntity.fromDto(trainer.get()));
-            return update(trainee.get());
+    public TraineeDto save(TraineeDto traineeDto) {
+        if (traineeDto.getUser() != null && !traineeDto.getUser().isValid()) {
+            throw new ConflictException("Invalid user");
         }
 
-        return false;
+        return traineeRepository.save(TraineeEntity.fromDto(traineeDto)).toDto();
+    }
+
+    @Override
+    public boolean update(TraineeDto trainee) {
+        if (trainee.getUser() != null && !trainee.getUser().isValid()) {
+            throw new ConflictException("Invalid user");
+        }
+
+        if (!traineeRepository.existsById(trainee.getId())) {
+            return false;
+        }
+
+        // TODO: review the need for userService here
+        userService.updateProfile(UserDto.builder()
+                .firstName(trainee.getUser().getFirstName())
+                .lastName(trainee.getUser().getLastName())
+                .build());
+        traineeRepository.update(trainee.getId(), trainee.getDob(), trainee.getAddress(), trainee.getUser());
+        return true;
     }
 
     @Override
@@ -273,61 +295,5 @@ public class TraineeServiceImpl implements TraineeService {
                         )
                 ).collect(Collectors.toSet())
                 : Set.of();
-    }
-
-    @Override
-    public TraineeDto save(TraineeDto trainee) {
-        if (trainee.getUser() != null && !trainee.getUser().isValid()) {
-            throw new IllegalArgumentException("Invalid user");
-        }
-
-        var traineeEntity = traineeRepository.save(TraineeEntity.fromDto(trainee));
-        return traineeEntity.toDto();
-    }
-
-    @Override
-    public boolean update(TraineeDto trainee) {
-        if (trainee.getUser() != null && !trainee.getUser().isValid()) {
-            throw new IllegalArgumentException("Invalid user");
-        }
-
-        Optional<TraineeEntity> traineeEntityOptional = traineeRepository.findById(trainee.getId());
-
-        if (traineeEntityOptional.isPresent()) {
-            TraineeEntity traineeEntity = traineeEntityOptional.get();
-            traineeEntity.setAddress(trainee.getAddress());
-            traineeEntity.setDob(trainee.getDob());
-            traineeEntity.setUser(trainee.getUser());
-            traineeEntity.setTrainers(trainee.getTrainers());
-            traineeEntity.setTrainings(trainee.getTrainings());
-
-            return traineeRepository.update(traineeEntity);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean delete(BigInteger id) {
-        return traineeRepository.deleteById(id);
-    }
-
-    @Override
-    public Optional<TraineeDto> get(BigInteger bigInteger) {
-        var trainee = traineeRepository.findById(bigInteger);
-        return trainee.map(TraineeEntity::toDto);
-    }
-
-    @Override
-    public List<TraineeDto> getAll() {
-        List<TraineeEntity> traineeEntities = new ArrayList<>();
-        traineeRepository.findAll().forEach(traineeEntities::add);
-
-        return traineeEntities.stream().map(TraineeEntity::toDto).toList();
-    }
-
-    @Override
-    public long count() {
-        return traineeRepository.count();
     }
 }

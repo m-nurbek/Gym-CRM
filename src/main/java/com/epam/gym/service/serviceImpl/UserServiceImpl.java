@@ -1,5 +1,6 @@
 package com.epam.gym.service.serviceImpl;
 
+import com.epam.gym.controller.exception.ConflictException;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.UserRepository;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,100 +29,50 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUsernameAndPasswordMatch(String username, String password) {
-        return userRepository.isUsernameAndPasswordMatch(username, password);
-    }
-
-    @Override
-    public boolean isTrainee(String username) {
-        Optional<UserEntity> userEntityOptional = userRepository.findByUsername(username);
-
-        if (userEntityOptional.isEmpty()) {
-            return false;
-        }
-
-        UserEntity u = userEntityOptional.get();
-
-        return u.getTrainee() != null;
-    }
-
-    @Override
-    public boolean isTrainer(String username) {
-        Optional<UserEntity> userEntityOptional = userRepository.findByUsername(username);
-
-        if (userEntityOptional.isEmpty()) {
-            return false;
-        }
-
-        UserEntity u = userEntityOptional.get();
-
-        return u.getTrainer() != null;
-    }
-
-    @Override
-    public boolean isTrainee(BigInteger id) {
-        Optional<UserEntity> userEntityOptional = userRepository.findById(id);
-
-        if (userEntityOptional.isEmpty()) {
-            return false;
-        }
-
-        UserEntity u = userEntityOptional.get();
-
-        return u.getTrainee() != null;
-    }
-
-    @Override
-    public boolean isTrainer(BigInteger id) {
-        Optional<UserEntity> userEntityOptional = userRepository.findById(id);
-
-        if (userEntityOptional.isEmpty()) {
-            return false;
-        }
-
-        UserEntity u = userEntityOptional.get();
-
-        return u.getTrainer() != null;
+        return userRepository.existsByUsernameAndPassword(username, password);
     }
 
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
         var user = userRepository.findByUsername(username);
-        return changePasswordForUser(user, oldPassword, newPassword);
+        return user.filter(userEntity -> changePasswordForUser(userEntity, oldPassword, newPassword)).isPresent();
     }
 
     @Override
     public boolean changePassword(BigInteger id, String oldPassword, String newPassword) {
         var user = userRepository.findById(id);
-        return changePasswordForUser(user, oldPassword, newPassword);
+        return user.filter(userEntity -> changePasswordForUser(userEntity, oldPassword, newPassword)).isPresent();
     }
 
-    private boolean changePasswordForUser(Optional<UserEntity> user, String oldPassword, String newPassword) {
-        if (user.isEmpty() || !user.get().getPassword().equals(oldPassword)) {
+    private boolean changePasswordForUser(UserEntity user, String oldPassword, String newPassword) {
+        if (!user.getPassword().equals(oldPassword)) {
             return false;
         }
 
-        return userRepository.updatePassword(user.get().getId(), newPassword);
+        userRepository.updatePasswordById(user.getId(), newPassword);
+        return true;
     }
 
     @Override
     public boolean updateProfile(UserDto updatedUser) {
-        Optional<UserEntity> userEntityOptional = userRepository.findById(updatedUser.getId());
-
-        if (userEntityOptional.isPresent()) {
-            UserEntity userEntity = userEntityOptional.get();
-            userEntity.setUsername(updatedUser.getUsername());
-            userEntity.setFirstName(updatedUser.getFirstName());
-            userEntity.setLastName(updatedUser.getLastName());
-
-            return userRepository.update(userEntity);
+        if (!userRepository.existsById(updatedUser.getId())) {
+            return false;
         }
 
-        return false;
+        userRepository.updateProfileById(updatedUser.getId(), updatedUser.getFirstName(), updatedUser.getLastName());
+        return true;
     }
 
     @Override
     public boolean updateActiveState(BigInteger id, boolean isActive) {
-        return userRepository.updateActiveState(id, isActive);
+        var u = userRepository.findById(id);
+
+        if (u.isEmpty()) {
+            return false;
+        }
+
+        userRepository.updateIsActiveById(u.get().getId(), isActive);
+        return true;
     }
 
     @Override
@@ -133,18 +83,19 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
-        return updateActiveState(u.get().getId(), isActive);
+        userRepository.updateIsActiveById(u.get().getId(), isActive);
+        return true;
     }
 
     @Override
-    public UserDto save(UserDto userDto) {
+    public UserDto save(UserDto userDto) throws ConflictException {
         userDto.setUsername(generateUniqueUsername(userDto));
         userDto.setPassword(UserProfileUtil.generatePassword());
 
         UserEntity userEntity = UserEntity.fromDto(userDto);
 
         if (!userEntity.isValid()) {
-            throw new IllegalArgumentException("Invalid user");
+            throw new ConflictException("Invalid user");
         }
 
         userEntity = userRepository.save(userEntity);
@@ -163,49 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean update(UserDto updatedUser) {
-        Optional<UserEntity> userEntityOptional = userRepository.findById(updatedUser.getId());
-
-        if (userEntityOptional.isPresent()) {
-            UserEntity userEntity = userEntityOptional.get();
-            userEntity.setUsername(updatedUser.getUsername());
-            userEntity.setFirstName(updatedUser.getFirstName());
-            userEntity.setLastName(updatedUser.getLastName());
-            userEntity.setIsActive(updatedUser.getIsActive());
-            userEntity.setTrainer(updatedUser.getTrainer());
-            userEntity.setTrainee(updatedUser.getTrainee());
-
-            if (!userEntity.isValid()) {
-                throw new IllegalArgumentException("Invalid user");
-            }
-
-            return userRepository.update(userEntity);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean delete(BigInteger id) {
-        return userRepository.deleteById(id);
-    }
-
-    @Override
-    public Optional<UserDto> get(BigInteger id) {
-        var u = userRepository.findById(id);
-        return u.map(UserEntity::toDto);
-    }
-
-    @Override
     public List<UserDto> getAll() {
-        List<UserEntity> userEntities = new ArrayList<>();
-        userRepository.findAll().forEach(userEntities::add);
-
-        return userEntities.stream().map(UserEntity::toDto).toList();
-    }
-
-    @Override
-    public long count() {
-        return userRepository.count();
+        return userRepository.findAll().stream().map(UserEntity::toDto).toList();
     }
 }

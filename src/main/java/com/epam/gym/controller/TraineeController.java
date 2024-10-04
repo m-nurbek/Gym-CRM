@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/v1/trainees")
+@RequestMapping("/api/v1/trainees")
 @AllArgsConstructor
 public class TraineeController {
     private final TraineeService traineeService;
@@ -35,7 +35,7 @@ public class TraineeController {
 
     @GetMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public TraineeResponseModel getProfile(@PathVariable String username) throws Exception {
+    public TraineeResponseModel getProfile(@PathVariable String username) {
         return traineeService.findByUsernameToResponse(username).orElseThrow(NotFoundException::new);
     }
 
@@ -44,13 +44,13 @@ public class TraineeController {
     public TraineeUpdateResponseModel updateProfile(
             @PathVariable String username,
             @Valid @RequestBody TraineeUpdateRequestModel requestModel
-    ) throws NotFoundException {
+    ) {
         return traineeService.update(username, requestModel).orElseThrow(NotFoundException::new);
     }
 
     @DeleteMapping("/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProfile(@PathVariable String username) throws NotFoundException {
+    public void deleteProfile(@PathVariable String username) {
         if (!traineeService.deleteByUsername(username)) {
             throw new NotFoundException();
         }
@@ -58,7 +58,7 @@ public class TraineeController {
 
     @GetMapping("/trainers/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public Set<SimpleTrainerResponseModel> getNotAssignedActiveTrainers(@PathVariable String username) throws NotFoundException {
+    public Set<SimpleTrainerResponseModel> getNotAssignedActiveTrainers(@PathVariable String username) {
         if (traineeService.findByUsername(username).isEmpty()) {
             throw new NotFoundException();
         }
@@ -71,7 +71,7 @@ public class TraineeController {
     public Set<SimpleTrainerResponseModel> updateTrainersList(
             @PathVariable String username,
             @Valid @RequestBody List<String> trainerUsernameList
-    ) throws NotFoundException {
+    ) {
         if (traineeService.findByUsername(username).isEmpty()) {
             throw new NotFoundException();
         }
@@ -86,7 +86,7 @@ public class TraineeController {
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
             @RequestParam(value = "trainerName", required = false) String trainerName,
-            @RequestParam(value = "trainingType", required = false) String trainingType) throws NotFoundException {
+            @RequestParam(value = "trainingType", required = false) String trainingType) {
 
         if (traineeService.findByUsername(username).isEmpty()) {
             throw new NotFoundException();
@@ -97,7 +97,7 @@ public class TraineeController {
 
     @PatchMapping("/active-state/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) throws NotFoundException {
+    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         if (!userService.updateActiveState(username, isActive)) {
             throw new NotFoundException();
         }

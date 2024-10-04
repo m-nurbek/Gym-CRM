@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,49 +22,8 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     private final TrainingTypeRepository trainingTypeRepository;
 
     @Override
-    public TrainingTypeDto save(TrainingTypeDto type) {
-        var typeEntity = trainingTypeRepository.save(TrainingTypeEntity.fromDto(type));
-        return typeEntity.toDto();
-    }
-
-    @Override
-    public boolean update(TrainingTypeDto type) {
-        Optional<TrainingTypeEntity> trainingTypeEntityOptional = trainingTypeRepository.findById(type.getId());
-
-        if (trainingTypeEntityOptional.isPresent()) {
-            TrainingTypeEntity trainingTypeEntity = trainingTypeEntityOptional.get();
-            trainingTypeEntity.setName(type.getName());
-            trainingTypeEntity.setTrainings(type.getTrainings());
-            trainingTypeEntity.setTrainers(type.getTrainers());
-
-            return trainingTypeRepository.update(trainingTypeEntity);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean delete(BigInteger id) {
-        return trainingTypeRepository.deleteById(id);
-    }
-
-    @Override
-    public Optional<TrainingTypeDto> get(BigInteger id) {
-        var type = trainingTypeRepository.findById(id);
-        return type.map(TrainingTypeEntity::toDto);
-    }
-
-    @Override
     public List<TrainingTypeDto> getAll() {
-        List<TrainingTypeEntity> trainingTypeEntities = new ArrayList<>();
-        trainingTypeRepository.findAll().forEach(trainingTypeEntities::add);
-
-        return trainingTypeEntities.stream().map(TrainingTypeEntity::toDto).toList();
-    }
-
-    @Override
-    public long count() {
-        return trainingTypeRepository.count();
+        return trainingTypeRepository.findAll().stream().map(TrainingTypeEntity::toDto).toList();
     }
 
     @Override
@@ -81,7 +38,7 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
 
     @Override
     public Optional<TrainingTypeDto> getTrainingTypeName(String name) {
-        var type = trainingTypeRepository.findByName(name);
+        var type = trainingTypeRepository.findByName(TrainingTypeEnum.valueOf(name.toUpperCase().trim()));
         return type.map(TrainingTypeEntity::toDto);
     }
 

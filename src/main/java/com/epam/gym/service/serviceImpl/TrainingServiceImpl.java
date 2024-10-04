@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,52 +29,8 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingTypeService trainingTypeService;
 
     @Override
-    public TrainingDto save(TrainingDto training) {
-        var trainingEntity = trainingRepository.save(TrainingEntity.fromDto(training));
-        return trainingEntity.toDto();
-    }
-
-    @Override
-    public boolean update(TrainingDto training) {
-        Optional<TrainingEntity> trainingEntityOptional = trainingRepository.findById(training.getId());
-
-        if (trainingEntityOptional.isPresent()) {
-            TrainingEntity trainingEntity = trainingEntityOptional.get();
-            trainingEntity.setDate(training.getDate());
-            trainingEntity.setName(training.getName());
-            trainingEntity.setDuration(training.getDuration());
-            trainingEntity.setType(training.getType());
-            trainingEntity.setTrainee(training.getTrainee());
-            trainingEntity.setTrainer(training.getTrainer());
-
-            return trainingRepository.update(trainingEntity);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean delete(BigInteger id) {
-        return trainingRepository.deleteById(id);
-    }
-
-    @Override
-    public Optional<TrainingDto> get(BigInteger id) {
-        var training = trainingRepository.findById(id);
-        return training.map(TrainingEntity::toDto);
-    }
-
-    @Override
-    public List<TrainingDto> getAll() {
-        List<TrainingEntity> trainingEntities = new ArrayList<>();
-        trainingRepository.findAll().forEach(trainingEntities::add);
-
-        return trainingEntities.stream().map(TrainingEntity::toDto).toList();
-    }
-
-    @Override
-    public long count() {
-        return trainingRepository.count();
+    public Optional<TrainingDto> findById(BigInteger id) {
+        return trainingRepository.findById(id).map(TrainingEntity::toDto);
     }
 
     @Override
@@ -109,7 +63,7 @@ public class TrainingServiceImpl implements TrainingService {
     public boolean assignTrainer(String traineeUsername, BigInteger trainerId, String name, String type, LocalDate date, int duration) {
         var t = trainingTypeService.getTrainingTypeName(type);
         var trainee = traineeService.findByUsername(traineeUsername);
-        var trainer = trainerService.get(trainerId);
+        var trainer = trainerService.findById(trainerId);
 
         if (t.isEmpty() || trainee.isEmpty() || trainer.isEmpty()) {
             return false;
@@ -132,34 +86,5 @@ public class TrainingServiceImpl implements TrainingService {
         trainingRepository.save(trainingEntity);
 
         return true;
-    }
-
-    @Override
-    public boolean unassignTrainer(String traineeUsername, BigInteger trainerId) {
-        var trainee = traineeService.findByUsername(traineeUsername);
-        var trainer = trainerService.get(trainerId);
-
-        if (trainee.isEmpty() || trainer.isEmpty()) {
-            return false;
-        }
-
-        var traineeEntity = TraineeEntity.fromDto(trainee.get());
-        var trainerEntity = TrainerEntity.fromDto(trainer.get());
-
-        var trainingEntity = trainingRepository.findByTraineeAndTrainer(traineeEntity, trainerEntity);
-
-        if (trainingEntity.isEmpty()) {
-            return false;
-        }
-
-        trainingRepository.deleteById(trainingEntity.get().getId());
-        traineeService.unassignTrainer(traineeEntity.getId(), trainerEntity.getId());
-
-        return true;
-    }
-
-    @Override
-    public boolean cancelTraining(BigInteger trainingId) {
-        return trainingRepository.deleteById(trainingId);
     }
 }
