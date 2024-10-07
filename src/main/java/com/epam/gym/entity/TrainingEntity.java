@@ -1,6 +1,5 @@
 package com.epam.gym.entity;
 
-import com.epam.gym.dto.TrainingDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,18 +68,6 @@ public class TrainingEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "TYPE", referencedColumnName = "ID")
     private TrainingTypeEntity type;
-
-    public TrainingDto toDto() {
-        return new TrainingDto(id, trainee, trainer, name, type, date, duration);
-    }
-
-    public static TrainingEntity fromDto(TrainingDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        return new TrainingEntity(dto.getId(), dto.getName(), dto.getDate(), dto.getDuration(), dto.getTrainee(), dto.getTrainer(), dto.getType());
-    }
 
     @Override
     public final boolean equals(Object o) {

@@ -21,11 +21,13 @@ public interface UserRepository extends JpaRepository<UserEntity, BigInteger> {
     @Query("""
             update UserEntity u
             set u.firstName = :firstName,
-            u.lastName = :lastName
+            u.lastName = :lastName,
+            u.isActive = :isActive
             where u.id = :id""")
     void updateProfileById(@Param("id") @NonNull BigInteger id,
                            @Param("firstName") @NonNull String firstName,
-                           @Param("lastName") @NonNull String lastName);
+                           @Param("lastName") @NonNull String lastName,
+                           @Param("isActive") @NonNull Boolean isActive);
 
     Optional<UserEntity> findByUsername(@NonNull String username);
 

@@ -1,10 +1,10 @@
 package com.epam.gym.controller;
 
 import com.epam.gym.controller.exception.NotFoundException;
-import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
-import com.epam.gym.dto.model.response.TrainerResponseModel;
-import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseForTrainerModel;
+import com.epam.gym.dto.request.TrainerUpdateRequestDto;
+import com.epam.gym.dto.response.TrainerResponseDto;
+import com.epam.gym.dto.response.TrainerUpdateResponseDto;
+import com.epam.gym.dto.response.TrainingResponseForTrainerDto;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
@@ -32,22 +32,22 @@ public class TrainerController {
 
     @GetMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public TrainerResponseModel getProfile(@PathVariable String username) {
-        return trainerService.findByUsernameToResponse(username).orElseThrow(NotFoundException::new);
+    public TrainerResponseDto getProfile(@PathVariable String username) {
+        return trainerService.findByUsername(username).orElseThrow(NotFoundException::new);
     }
 
     @PutMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public TrainerUpdateResponseModel updateProfile(
+    public TrainerUpdateResponseDto updateProfile(
             @PathVariable String username,
-            @Valid @RequestBody TrainerUpdateRequestModel requestModel
+            @Valid @RequestBody TrainerUpdateRequestDto requestModel
     ) {
         return trainerService.update(username, requestModel).orElseThrow(NotFoundException::new);
     }
 
     @GetMapping("/trainings/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public Set<TrainingResponseForTrainerModel> getTrainingsList(
+    public Set<TrainingResponseForTrainerDto> getTrainingsList(
             @PathVariable String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,

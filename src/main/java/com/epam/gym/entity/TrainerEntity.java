@@ -1,6 +1,5 @@
 package com.epam.gym.entity;
 
-import com.epam.gym.dto.TrainerDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,7 +50,7 @@ public class TrainerEntity {
     @Column(name = "ID")
     private BigInteger id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID")
     @ToString.Exclude
     private TrainingTypeEntity specialization;
@@ -74,18 +73,6 @@ public class TrainerEntity {
         for (TraineeEntity trainee : trainees) {
             trainee.getTrainers().remove(this);
         }
-    }
-
-    public TrainerDto toDto() {
-        return new TrainerDto(id, specialization, user, trainings, trainees);
-    }
-
-    public static TrainerEntity fromDto(TrainerDto trainerDto) {
-        if (trainerDto == null) {
-            return null;
-        }
-
-        return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization(), trainerDto.getUser(), trainerDto.getTrainings(), trainerDto.getTrainees());
     }
 
     @Override

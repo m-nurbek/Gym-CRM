@@ -21,6 +21,7 @@
         <h2.version>2.3.232</h2.version>
         <postgresql.version>42.7.4</postgresql.version>
         <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
+        <assertj.version>3.26.3</assertj.version>
 
         <!--  Plugin versions  -->
         <jacoco.version>0.8.12</jacoco.version>
@@ -77,7 +78,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
 
         <!--    Utils    -->
@@ -93,6 +94,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring-boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
 

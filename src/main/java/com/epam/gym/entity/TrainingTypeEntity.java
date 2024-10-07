@@ -1,6 +1,5 @@
 package com.epam.gym.entity;
 
-import com.epam.gym.dto.TrainingTypeDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,18 +56,6 @@ public class TrainingTypeEntity {
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<TrainingEntity> trainings;
-
-    public TrainingTypeDto toDto() {
-        return new TrainingTypeDto(id, name, trainers, trainings);
-    }
-
-    public static TrainingTypeEntity fromDto(TrainingTypeDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        return new TrainingTypeEntity(dto.getId(), dto.getName(), dto.getTrainers(), dto.getTrainings());
-    }
 
     @Override
     public final boolean equals(Object o) {

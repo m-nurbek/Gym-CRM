@@ -1,11 +1,11 @@
 package com.epam.gym.controller;
 
 import com.epam.gym.controller.exception.NotFoundException;
-import com.epam.gym.dto.model.request.TraineeUpdateRequestModel;
-import com.epam.gym.dto.model.response.SimpleTrainerResponseModel;
-import com.epam.gym.dto.model.response.TraineeResponseModel;
-import com.epam.gym.dto.model.response.TraineeUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseForTraineeModel;
+import com.epam.gym.dto.request.TraineeUpdateRequestDto;
+import com.epam.gym.dto.response.SimpleTrainerResponseDto;
+import com.epam.gym.dto.response.TraineeResponseDto;
+import com.epam.gym.dto.response.TraineeUpdateResponseDto;
+import com.epam.gym.dto.response.TrainingResponseForTraineeDto;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
@@ -35,15 +35,15 @@ public class TraineeController {
 
     @GetMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public TraineeResponseModel getProfile(@PathVariable String username) {
-        return traineeService.findByUsernameToResponse(username).orElseThrow(NotFoundException::new);
+    public TraineeResponseDto getProfile(@PathVariable String username) {
+        return traineeService.findByUsername(username).orElseThrow(NotFoundException::new);
     }
 
     @PutMapping("/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public TraineeUpdateResponseModel updateProfile(
+    public TraineeUpdateResponseDto updateProfile(
             @PathVariable String username,
-            @Valid @RequestBody TraineeUpdateRequestModel requestModel
+            @Valid @RequestBody TraineeUpdateRequestDto requestModel
     ) {
         return traineeService.update(username, requestModel).orElseThrow(NotFoundException::new);
     }
@@ -58,7 +58,7 @@ public class TraineeController {
 
     @GetMapping("/trainers/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public Set<SimpleTrainerResponseModel> getNotAssignedActiveTrainers(@PathVariable String username) {
+    public Set<SimpleTrainerResponseDto> getNotAssignedActiveTrainers(@PathVariable String username) {
         if (traineeService.findByUsername(username).isEmpty()) {
             throw new NotFoundException();
         }
@@ -68,7 +68,7 @@ public class TraineeController {
 
     @PutMapping("/update-trainers/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public Set<SimpleTrainerResponseModel> updateTrainersList(
+    public Set<SimpleTrainerResponseDto> updateTrainersList(
             @PathVariable String username,
             @Valid @RequestBody List<String> trainerUsernameList
     ) {
@@ -81,7 +81,7 @@ public class TraineeController {
 
     @GetMapping("/trainings/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public Set<TrainingResponseForTraineeModel> getTrainingsList(
+    public Set<TrainingResponseForTraineeDto> getTrainingsList(
             @PathVariable String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,

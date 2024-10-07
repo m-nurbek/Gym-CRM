@@ -1,6 +1,5 @@
 package com.epam.gym.entity;
 
-import com.epam.gym.dto.UserDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,18 +59,6 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private TrainerEntity trainer;
-
-    public UserDto toDto() {
-        return new UserDto(id, firstName, lastName, username, password, isActive, trainee, trainer);
-    }
-
-    public static UserEntity fromDto(UserDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        return new UserEntity(dto.getId(), dto.getFirstName(), dto.getLastName(), dto.getUsername(), dto.getPassword(), dto.getIsActive(), dto.getTrainee(), dto.getTrainer());
-    }
 
     public boolean isValid() {
         return !(this.trainer != null && this.trainee != null);

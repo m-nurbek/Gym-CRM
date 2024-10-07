@@ -1,5 +1,9 @@
 # Gym-CRM Application Documentation
 
+
+### Swagger
+Swagger is available at http://localhost:8080/swagger-ui/index.html
+
 ## Overview
 The Gym-CRM application is a comprehensive system designed to manage gym operations, including users, trainers, trainees, training types, and training sessions. It is built using Java, Spring Core, and Maven.
 

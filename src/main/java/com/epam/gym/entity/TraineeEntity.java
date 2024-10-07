@@ -1,6 +1,5 @@
 package com.epam.gym.entity;
 
-import com.epam.gym.dto.TraineeDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -81,18 +80,6 @@ public class TraineeEntity {
         for (TrainerEntity trainer : trainers) {
             trainer.getTrainees().remove(this);
         }
-    }
-
-    public TraineeDto toDto() {
-        return new TraineeDto(id, dob, address, user, trainings, trainers);
-    }
-
-    public static TraineeEntity fromDto(TraineeDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        return new TraineeEntity(dto.getId(), dto.getDob(), dto.getAddress(), dto.getUser(), dto.getTrainings(), dto.getTrainers());
     }
 
     @Override

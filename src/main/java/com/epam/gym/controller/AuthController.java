@@ -2,11 +2,11 @@ package com.epam.gym.controller;
 
 import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.controller.exception.UnauthorizedException;
-import com.epam.gym.dto.model.request.ChangeLoginModel;
-import com.epam.gym.dto.model.request.TraineeRegistrationModel;
-import com.epam.gym.dto.model.request.TrainerRegistrationModel;
-import com.epam.gym.dto.model.request.UserCredentialModel;
-import com.epam.gym.service.serviceImpl.WebAuthServiceImpl;
+import com.epam.gym.dto.request.ChangeLoginDto;
+import com.epam.gym.dto.request.TraineeRegistrationDto;
+import com.epam.gym.dto.request.TrainerRegistrationDto;
+import com.epam.gym.dto.request.UserCredentialDto;
+import com.epam.gym.service.WebAuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class AuthController {
-    private final WebAuthServiceImpl authService;
+    private final WebAuthService authService;
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public void login(@Valid @RequestBody UserCredentialModel credential) {
+    public void login(@Valid @RequestBody UserCredentialDto credential) {
         if (!authService.authenticate(credential.username(), credential.password())) {
             throw new UnauthorizedException();
         }
@@ -33,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/register/trainee")
     @ResponseStatus(HttpStatus.OK)
-    public String registerTrainee(@Valid @RequestBody TraineeRegistrationModel trainee) {
+    public String registerTrainee(@Valid @RequestBody TraineeRegistrationDto trainee) {
         String[] usernameAndPassword = authService.registerTrainee(trainee.firstName(), trainee.lastName(), trainee.dob(), trainee.address());
 
         return """
@@ -45,7 +45,7 @@ public class AuthController {
 
     @PostMapping("/register/trainer")
     @ResponseStatus(HttpStatus.OK)
-    public String registerTrainer(@Valid @RequestBody TrainerRegistrationModel trainer) {
+    public String registerTrainer(@Valid @RequestBody TrainerRegistrationDto trainer) {
         String[] usernameAndPassword = authService.registerTrainer(trainer.firstName(), trainer.lastName(), trainer.specialization());
 
         return """
@@ -57,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/change-password/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public void changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginModel changedLogin) {
+    public void changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginDto changedLogin) {
         if (!authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword())) {
             throw new BadRequestException();
         }

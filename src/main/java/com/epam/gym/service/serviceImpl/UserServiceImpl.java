@@ -12,20 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
-    @Override
-    public Optional<UserDto> findByUsername(String username) {
-        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
-        return userEntity.map(UserEntity::toDto);
-    }
 
     @Override
     public boolean isUsernameAndPasswordMatch(String username, String password) {
@@ -54,12 +46,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateProfile(UserDto updatedUser) {
-        if (!userRepository.existsById(updatedUser.getId())) {
+    public boolean updateProfile(BigInteger id, String firstName, String lastName, boolean isActive) {
+        if (!userRepository.existsById(id)) {
             return false;
         }
 
-        userRepository.updateProfileById(updatedUser.getId(), updatedUser.getFirstName(), updatedUser.getLastName());
+        userRepository.updateProfileById(id, firstName, lastName, isActive);
         return true;
     }
 
@@ -77,44 +69,56 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateActiveState(String username, boolean isActive) {
-        var u = findByUsername(username);
+        var u = userRepository.findByUsername(username).orElse(null);
 
-        if (u.isEmpty()) {
+        if (u == null) {
             return false;
         }
 
-        userRepository.updateIsActiveById(u.get().getId(), isActive);
+        userRepository.updateIsActiveById(u.getId(), isActive);
         return true;
     }
 
     @Override
-    public UserDto save(UserDto userDto) throws ConflictException {
-        userDto.setUsername(generateUniqueUsername(userDto));
-        userDto.setPassword(UserProfileUtil.generatePassword());
+    public UserDto save(String firstName, String lastName, boolean isActive) {
+        String uniqueUsername = generateUniqueUsername(firstName, lastName);
+        String generatedPassword = UserProfileUtil.generatePassword();
 
-        UserEntity userEntity = UserEntity.fromDto(userDto);
+        UserEntity userEntity = new UserEntity(
+                null,
+                firstName,
+                lastName,
+                uniqueUsername,
+                generatedPassword,
+                isActive,
+                null,
+                null
+        );
 
         if (!userEntity.isValid()) {
             throw new ConflictException("Invalid user");
         }
 
-        userEntity = userRepository.save(userEntity);
-        return userEntity.toDto();
+        UserEntity u = userRepository.save(userEntity);
+
+        return new UserDto(
+                u.getId(),
+                u.getFirstName(),
+                u.getLastName(),
+                u.getUsername(),
+                u.getPassword(),
+                u.getIsActive()
+        );
     }
 
-    private synchronized String generateUniqueUsername(UserDto user) {
+    private synchronized String generateUniqueUsername(String firstName, String lastName) {
         AtomicBigInteger serialNumber = new AtomicBigInteger(BigInteger.valueOf(-1));
         String username;
 
         do {
-            username = UserProfileUtil.generateUsername(user.getFirstName(), user.getLastName(), serialNumber.incrementAndGet());
+            username = UserProfileUtil.generateUsername(firstName, lastName, serialNumber.incrementAndGet());
         } while (userRepository.findByUsername(username).isPresent());
 
         return username;
-    }
-
-    @Override
-    public List<UserDto> getAll() {
-        return userRepository.findAll().stream().map(UserEntity::toDto).toList();
     }
 }

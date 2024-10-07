@@ -1,6 +1,6 @@
 package com.epam.gym.config.filter;
 
-import com.epam.gym.dto.model.request.UserCredentialModel;
+import com.epam.gym.dto.request.UserCredentialDto;
 import com.epam.gym.service.WebAuthService;
 import com.epam.gym.util.UserProfileUtil;
 import jakarta.servlet.Filter;
@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public class AuthenticationFilter implements Filter {
         var httpResponse = (HttpServletResponse) servletResponse;
         String authHeader = httpRequest.getHeader("Authorization");
 
-        Optional<UserCredentialModel> credentials = UserProfileUtil.retrieveCredentialsFromBasicAuthHeader(authHeader);
+        Optional<UserCredentialDto> credentials = UserProfileUtil.retrieveCredentialsFromBasicAuthHeader(authHeader);
 
         if (credentials.isPresent() && webAuthService.authenticate(credentials.get().username(), credentials.get().password())) {
             filterChain.doFilter(servletRequest, servletResponse);

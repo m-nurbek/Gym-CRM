@@ -1,23 +1,21 @@
 package com.epam.gym.service.serviceImpl;
 
-import com.epam.gym.controller.exception.ConflictException;
-import com.epam.gym.dto.TrainerDto;
-import com.epam.gym.dto.UserDto;
-import com.epam.gym.dto.model.request.TrainerUpdateRequestModel;
-import com.epam.gym.dto.model.response.SimpleTraineeResponseModel;
-import com.epam.gym.dto.model.response.TrainerResponseModel;
-import com.epam.gym.dto.model.response.TrainerUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseForTrainerModel;
+import com.epam.gym.dto.request.TrainerUpdateRequestDto;
+import com.epam.gym.dto.response.SimpleTraineeResponseDto;
+import com.epam.gym.dto.response.TrainerResponseDto;
+import com.epam.gym.dto.response.TrainerUpdateResponseDto;
+import com.epam.gym.dto.response.TrainingResponseForTrainerDto;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.TrainingTypeEntity;
+import com.epam.gym.entity.TrainingTypeEnum;
+import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.TrainerRepository;
-import com.epam.gym.service.TraineeService;
+import com.epam.gym.repository.TrainingRepository;
+import com.epam.gym.repository.TrainingTypeRepository;
+import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.TrainerService;
-import com.epam.gym.service.TrainingTypeService;
-import com.epam.gym.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,60 +27,57 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
-    private final UserService userService;
-    private final TraineeService traineeService;
-    private final TrainingTypeService trainingTypeService;
-
-    @Autowired
-    public TrainerServiceImpl(
-            UserService userService,
-            TrainerRepository trainerRepository,
-            @Lazy TraineeService traineeService,
-            TrainingTypeService trainingTypeService) {
-        this.userService = userService;
-        this.trainerRepository = trainerRepository;
-        this.traineeService = traineeService;
-        this.trainingTypeService = trainingTypeService;
-    }
+    private final UserRepository userRepository;
+    private final TrainingRepository trainingRepository;
+    private final TrainingTypeRepository trainingTypeRepository;
 
     @Override
-    public Optional<TrainerDto> findById(BigInteger id) {
-        return trainerRepository.findById(id).map(TrainerEntity::toDto);
-    }
+    public TrainerResponseDto save(TrainingTypeEnum specialization, BigInteger userId) {
+        UserEntity user = userRepository.findById(userId).orElse(null);
 
-    @Override
-    public Optional<TrainerDto> findByUsername(String username) {
-        Optional<UserDto> userDto = userService.findByUsername(username);
-
-        if (userDto.isPresent()) {
-            Optional<TrainerEntity> trainer = trainerRepository.findById(userDto.get().getTrainer().getId());
-
-            if (trainer.isPresent()) {
-                TrainerEntity trainerEntity = trainer.get();
-                return Optional.of(trainerEntity.toDto());
-            }
+        if (user == null || user.getTrainee() != null) {
+            return null;
         }
 
-        return Optional.empty();
+        TrainerEntity trainerEntity = trainerRepository.save(new TrainerEntity(
+                null,
+                trainingTypeRepository.findByName(specialization).orElse(null),
+                user,
+                Set.of(),
+                Set.of()
+        ));
+
+        return new TrainerResponseDto(
+                trainerEntity.getUser().getFirstName(),
+                trainerEntity.getUser().getLastName(),
+                trainerEntity.getSpecialization().getName().name(),
+                trainerEntity.getUser().getIsActive(),
+                trainerEntity.getTrainees().stream().map(x -> new SimpleTraineeResponseDto(
+                        x.getUser().getUsername(),
+                        x.getUser().getFirstName(),
+                        x.getUser().getLastName()
+                )).toList()
+        );
     }
 
     @Override
-    public Optional<TrainerResponseModel> findByUsernameToResponse(String username) {
-        Optional<TrainerDto> trainerDto = findByUsername(username);
+    public Optional<TrainerResponseDto> findByUsername(String username) {
+        Optional<TrainerEntity> trainer = trainerRepository.findByUser_Username(username);
 
-        if (trainerDto.isEmpty()) {
+        if (trainer.isEmpty()) {
             return Optional.empty();
         }
 
-        return trainerDto.map(t -> new TrainerResponseModel(
+        return trainer.map(t -> new TrainerResponseDto(
                 t.getUser().getFirstName(),
                 t.getUser().getLastName(),
                 t.getSpecialization().getName().name(),
                 t.getUser().getIsActive(),
                 t.getTrainees().stream().map(
-                        trainee -> new SimpleTraineeResponseModel(
+                        trainee -> new SimpleTraineeResponseDto(
                                 trainee.getUser().getUsername(),
                                 trainee.getUser().getFirstName(),
                                 trainee.getUser().getLastName())
@@ -90,42 +85,41 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Optional<TrainerUpdateResponseModel> update(String username, TrainerUpdateRequestModel model) {
-        Optional<TrainerDto> trainerDto = findByUsername(username);
+    public Optional<TrainerUpdateResponseDto> update(String username, TrainerUpdateRequestDto model) {
+        TrainerEntity trainer = trainerRepository.findByUser_Username(username).orElse(null);
 
-        if (trainerDto.isEmpty()) {
+        if (trainer == null) {
             return Optional.empty();
         }
 
-        TrainerDto trainer = trainerDto.get();
-        trainer.getUser().setFirstName(model.firstName());
-        trainer.getUser().setLastName(model.lastName());
+        userRepository.updateProfileById(
+                trainer.getUser().getId(),
+                model.firstName(),
+                model.lastName(),
+                model.isActive()
+        );
 
         if (model.specialization() != null) {
-            Optional<TrainingTypeEntity> typeEntity = trainingTypeService.getTrainingTypeName(model.specialization()).map(TrainingTypeEntity::fromDto);
-            typeEntity.ifPresent(trainer::setSpecialization);
-        }
+            Optional<TrainingTypeEntity> type = trainingTypeRepository.findByName(model.specialization());
 
-        trainer.getUser().setIsActive(model.isActive());
-
-        boolean success = update(trainer);
-
-        if (!success) {
-            return Optional.empty();
+            type.ifPresent(trainingTypeEntity -> trainerRepository.updateSpecialization(
+                    trainer.getId(),
+                    trainingTypeEntity
+            ));
         }
 
         return Optional.of(
-                new TrainerUpdateResponseModel(
-                        trainer.getUser().getUsername(),
-                        trainer.getUser().getFirstName(),
-                        trainer.getUser().getLastName(),
-                        trainer.getSpecialization().getName().name(),
-                        trainer.getUser().getIsActive(),
+                new TrainerUpdateResponseDto(
+                        username,
+                        model.firstName(),
+                        model.lastName(),
+                        model.specialization() != null ? model.specialization().name() : null,
+                        model.isActive(),
                         trainer.getTrainees().stream()
-                                .map(t -> new SimpleTraineeResponseModel(
-                                        t.getUser().getUsername(),
-                                        t.getUser().getFirstName(),
-                                        t.getUser().getLastName()
+                                .map(x -> new SimpleTraineeResponseDto(
+                                        x.getUser().getUsername(),
+                                        x.getUser().getFirstName(),
+                                        x.getUser().getLastName()
                                 ))
                                 .toList()
                 )
@@ -133,64 +127,26 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Set<TrainingEntity> getTrainingsByUsername(String username) {
-        Optional<TrainerDto> trainer = findByUsername(username);
-
-        if (trainer.isPresent()) {
-            trainer.get().getTrainings().size(); // TODO: review the need for this here
-            return trainer.get().getTrainings();
-        }
-
-        return Set.of();
-    }
-
-    @Override
-    public Set<TrainingResponseForTrainerModel> getTrainingsByUsernameToResponse(String username, LocalDate periodFrom, LocalDate periodTo, String traineeName) {
-        Set<TrainingEntity> trainingEntities = getTrainingsByUsername(username);
+    public Set<TrainingResponseForTrainerDto> getTrainingsByUsernameToResponse(
+            String username, LocalDate periodFrom, LocalDate periodTo, String traineeName) {
+        Set<TrainingEntity> trainingEntities = trainingRepository.findByTrainerUsername(username);
 
         return trainingEntities.stream()
                 .filter(t -> (periodFrom == null || !t.getDate().isBefore(periodFrom)) &&
                         (periodTo == null || !t.getDate().isAfter(periodTo)) &&
-                        (traineeName == null || t.getTrainee().getUser().getUsername().equalsIgnoreCase(traineeName)))
+                        (traineeName == null || t.getTrainee().getUser().getUsername().equals(traineeName)))
                 .map(t -> {
                     var trainee = t.getTrainee().getUser();
+                    String traineeFullName = "%s %s".formatted(trainee.getFirstName(), trainee.getLastName());
 
-                    return new TrainingResponseForTrainerModel(
+                    return new TrainingResponseForTrainerDto(
                             t.getName(),
                             t.getDate(),
                             t.getType().getName().name(),
                             t.getDuration(),
-                            "%s %s".formatted(trainee.getFirstName(), trainee.getLastName())
+                            traineeFullName
                     );
                 })
                 .collect(Collectors.toSet());
-    }
-
-    @Override
-    public TrainerDto save(TrainerDto trainer) {
-        if (trainer.getUser() != null && !trainer.getUser().isValid()) {
-            throw new ConflictException("Invalid user");
-        }
-
-        return trainerRepository.save(TrainerEntity.fromDto(trainer)).toDto();
-    }
-
-    @Override
-    public boolean update(TrainerDto trainer) {
-        if (trainer.getUser() != null && !trainer.getUser().isValid()) {
-            throw new ConflictException("Invalid user");
-        }
-
-        if (!trainerRepository.existsById(trainer.getId())) {
-            return false;
-        }
-
-        // TODO: review the need for userService here
-        userService.updateProfile(UserDto.builder()
-                .firstName(trainer.getUser().getFirstName())
-                .lastName(trainer.getUser().getLastName())
-                .build());
-        trainerRepository.update(trainer.getId(), trainer.getUser(), trainer.getSpecialization());
-        return true;
     }
 }

@@ -1,6 +1,6 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.dto.model.response.TrainingTypeResponseModel;
+import com.epam.gym.dto.response.TrainingTypeResponseDto;
 import com.epam.gym.service.TrainingTypeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class TrainingTypeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Set<TrainingTypeResponseModel> getTrainingTypes() {
+    public Set<TrainingTypeResponseDto> getTrainingTypes() {
         return trainingTypeService.getAllToResponse();
     }
 }
