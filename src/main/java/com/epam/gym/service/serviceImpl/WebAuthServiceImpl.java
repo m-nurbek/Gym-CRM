@@ -6,22 +6,37 @@ import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
 import com.epam.gym.service.WebAuthService;
-import lombok.AllArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
 @Service
-@AllArgsConstructor
 @Transactional
 public class WebAuthServiceImpl implements WebAuthService {
     private final UserService userService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
 
+    private final MeterRegistry meterRegistry;
+    private final Counter counter;
+
+    public WebAuthServiceImpl(UserService userService, TraineeService traineeService, TrainerService trainerService, MeterRegistry meterRegistry) {
+        this.userService = userService;
+        this.traineeService = traineeService;
+        this.trainerService = trainerService;
+        this.meterRegistry = meterRegistry;
+        counter = Counter.builder("user.login.counter")
+                .tag("status", "authenticated")
+                .description("Total number of users' logins to the system")
+                .register(this.meterRegistry);
+    }
+
     @Override
     public boolean authenticate(String username, String password) {
+        counter.increment();
         return userService.isUsernameAndPasswordMatch(username, password);
     }
 

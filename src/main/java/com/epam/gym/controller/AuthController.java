@@ -7,6 +7,7 @@ import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TrainerRegistrationDto;
 import com.epam.gym.dto.request.UserCredentialDto;
 import com.epam.gym.service.WebAuthService;
+import io.micrometer.core.annotation.Timed;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final WebAuthService authService;
 
+    @Timed(value = "request.login.api", description = "Login API Response Time", histogram = true, percentiles = {0.5, 0.7, 0.9, 0.99})
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public void login(@Valid @RequestBody UserCredentialDto credential) {
