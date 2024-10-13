@@ -34,13 +34,11 @@ public class TraineeController {
     private final UserService userService;
 
     @GetMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public TraineeResponseDto getProfile(@PathVariable String username) {
         return traineeService.findByUsername(username).orElseThrow(NotFoundException::new);
     }
 
     @PutMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public TraineeUpdateResponseDto updateProfile(
             @PathVariable String username,
             @Valid @RequestBody TraineeUpdateRequestDto requestModel
@@ -57,7 +55,6 @@ public class TraineeController {
     }
 
     @GetMapping("/trainers/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public Set<SimpleTrainerResponseDto> getNotAssignedActiveTrainers(@PathVariable String username) {
         if (traineeService.findByUsername(username).isEmpty()) {
             throw new NotFoundException();
@@ -67,7 +64,6 @@ public class TraineeController {
     }
 
     @PutMapping("/update-trainers/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public Set<SimpleTrainerResponseDto> updateTrainersList(
             @PathVariable String username,
             @Valid @RequestBody List<String> trainerUsernameList
@@ -80,7 +76,6 @@ public class TraineeController {
     }
 
     @GetMapping("/trainings/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public Set<TrainingResponseForTraineeDto> getTrainingsList(
             @PathVariable String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
@@ -96,7 +91,6 @@ public class TraineeController {
     }
 
     @PatchMapping("/active-state/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         if (!userService.updateActiveState(username, isActive)) {
             throw new NotFoundException();

@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
-        userRepository.updatePasswordById(user.getId(), newPassword);
+        userRepository.updatePasswordById(user.getId(), passwordEncoder.encode(newPassword));
         return true;
     }
 

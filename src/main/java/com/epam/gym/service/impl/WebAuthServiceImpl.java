@@ -3,6 +3,8 @@ package com.epam.gym.service.impl;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TrainerRegistrationDto;
+import com.epam.gym.dto.response.JwtTokenResponseDto;
+import com.epam.gym.service.JwtService;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
@@ -12,6 +14,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +25,17 @@ public class WebAuthServiceImpl implements WebAuthService {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     private final MeterRegistry meterRegistry;
     private final Counter counter;
 
-    public WebAuthServiceImpl(UserService userService, TraineeService traineeService, TrainerService trainerService, AuthenticationManager authenticationManager, MeterRegistry meterRegistry) {
+    public WebAuthServiceImpl(UserService userService, TraineeService traineeService, TrainerService trainerService, AuthenticationManager authenticationManager, JwtService jwtService, MeterRegistry meterRegistry) {
         this.userService = userService;
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
         this.meterRegistry = meterRegistry;
         counter = Counter.builder("user.login.counter")
                 .tag("status", "authenticated")
@@ -39,12 +44,17 @@ public class WebAuthServiceImpl implements WebAuthService {
     }
 
     @Override
-    public void authenticate(String username, String password) {
+    public JwtTokenResponseDto authenticate(String username, String password) {
         counter.increment();
 
         Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(username, password);
+        Authentication authResponse = authenticationManager.authenticate(authentication);
 
-        authenticationManager.authenticate(authentication);
+        if (authResponse.isAuthenticated()) {
+            return jwtService.generateAccessAndRefreshTokens(username);
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
+        }
     }
 
     @Override
@@ -70,5 +80,20 @@ public class WebAuthServiceImpl implements WebAuthService {
         trainerService.save(trainer.specialization(), u.id());
 
         return new String[]{u.username(), u.password()};
+    }
+
+    @Override
+    public void logout(String username) {
+        jwtService.deleteRefreshToken(username);
+    }
+
+    @Override
+    public JwtTokenResponseDto refreshAccessToken(String refreshToken) {
+        String accessToken = jwtService.refreshAccessToken(refreshToken);
+
+        return new JwtTokenResponseDto(
+                accessToken,
+                refreshToken
+        );
     }
 }

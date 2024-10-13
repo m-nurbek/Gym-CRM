@@ -9,7 +9,6 @@ import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -31,13 +29,11 @@ public class TrainerController {
     private final UserService userService;
 
     @GetMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public TrainerResponseDto getProfile(@PathVariable String username) {
         return trainerService.findByUsername(username).orElseThrow(NotFoundException::new);
     }
 
     @PutMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public TrainerUpdateResponseDto updateProfile(
             @PathVariable String username,
             @Valid @RequestBody TrainerUpdateRequestDto requestModel
@@ -46,7 +42,6 @@ public class TrainerController {
     }
 
     @GetMapping("/trainings/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public Set<TrainingResponseForTrainerDto> getTrainingsList(
             @PathVariable String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
@@ -61,7 +56,6 @@ public class TrainerController {
     }
 
     @PatchMapping("/active-state/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
         if (!userService.updateActiveState(username, isActive)) {
             throw new NotFoundException();
