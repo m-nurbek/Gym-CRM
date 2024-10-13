@@ -1,6 +1,7 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.entity.TrainingTypeEnum;
+import com.epam.gym.dto.request.TraineeRegistrationDto;
+import com.epam.gym.dto.request.TrainerRegistrationDto;
 import com.epam.gym.service.WebAuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +9,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDate;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,7 +31,7 @@ class AuthControllerUnitTest {
 
     @Test
     void login() throws Exception {
-        when(authService.authenticate(anyString(), anyString())).thenReturn(true);
+        doNothing().when(authService).authenticate(anyString(), anyString());
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -42,7 +45,7 @@ class AuthControllerUnitTest {
 
     @Test
     void failedLogin() throws Exception {
-        when(authService.authenticate(anyString(), anyString())).thenReturn(false);
+        doThrow(BadCredentialsException.class).when(authService).authenticate(anyString(), anyString());
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,7 +59,7 @@ class AuthControllerUnitTest {
 
     @Test
     void registerTrainee() throws Exception {
-        when(authService.registerTrainee(anyString(), anyString(), any(LocalDate.class), anyString()))
+        when(authService.registerTrainee(any(TraineeRegistrationDto.class)))
                 .thenReturn(new String[]{"username", "password"});
 
         mockMvc.perform(post("/api/v1/auth/register/trainee")
@@ -73,7 +76,7 @@ class AuthControllerUnitTest {
 
     @Test
     void registerTrainer() throws Exception {
-        when(authService.registerTrainer(anyString(), anyString(), any(TrainingTypeEnum.class)))
+        when(authService.registerTrainer(any(TrainerRegistrationDto.class)))
                 .thenReturn(new String[]{"username", "password"});
 
         mockMvc.perform(post("/api/v1/auth/register/trainer")
@@ -88,6 +91,7 @@ class AuthControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void changeLogin() throws Exception {
         when(authService.changePassword(anyString(), anyString(), anyString()))
                 .thenReturn(true);
@@ -103,6 +107,7 @@ class AuthControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void failedChangeLogin() throws Exception {
         when(authService.changePassword(anyString(), anyString(), anyString()))
                 .thenReturn(false);

@@ -1,7 +1,6 @@
 package com.epam.gym.controller;
 
 import com.epam.gym.controller.exception.BadRequestException;
-import com.epam.gym.controller.exception.UnauthorizedException;
 import com.epam.gym.dto.request.ChangeLoginDto;
 import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TrainerRegistrationDto;
@@ -28,15 +27,13 @@ public class AuthController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public void login(@Valid @RequestBody UserCredentialDto credential) {
-        if (!authService.authenticate(credential.username(), credential.password())) {
-            throw new UnauthorizedException();
-        }
+        authService.authenticate(credential.username(), credential.password());
     }
 
     @PostMapping("/register/trainee")
     @ResponseStatus(HttpStatus.OK)
     public String registerTrainee(@Valid @RequestBody TraineeRegistrationDto trainee) {
-        String[] usernameAndPassword = authService.registerTrainee(trainee.firstName(), trainee.lastName(), trainee.dob(), trainee.address());
+        String[] usernameAndPassword = authService.registerTrainee(trainee);
 
         return """
                         Registration successful.
@@ -48,7 +45,7 @@ public class AuthController {
     @PostMapping("/register/trainer")
     @ResponseStatus(HttpStatus.OK)
     public String registerTrainer(@Valid @RequestBody TrainerRegistrationDto trainer) {
-        String[] usernameAndPassword = authService.registerTrainer(trainer.firstName(), trainer.lastName(), trainer.specialization());
+        String[] usernameAndPassword = authService.registerTrainer(trainer);
 
         return """
                         Registration successful.

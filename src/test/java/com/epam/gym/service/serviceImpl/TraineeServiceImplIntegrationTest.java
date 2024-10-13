@@ -47,9 +47,10 @@ class TraineeServiceImplIntegrationTest {
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
         boolean isActive = false;
+        String password = "password";
 
         // when
-        UserDto user = userService.save(firstName, lastName, isActive);
+        UserDto user = userService.save(firstName, lastName, password, isActive);
         TraineeResponseDto trainee = traineeService.save(dob, address, user.id());
         UserEntity userEntity = userRepository.findById(user.id()).orElse(null);
 

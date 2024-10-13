@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -37,6 +38,7 @@ class TrainerControllerUnitTest {
     private UserService userService;
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void getProfile() throws Exception {
         when(trainerService.findByUsername(anyString())).thenReturn(Optional.of(new TrainerResponseDto(
                 "firstName",
@@ -51,6 +53,7 @@ class TrainerControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void failedGetProfile() throws Exception {
         when(trainerService.findByUsername(anyString())).thenReturn(Optional.empty());
 
@@ -59,6 +62,7 @@ class TrainerControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void updateProfile() throws Exception {
         when(trainerService.update(anyString(), any())).thenReturn(Optional.of(new TrainerUpdateResponseDto(
                 "username",
@@ -83,6 +87,7 @@ class TrainerControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void failedUpdateProfile() throws Exception {
         when(trainerService.update(anyString(), any())).thenReturn(Optional.empty());
 
@@ -100,6 +105,7 @@ class TrainerControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void getTrainingsList() throws Exception {
         when(trainerService.findByUsername(anyString()))
                 .thenReturn(Optional.of(new TrainerResponseDto(
@@ -117,6 +123,7 @@ class TrainerControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void failedGetTrainingsList() throws Exception {
         when(trainerService.findByUsername(anyString()))
                 .thenReturn(Optional.empty());
@@ -128,6 +135,7 @@ class TrainerControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void changeProfileActiveState() throws Exception {
         when(userService.updateActiveState(anyString(), anyBoolean())).thenReturn(true);
 
@@ -140,6 +148,7 @@ class TrainerControllerUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "johndoe1", password = "password1")
     void failedChangeProfileActiveState() throws Exception {
         when(userService.updateActiveState(anyString(), anyBoolean())).thenReturn(false);
 

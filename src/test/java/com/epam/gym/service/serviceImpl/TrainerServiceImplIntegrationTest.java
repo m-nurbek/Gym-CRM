@@ -44,9 +44,10 @@ class TrainerServiceImplIntegrationTest {
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
         boolean isActive = false;
+        String password = "password";
 
         // when
-        UserDto user = userService.save(firstName, lastName, isActive);
+        UserDto user = userService.save(firstName, lastName, password, isActive);
         TrainerResponseDto trainer = trainerService.save(specialization, user.id());
 
         UserEntity userEntity = userRepository.findById(user.id()).orElse(null);

@@ -230,9 +230,10 @@ class UserServiceImplIntegrationTest {
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
         boolean isActive = false;
+        String password = "password";
 
         // when
-        UserDto userDto = userService.save(firstName, lastName, isActive);
+        UserDto userDto = userService.save(firstName, lastName, password, isActive);
 
         // then
         assertAll(

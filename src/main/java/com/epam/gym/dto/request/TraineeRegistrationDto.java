@@ -2,6 +2,7 @@ package com.epam.gym.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,6 +21,10 @@ public record TraineeRegistrationDto(
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate dob,
 
-        String address
+        String address,
+
+        @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}",
+                message = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
+        String password
 ) {
 }

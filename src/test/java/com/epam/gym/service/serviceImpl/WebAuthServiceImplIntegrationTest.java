@@ -1,6 +1,8 @@
 package com.epam.gym.service.serviceImpl;
 
 import com.epam.gym.Application;
+import com.epam.gym.dto.request.TraineeRegistrationDto;
+import com.epam.gym.dto.request.TrainerRegistrationDto;
 import com.epam.gym.entity.TrainingTypeEnum;
 import com.epam.gym.repository.TraineeRepository;
 import com.epam.gym.repository.TrainerRepository;
@@ -8,6 +10,7 @@ import com.epam.gym.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
@@ -15,6 +18,8 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -35,14 +40,8 @@ class WebAuthServiceImplIntegrationTest {
         String username = "johndoe1";
         String password = "password1";
 
-        // when
-        boolean success = webAuthService.authenticate(username, password);
-
-        // then
-        assertAll(
-                "Assertions for 'authenticate()' method",
-                () -> assertThat(success).isTrue()
-        );
+        // when & then
+        assertDoesNotThrow(() -> webAuthService.authenticate(username, password));
     }
 
     @Test
@@ -51,14 +50,8 @@ class WebAuthServiceImplIntegrationTest {
         String username = "non-existent";
         String password = "password1";
 
-        // when
-        boolean success = webAuthService.authenticate(username, password);
-
-        // then
-        assertAll(
-                "Assertions for 'authenticate()' method",
-                () -> assertThat(success).isFalse()
-        );
+        // when & then
+        assertThrows(BadCredentialsException.class, () -> webAuthService.authenticate(username, password));
     }
 
     @Test
@@ -67,14 +60,8 @@ class WebAuthServiceImplIntegrationTest {
         String username = "johndoe1";
         String password = "wrongPassword";
 
-        // when
-        boolean success = webAuthService.authenticate(username, password);
-
-        // then
-        assertAll(
-                "Assertions for 'authenticate()' method",
-                () -> assertThat(success).isFalse()
-        );
+        // when & then
+        assertThrows(BadCredentialsException.class, () -> webAuthService.authenticate(username, password));
     }
 
     @Test
@@ -135,9 +122,10 @@ class WebAuthServiceImplIntegrationTest {
         String lastName = "LASTNAME";
         LocalDate dob = LocalDate.of(2001, 1, 1);
         String address = "ADDRESS";
+        var traineeRegistrationDto = new TraineeRegistrationDto(firstName, lastName, dob, address, "password");
 
         // when
-        String[] usernamePassword = webAuthService.registerTrainee(firstName, lastName, dob, address);
+        String[] usernamePassword = webAuthService.registerTrainee(traineeRegistrationDto);
         String username = usernamePassword[0];
 
         var user = userRepository.findByUsername(username).orElse(null);
@@ -166,9 +154,10 @@ class WebAuthServiceImplIntegrationTest {
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
         var type = TrainingTypeEnum.AEROBICS;
+        var trainerRegistrationDto = new TrainerRegistrationDto(firstName, lastName, type, "password");
 
         // when
-        String[] usernamePassword = webAuthService.registerTrainer(firstName, lastName, type);
+        String[] usernamePassword = webAuthService.registerTrainer(trainerRegistrationDto);
         String username = usernamePassword[0];
 
         var user = userRepository.findByUsername(username).orElse(null);

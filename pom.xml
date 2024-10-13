@@ -17,6 +17,7 @@
 
         <!--   Dependencies versions    -->
         <spring-boot.version>3.3.4</spring-boot.version>
+        <spring.security.test>6.3.3</spring.security.test>
         <lombok.version>1.18.34</lombok.version>
         <h2.version>2.3.232</h2.version>
         <postgresql.version>42.7.4</postgresql.version>
@@ -45,6 +46,12 @@
             <version>${prometheus.version}</version>
         </dependency>
 
+        <!--    Security    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
 
         <!--    Web    -->
         <dependency>
@@ -110,6 +117,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring-boot.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring.security.test}</version>
         </dependency>
 
         <dependency>

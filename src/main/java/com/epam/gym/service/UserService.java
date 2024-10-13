@@ -3,8 +3,11 @@ package com.epam.gym.service;
 import com.epam.gym.dto.UserDto;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 public interface UserService {
+
+    Optional<UserDto> findByUsername(String username);
 
     boolean isUsernameAndPasswordMatch(String username, String password);
 
@@ -18,5 +21,5 @@ public interface UserService {
 
     boolean updateActiveState(String username, boolean isActive);
 
-    UserDto save(String firstName, String lastName, boolean isActive);
+    UserDto save(String firstName, String lastName, String password, boolean isActive);
 }

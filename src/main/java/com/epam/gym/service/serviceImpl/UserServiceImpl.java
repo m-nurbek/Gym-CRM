@@ -8,20 +8,42 @@ import com.epam.gym.service.UserService;
 import com.epam.gym.util.AtomicBigInteger;
 import com.epam.gym.util.UserProfileUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public Optional<UserDto> findByUsername(String username) {
+        return userRepository.findByUsername(username).map(x ->
+                new UserDto(
+                        x.getId(),
+                        x.getFirstName(),
+                        x.getLastName(),
+                        x.getUsername(),
+                        x.getPassword(),
+                        x.getIsActive()
+                ));
+    }
 
     @Override
     public boolean isUsernameAndPasswordMatch(String username, String password) {
-        return userRepository.existsByUsernameAndPassword(username, password);
+        var user = userRepository.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            return false;
+        }
+
+        return passwordEncoder.matches(password, user.getPassword());
     }
 
     @Override
@@ -37,7 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean changePasswordForUser(UserEntity user, String oldPassword, String newPassword) {
-        if (!user.getPassword().equals(oldPassword)) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             return false;
         }
 
@@ -80,9 +102,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto save(String firstName, String lastName, boolean isActive) {
+    public UserDto save(String firstName, String lastName, String password, boolean isActive) {
         String uniqueUsername = generateUniqueUsername(firstName, lastName);
-        String generatedPassword = UserProfileUtil.generatePassword();
+        String generatedPassword = passwordEncoder.encode(password);
 
         UserEntity userEntity = new UserEntity(
                 null,
