@@ -1,4 +1,4 @@
-package com.epam.gym.service.serviceImpl;
+package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
