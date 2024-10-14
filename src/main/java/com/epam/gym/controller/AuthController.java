@@ -56,8 +56,11 @@ public class AuthController {
                 """.formatted(usernameAndPassword[0], usernameAndPassword[1]);
     }
 
-    @PostMapping("/change-password/{username}")
-    public void changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginDto changedLogin) {
+    @PostMapping("/change-password")
+    public void changeLogin(@RequestHeader("Authorization") String tokenWithPrefix, @Valid @RequestBody ChangeLoginDto changedLogin) {
+        String jwtToken = tokenWithPrefix.trim().split("\\s+")[1];
+        String username = jwtService.extractUsername(jwtToken);
+
         if (!authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword())) {
             throw new BadRequestException();
         }

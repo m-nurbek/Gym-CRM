@@ -143,6 +143,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    @Transactional
     public JwtTokenResponseDto generateAccessAndRefreshTokens(String username) {
         String accessToken = generateToken(username);
         String refreshToken = createRefreshToken(username);
