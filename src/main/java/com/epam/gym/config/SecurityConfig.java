@@ -1,5 +1,6 @@
 package com.epam.gym.config;
 
+import com.epam.gym.config.filter.BruteForceProtectorFilter;
 import com.epam.gym.config.filter.JwtFilter;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.service.UserService;
@@ -37,9 +38,11 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
 
     private final JwtFilter jwtFilter;
+    private final BruteForceProtectorFilter bruteForceProtectorFilter;
 
-    public SecurityConfig(@Lazy JwtFilter jwtFilter) {
+    public SecurityConfig(@Lazy JwtFilter jwtFilter, BruteForceProtectorFilter bruteForceProtectorFilter) {
         this.jwtFilter = jwtFilter;
+        this.bruteForceProtectorFilter = bruteForceProtectorFilter;
     }
 
     @Bean
@@ -64,16 +67,16 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserService userService) {
         return username -> {
-            log.info("Trying to authenticate user with username: {}", username);
+            log.info("Trying to find user with username: {}", username);
 
             UserDto userDto = userService.findByUsername(username).orElse(null);
 
             if (userDto == null) {
-                log.error("Authentication failed for the user with username: {}", username);
+                log.error("Failed to search for the user with username: {}", username);
                 throw new UsernameNotFoundException("User with username '%s' not found".formatted(username));
             }
 
-            log.info("Successfully authenticated user with username: {}", username);
+            log.info("Found user with username: {}", username);
             return userDto;
         };
     }
@@ -112,6 +115,7 @@ public class SecurityConfig {
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(bruteForceProtectorFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -141,6 +145,7 @@ public class SecurityConfig {
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(bruteForceProtectorFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
