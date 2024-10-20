@@ -1,10 +1,14 @@
 package com.epam.gym.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface BruteForceProtectorService {
 
-    void loginFailed(String username);
+    void loginFailed(String clientIp);
 
-    void loginSucceeded(String username);
+    void loginSucceeded(String clientIp);
 
-    boolean isBlocked(String username);
+    boolean isBlocked(String clientIp);
+
+    String getClientIP(HttpServletRequest httpServletRequest);
 }
