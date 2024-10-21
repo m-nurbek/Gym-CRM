@@ -3,6 +3,7 @@ package com.epam.gym.service.impl;
 import com.epam.gym.service.BruteForceProtectorService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -12,7 +13,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class BruteForceProtectorServiceImpl implements BruteForceProtectorService {
+    @Value("${security.login.max-attempts}")
     private int MAX_ATTEMPTS = 3;
+    @Value("${security.login.lock-time.minutes}")
     private int lockTimeDurationInMinutes = 1;
     private final long LOCK_TIME = TimeUnit.MINUTES.toMillis(lockTimeDurationInMinutes);
 
