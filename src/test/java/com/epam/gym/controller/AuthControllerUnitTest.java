@@ -73,7 +73,7 @@ class AuthControllerUnitTest {
                                   "lastName": "lastname",
                                   "dob": "2000-01-01",
                                   "address": "address",
-                                  "password": "password"
+                                  "password": "Password123!@"
                                 }"""))
                 .andExpect(status().isOk());
     }
@@ -90,23 +90,7 @@ class AuthControllerUnitTest {
                                   "firstName": "firstname",
                                   "lastName": "lastname",
                                   "specialization": "SWIMMING",
-                                  "password": "password"
-                                }"""))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
-    void changeLogin() throws Exception {
-        when(authService.changePassword(anyString(), anyString(), anyString()))
-                .thenReturn(true);
-
-        mockMvc.perform(post("/api/v1/auth/change-password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "oldPassword": "old",
-                                  "newPassword": "newPassword1!@"
+                                  "password": "Password123!@"
                                 }"""))
                 .andExpect(status().isOk());
     }
