@@ -9,6 +9,7 @@ import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/trainers")
 @AllArgsConstructor
+@Secured("ROLE_TRAINER")
 public class TrainerController {
     private final TrainerService trainerService;
     private final UserService userService;

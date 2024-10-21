@@ -2,6 +2,7 @@ package com.epam.gym.service.impl;
 
 import com.epam.gym.controller.exception.ConflictException;
 import com.epam.gym.dto.UserDto;
+import com.epam.gym.dto.UserRole;
 import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.UserService;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,7 +34,8 @@ public class UserServiceImpl implements UserService {
                         x.getLastName(),
                         x.getUsername(),
                         x.getPassword(),
-                        x.getIsActive()
+                        x.getIsActive(),
+                        getUserRoles(x)
                 ));
     }
 
@@ -129,7 +133,8 @@ public class UserServiceImpl implements UserService {
                 u.getLastName(),
                 u.getUsername(),
                 u.getPassword(),
-                u.getIsActive()
+                u.getIsActive(),
+                getUserRoles(u)
         );
     }
 
@@ -142,5 +147,23 @@ public class UserServiceImpl implements UserService {
         } while (userRepository.findByUsername(username).isPresent());
 
         return username;
+    }
+
+    private List<UserRole> getUserRoles(UserEntity user) {
+        if (user == null) {
+            return List.of();
+        }
+
+        List<UserRole> roles = new ArrayList<>();
+
+        if (user.getTrainer() != null && user.getTrainee() != null) {
+            throw new ConflictException("User cannot be trainee and trainer at the same time");
+        } else if (user.getTrainer() != null) {
+            roles.add(UserRole.ROLE_TRAINER);
+        } else {
+            roles.add(UserRole.ROLE_TRAINEE);
+        }
+
+        return roles;
     }
 }

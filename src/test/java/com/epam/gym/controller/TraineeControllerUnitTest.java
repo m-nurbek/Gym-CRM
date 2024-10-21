@@ -42,7 +42,7 @@ class TraineeControllerUnitTest {
     private UserService userService;
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void getProfile() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.of(new TraineeResponseDto(
@@ -59,7 +59,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void failedGetProfile() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.empty());
@@ -69,7 +69,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void updateProfile() throws Exception {
         when(traineeService.update(anyString(), any(TraineeUpdateRequestDto.class)))
                 .thenReturn(Optional.of(new TraineeUpdateResponseDto(
@@ -97,7 +97,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void failedUpdateProfile() throws Exception {
         when(traineeService.update(anyString(), any(TraineeUpdateRequestDto.class)))
                 .thenReturn(Optional.empty());
@@ -117,7 +117,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void deleteProfile() throws Exception {
         when(traineeService.deleteByUsername(anyString())).thenReturn(true);
 
@@ -126,7 +126,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void failedDeleteProfile() throws Exception {
         when(traineeService.deleteByUsername(anyString())).thenReturn(false);
 
@@ -135,7 +135,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void getNotAssignedActiveTrainers() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.of(new TraineeResponseDto(
@@ -153,7 +153,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void failedGetNotAssignedActiveTrainers() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.empty());
@@ -164,7 +164,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void updateTrainersList() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.of(new TraineeResponseDto(
@@ -191,7 +191,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void failedUpdateTrainersList() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.empty());
@@ -211,7 +211,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void getTrainingsList() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.of(new TraineeResponseDto(
@@ -230,7 +230,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void failedGetTrainingsList() throws Exception {
         when(traineeService.findByUsername(anyString()))
                 .thenReturn(Optional.empty());
@@ -242,7 +242,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void changeProfileActiveState() throws Exception {
         when(userService.updateActiveState(anyString(), anyBoolean())).thenReturn(true);
 
@@ -255,7 +255,7 @@ class TraineeControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe1", password = "password1")
+    @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void failedChangeProfileActiveState() throws Exception {
         when(userService.updateActiveState(anyString(), anyBoolean())).thenReturn(false);
 

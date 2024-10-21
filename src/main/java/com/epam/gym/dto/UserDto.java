@@ -1,6 +1,7 @@
 package com.epam.gym.dto;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigInteger;
@@ -16,11 +17,14 @@ public record UserDto(
         String lastName,
         String username,
         String password,
-        Boolean isActive
+        Boolean isActive,
+        List<UserRole> roles
 ) implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return roles.stream()
+                .map(x -> new SimpleGrantedAuthority(x.toString()))
+                .toList();
     }
 
     @Override

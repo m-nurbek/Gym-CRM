@@ -11,6 +11,7 @@ import com.epam.gym.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +30,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/trainees")
 @AllArgsConstructor
+@Secured("ROLE_TRAINEE")
 public class TraineeController {
     private final TraineeService traineeService;
     private final UserService userService;
