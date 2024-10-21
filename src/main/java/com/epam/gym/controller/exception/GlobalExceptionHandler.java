@@ -1,8 +1,13 @@
 package com.epam.gym.controller.exception;
 
+import com.epam.gym.service.BruteForceProtectorService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +19,10 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @Autowired
+    private BruteForceProtectorService bruteForceProtectorService;
+    @Autowired
+    private HttpServletRequest request;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -44,7 +53,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
         log.error(ex.getMessage(), ex);
+        callFailedAuthorizationAttemptService();
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<String> handleUnauthorizedException(UsernameNotFoundException ex) {
+        log.error(ex.getMessage(), ex);
+        callFailedAuthorizationAttemptService();
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleUnauthorizedException(BadCredentialsException ex) {
+        log.error(ex.getMessage(), ex);
+        callFailedAuthorizationAttemptService();
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    private void callFailedAuthorizationAttemptService() {
+        String clientIp = bruteForceProtectorService.getClientIP(request);
+        bruteForceProtectorService.loginFailed(clientIp);
     }
 
     @ExceptionHandler(ConflictException.class)

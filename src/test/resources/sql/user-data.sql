@@ -1,65 +1,65 @@
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (1, true, 'John', 'Doe', '$2a$12$1TcEYnfwRKYR8N2epkTmR.pGdy7VnLoKH1NSLYyN9kJvU9Pn5NQvG', 'johndoe1');
+VALUES (1, true, 'John', 'Doe', '$2a$12$1TcEYnfwRKYR8N2epkTmR.pGdy7VnLoKH1NSLYyN9kJvU9Pn5NQvG', 'johndoe1'); -- password1
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (2, true, 'Jane', 'Doe', '$2a$12$O1uyPeHsx/MKkLaCbj/3XOOmqsdDz5K6kJW9TccbPDMgQvoqxkOxO', 'janedoe2');
+VALUES (2, true, 'Jane', 'Doe', '$2a$12$O1uyPeHsx/MKkLaCbj/3XOOmqsdDz5K6kJW9TccbPDMgQvoqxkOxO', 'janedoe2'); -- password2
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (3, true, 'Alice', 'Smith', '$2a$12$wSe2P38ocxqWZn60b8Wa2uyhcEAPN7fB2AZ0.1bEPAl9Us86BMEoi', 'alicesmith3');
+VALUES (3, true, 'Alice', 'Smith', '$2a$12$wSe2P38ocxqWZn60b8Wa2uyhcEAPN7fB2AZ0.1bEPAl9Us86BMEoi', 'alicesmith3'); -- password3
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (4, true, 'Bob', 'Johnson', '$2a$12$hibyOS2veK13p6nPyDZ7.usuFgSz3az2tBEov4ii9jXeU8px2zsLW', 'bobjohnson4');
+VALUES (4, true, 'Bob', 'Johnson', '$2a$12$hibyOS2veK13p6nPyDZ7.usuFgSz3az2tBEov4ii9jXeU8px2zsLW', 'bobjohnson4'); -- password4
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (5, true, 'Charlie', 'Brown', '$2a$12$FswNNLUzRRLlK7zkpIesnOb1MqpOZvV9M0DDfZIzt2hlnzxr0QNAy', 'charliebrown5');
+VALUES (5, true, 'Charlie', 'Brown', '$2a$12$FswNNLUzRRLlK7zkpIesnOb1MqpOZvV9M0DDfZIzt2hlnzxr0QNAy', 'charliebrown5'); -- password5
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (6, true, 'David', 'Miller', '$2a$12$dzr16dduw2t8fOBgVMci4.5vxZFYNX6B74IoTS6NyyWdZTF12ylNK', 'davidmiller6');
+VALUES (6, true, 'David', 'Miller', '$2a$12$dzr16dduw2t8fOBgVMci4.5vxZFYNX6B74IoTS6NyyWdZTF12ylNK', 'davidmiller6'); -- password6
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (7, true, 'Emily', 'Wilson', '$2a$12$6m.NMj5JYe3ZbPrTwWeHvOAHv26FwtR/EDiZfpxazjAoEtqJRcHve', 'emilywilson7');
+VALUES (7, true, 'Emily', 'Wilson', '$2a$12$6m.NMj5JYe3ZbPrTwWeHvOAHv26FwtR/EDiZfpxazjAoEtqJRcHve', 'emilywilson7'); -- password7
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (8, true, 'Frank', 'Moore', '$2a$12$HYFFSoGGG.v5U5GCESOxT.Rylu4HpZs1CJGFBcC/K4ZHIQtNoRihu', 'frankmoore8');
+VALUES (8, true, 'Frank', 'Moore', '$2a$12$HYFFSoGGG.v5U5GCESOxT.Rylu4HpZs1CJGFBcC/K4ZHIQtNoRihu', 'frankmoore8'); -- password8
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (9, true, 'Grace', 'Taylor', '$2a$12$xFg4qFz.NOSWRVTP02OWA.EgO3OP1XgBiwsYQvTmvAL9ObZFlU5Fy', 'gracetaylor9');
+VALUES (9, true, 'Grace', 'Taylor', '$2a$12$xFg4qFz.NOSWRVTP02OWA.EgO3OP1XgBiwsYQvTmvAL9ObZFlU5Fy', 'gracetaylor9'); -- password9
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (10, true, 'Henry', 'Anderson', '$2a$12$LxhlHYQH11Z3ve23wx4n3eR9VjzjVJB8wZ4NgFrOWdqXG7NxK3IFu', 'henryanderson10');
+VALUES (10, true, 'Henry', 'Anderson', '$2a$12$LxhlHYQH11Z3ve23wx4n3eR9VjzjVJB8wZ4NgFrOWdqXG7NxK3IFu', 'henryanderson10'); -- password10
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (11, true, 'Ivy', 'Thomas', '$2a$12$4ShRayeBjA4M39N41BxVbORUmFaExR.tgh/VqHSQ04XfqvST0UMrC', 'ivythomas11');
+VALUES (11, true, 'Ivy', 'Thomas', '$2a$12$4ShRayeBjA4M39N41BxVbORUmFaExR.tgh/VqHSQ04XfqvST0UMrC', 'ivythomas11'); -- password11
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (12, true, 'Jake', 'Jackson', '$2a$12$v2ptNppsAzXo2Q0aIgUfkOM6KllgDoKzXuWZTJhETIZdCTngPxFRy', 'jakejackson12');
+VALUES (12, true, 'Jake', 'Jackson', '$2a$12$v2ptNppsAzXo2Q0aIgUfkOM6KllgDoKzXuWZTJhETIZdCTngPxFRy', 'jakejackson12'); -- password12
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (13, true, 'Kate', 'White', '$2a$12$vw3FuYsZ5zcycwtPK9cwO.5VjNed3dKlRfkABN1UxVj3ooFEe7xEu', 'katewhite13');
+VALUES (13, true, 'Kate', 'White', '$2a$12$vw3FuYsZ5zcycwtPK9cwO.5VjNed3dKlRfkABN1UxVj3ooFEe7xEu', 'katewhite13'); -- password13
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (14, true, 'Liam', 'Harris', '$2a$12$/Q5nmQr/hA2PQtqLWJrxmOs.RxbEpklN.j9StHhaVxm4qULFWfm9u', 'liamharris14');
+VALUES (14, true, 'Liam', 'Harris', '$2a$12$/Q5nmQr/hA2PQtqLWJrxmOs.RxbEpklN.j9StHhaVxm4qULFWfm9u', 'liamharris14'); -- password14
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (15, true, 'Mia', 'Martin', '$2a$12$f.C4AZD17KecN9rpLn3aLuuPIvBPSZa4aIsbNUfDFypX6tDIQscBK', 'miamartin15');
+VALUES (15, true, 'Mia', 'Martin', '$2a$12$f.C4AZD17KecN9rpLn3aLuuPIvBPSZa4aIsbNUfDFypX6tDIQscBK', 'miamartin15'); -- password15
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (16, true, 'Noah', 'Lee', '$2a$12$o.51UT2pZGF4Hk9eazDbnePICIsULCMRY5GVg6jkchHEu2YNy2Avu', 'noahlee16');
+VALUES (16, true, 'Noah', 'Lee', '$2a$12$o.51UT2pZGF4Hk9eazDbnePICIsULCMRY5GVg6jkchHEu2YNy2Avu', 'noahlee16'); -- password16
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (17, true, 'Olivia', 'Walker', '$2a$12$kfGEuUHeMeLFruCEcc57FeK/n89OK3kNuZPUk9ws2cAYIpd4OEagO', 'oliviawalker17');
+VALUES (17, true, 'Olivia', 'Walker', '$2a$12$kfGEuUHeMeLFruCEcc57FeK/n89OK3kNuZPUk9ws2cAYIpd4OEagO', 'oliviawalker17'); -- password17
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (18, true, 'Paul', 'Hall', '$2a$12$NfzH/aMKczaRZjPDZfuYbeGBchKXzvO/pjnGCDx92HgLKUkbllmnu', 'paulhall18');
+VALUES (18, true, 'Paul', 'Hall', '$2a$12$NfzH/aMKczaRZjPDZfuYbeGBchKXzvO/pjnGCDx92HgLKUkbllmnu', 'paulhall18'); -- password18
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (19, true, 'Quinn', 'Allen', '$2a$12$H3lXv7btQWigBO6ZKgOmWeJ9pVXS1dNCPcAyihP4w.k1EHTgDJXey', 'quinnallen19');
+VALUES (19, true, 'Quinn', 'Allen', '$2a$12$H3lXv7btQWigBO6ZKgOmWeJ9pVXS1dNCPcAyihP4w.k1EHTgDJXey', 'quinnallen19'); -- password19
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (20, true, 'Ryan', 'Young', '$2a$12$IpT1VpadJ1AfPtq54LRP8.mbza5t8aawhPbSvG31B1.gyihFZ.85C', 'ryanyoung20');
+VALUES (20, true, 'Ryan', 'Young', '$2a$12$IpT1VpadJ1AfPtq54LRP8.mbza5t8aawhPbSvG31B1.gyihFZ.85C', 'ryanyoung20'); -- password20
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
-VALUES (21, true, 'Sophia', 'King', '$2a$12$YHI7.7JMeK.Urth5svy34uXI8Ro4FMDOz6stE5zYBo74klMBq7/oa', 'sophiaking21');
+VALUES (21, true, 'Sophia', 'King', '$2a$12$YHI7.7JMeK.Urth5svy34uXI8Ro4FMDOz6stE5zYBo74klMBq7/oa', 'sophiaking21'); -- .... and so on
 
 INSERT INTO user_table (id, is_active, first_name, last_name, password, username)
 VALUES (22, true, 'Tyler', 'Scott', '$2a$12$ygrEPxSx7Iqo4BhVzIsv1u8qyCmBTjMOQi1os3XWwmLRsYV1yhrAC', 'tylerscott22');

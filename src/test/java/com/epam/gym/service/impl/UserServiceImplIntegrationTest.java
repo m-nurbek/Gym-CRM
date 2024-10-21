@@ -6,6 +6,7 @@ import com.epam.gym.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
@@ -22,6 +23,8 @@ class UserServiceImplIntegrationTest {
     private UserServiceImpl userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     void shouldMatchUsernameAndPassword() {
@@ -80,8 +83,8 @@ class UserServiceImplIntegrationTest {
                 () -> assertThat(success2).isTrue(),
                 () -> assertThat(user1).isNotNull(),
                 () -> assertThat(user2).isNotNull(),
-                () -> assertThat(user1.getPassword()).isEqualTo(newPassword1),
-                () -> assertThat(user2.getPassword()).isEqualTo(newPassword2)
+                () -> assertThat(passwordEncoder.matches(newPassword1, user1.getPassword())).isTrue(),
+                () -> assertThat(passwordEncoder.matches(newPassword2, user2.getPassword())).isTrue()
         );
     }
 

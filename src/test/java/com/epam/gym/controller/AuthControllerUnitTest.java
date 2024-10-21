@@ -2,6 +2,7 @@ package com.epam.gym.controller;
 
 import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TrainerRegistrationDto;
+import com.epam.gym.dto.response.JwtTokenResponseDto;
 import com.epam.gym.service.WebAuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
 
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("classpath:application-test.properties")
 class AuthControllerUnitTest {
     @Autowired
     private MockMvc mockMvc;
@@ -31,14 +34,14 @@ class AuthControllerUnitTest {
 
     @Test
     void login() throws Exception {
-        doNothing().when(authService).authenticate(anyString(), anyString());
+        when(authService.authenticate(anyString(), anyString())).thenReturn(new JwtTokenResponseDto("accessToken", "refreshToken"));
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "username": "johndoe1",
-                                  "password": "password"
+                                  "password": "password1"
                                 }"""))
                 .andExpect(status().isOk());
     }
@@ -69,7 +72,8 @@ class AuthControllerUnitTest {
                                   "firstName": "firstname",
                                   "lastName": "lastname",
                                   "dob": "2000-01-01",
-                                  "address": "address"
+                                  "address": "address",
+                                  "password": "password"
                                 }"""))
                 .andExpect(status().isOk());
     }
@@ -85,7 +89,8 @@ class AuthControllerUnitTest {
                                 {
                                   "firstName": "firstname",
                                   "lastName": "lastname",
-                                  "specialization": "SWIMMING"
+                                  "specialization": "SWIMMING",
+                                  "password": "password"
                                 }"""))
                 .andExpect(status().isOk());
     }
@@ -96,7 +101,7 @@ class AuthControllerUnitTest {
         when(authService.changePassword(anyString(), anyString(), anyString()))
                 .thenReturn(true);
 
-        mockMvc.perform(post("/api/v1/auth/change-password/username")
+        mockMvc.perform(post("/api/v1/auth/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -112,7 +117,7 @@ class AuthControllerUnitTest {
         when(authService.changePassword(anyString(), anyString(), anyString()))
                 .thenReturn(false);
 
-        mockMvc.perform(post("/api/v1/auth/change-password/username")
+        mockMvc.perform(post("/api/v1/auth/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
