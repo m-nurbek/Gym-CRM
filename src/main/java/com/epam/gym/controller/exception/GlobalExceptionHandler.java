@@ -2,8 +2,8 @@ package com.epam.gym.controller.exception;
 
 import com.epam.gym.service.BruteForceProtectorService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,11 +18,10 @@ import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
-    @Autowired
-    private BruteForceProtectorService bruteForceProtectorService;
-    @Autowired
-    private HttpServletRequest request;
+    private final BruteForceProtectorService bruteForceProtectorService;
+    private final HttpServletRequest request;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -45,27 +44,27 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<String> handleAllOtherExceptions(BadRequestException ex) {
+    public ResponseEntity<String> handleBadRequestException(BadRequestException ex) {
         log.error(ex.getMessage(), ex);
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
+    public ResponseEntity<String> handleAuthenticationException(UnauthorizedException ex) {
         log.error(ex.getMessage(), ex);
         callFailedAuthorizationAttemptService();
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<String> handleUnauthorizedException(UsernameNotFoundException ex) {
+    public ResponseEntity<String> handleAuthenticationException(UsernameNotFoundException ex) {
         log.error(ex.getMessage(), ex);
         callFailedAuthorizationAttemptService();
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleUnauthorizedException(BadCredentialsException ex) {
+    public ResponseEntity<String> handleAuthenticationException(BadCredentialsException ex) {
         log.error(ex.getMessage(), ex);
         callFailedAuthorizationAttemptService();
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

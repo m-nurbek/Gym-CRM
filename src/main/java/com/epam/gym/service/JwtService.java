@@ -14,6 +14,8 @@ public interface JwtService {
 
     Key getSignKey();
 
+    String extractToken(String tokenWithPrefix);
+
     String extractUsername(String token);
 
     LocalDateTime extractExpiration(String token);

@@ -11,15 +11,15 @@ public interface UserService {
 
     boolean isUsernameAndPasswordMatch(String username, String password);
 
-    boolean changePassword(String username, String oldPassword, String newPassword);
+    void changePassword(String username, String oldPassword, String newPassword);
 
-    boolean changePassword(BigInteger id, String oldPassword, String newPassword);
+    void changePassword(BigInteger id, String oldPassword, String newPassword);
 
     boolean updateProfile(BigInteger id, String firstName, String lastName, boolean isActive);
 
     boolean updateActiveState(BigInteger id, boolean isActive);
 
-    boolean updateActiveState(String username, boolean isActive);
+    void updateActiveState(String username, boolean isActive);
 
     UserDto save(String firstName, String lastName, String password, boolean isActive);
 }

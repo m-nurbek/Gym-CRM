@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.MDC;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -62,7 +63,7 @@ public class LoggingAspect {
         String methodName = joinPoint.getSignature().getName();
         String transactionId = MDC.get("transactionId");
 
-        log.debug(">> CALLED METHOD (Transaction ID: {}): {}() with args: {}", transactionId, methodName, args);
+        log.trace(MarkerFactory.getMarker("LOGGING TRANSACTION"), ">> CALLED METHOD (Transaction ID: {}): {}() with args: {}", transactionId, methodName, args);
     }
 
     @AfterReturning(value = "controllerPointcut() || servicePointcut() || repositoryPointcut()", returning = "result")
@@ -70,7 +71,7 @@ public class LoggingAspect {
         String methodName = joinPoint.getSignature().getName();
         String transactionId = MDC.get("transactionId");
 
-        log.debug("<< METHOD RETURNED (Transaction ID: {}): {}() result: {}", transactionId, methodName, result);
+        log.trace(MarkerFactory.getMarker("LOGGING TRANSACTION"), "<< METHOD RETURNED (Transaction ID: {}): {}() result: {}", transactionId, methodName, result);
     }
 
     @AfterThrowing(pointcut = "controllerPointcut() || servicePointcut() || repositoryPointcut()", throwing = "exception")
@@ -78,6 +79,6 @@ public class LoggingAspect {
         String methodName = joinPoint.getSignature().getName();
         String transactionId = MDC.get("transactionId");
 
-        log.error("!! METHOD THREW EXCEPTION (Transaction ID: {}): {}() - {}", transactionId, methodName, exception.getMessage());
+        log.error(MarkerFactory.getMarker("LOGGING TRANSACTION"), "!! METHOD THREW EXCEPTION (Transaction ID: {}): {}() - {}", transactionId, methodName, exception.getMessage());
     }
 }

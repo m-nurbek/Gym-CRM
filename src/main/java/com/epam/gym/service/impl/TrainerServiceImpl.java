@@ -1,5 +1,6 @@
 package com.epam.gym.service.impl;
 
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.request.TrainerUpdateRequestDto;
 import com.epam.gym.dto.response.SimpleTraineeResponseDto;
 import com.epam.gym.dto.response.TrainerResponseDto;
@@ -64,32 +65,32 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Optional<TrainerResponseDto> findByUsername(String username) {
-        Optional<TrainerEntity> trainer = trainerRepository.findByUser_Username(username);
+    public TrainerResponseDto findByUsername(String username) {
+        TrainerEntity trainer = trainerRepository.findByUser_Username(username).orElse(null);
 
-        if (trainer.isEmpty()) {
-            return Optional.empty();
+        if (trainer == null) {
+            throw new NotFoundException("Trainer with this username doesn't exist");
         }
 
-        return trainer.map(t -> new TrainerResponseDto(
-                t.getUser().getFirstName(),
-                t.getUser().getLastName(),
-                t.getSpecialization().getName().name(),
-                t.getUser().getIsActive(),
-                t.getTrainees().stream().map(
+        return new TrainerResponseDto(
+                trainer.getUser().getFirstName(),
+                trainer.getUser().getLastName(),
+                trainer.getSpecialization().getName().name(),
+                trainer.getUser().getIsActive(),
+                trainer.getTrainees().stream().map(
                         trainee -> new SimpleTraineeResponseDto(
                                 trainee.getUser().getUsername(),
                                 trainee.getUser().getFirstName(),
                                 trainee.getUser().getLastName())
-                ).toList()));
+                ).toList());
     }
 
     @Override
-    public Optional<TrainerUpdateResponseDto> update(String username, TrainerUpdateRequestDto model) {
+    public TrainerUpdateResponseDto update(String username, TrainerUpdateRequestDto model) {
         TrainerEntity trainer = trainerRepository.findByUser_Username(username).orElse(null);
 
         if (trainer == null) {
-            return Optional.empty();
+            throw new NotFoundException("Trainer with this username doesn't exist");
         }
 
         userRepository.updateProfileById(
@@ -108,27 +109,29 @@ public class TrainerServiceImpl implements TrainerService {
             ));
         }
 
-        return Optional.of(
-                new TrainerUpdateResponseDto(
-                        username,
-                        model.firstName(),
-                        model.lastName(),
-                        model.specialization() != null ? model.specialization().name() : null,
-                        model.isActive(),
-                        trainer.getTrainees().stream()
-                                .map(x -> new SimpleTraineeResponseDto(
-                                        x.getUser().getUsername(),
-                                        x.getUser().getFirstName(),
-                                        x.getUser().getLastName()
-                                ))
-                                .toList()
-                )
+        return new TrainerUpdateResponseDto(
+                username,
+                model.firstName(),
+                model.lastName(),
+                model.specialization() != null ? model.specialization().name() : null,
+                model.isActive(),
+                trainer.getTrainees().stream()
+                        .map(x -> new SimpleTraineeResponseDto(
+                                x.getUser().getUsername(),
+                                x.getUser().getFirstName(),
+                                x.getUser().getLastName()
+                        ))
+                        .toList()
         );
     }
 
     @Override
     public Set<TrainingResponseForTrainerDto> getTrainingsByUsernameToResponse(
             String username, LocalDate periodFrom, LocalDate periodTo, String traineeName) {
+        if (!trainerRepository.existsByUser_Username(username)) {
+            throw new NotFoundException("Trainer with this username doesn't exist");
+        }
+
         Set<TrainingEntity> trainingEntities = trainingRepository.findByTrainerUsername(username);
 
         return trainingEntities.stream()

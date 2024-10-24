@@ -1,5 +1,6 @@
 package com.epam.gym.service.impl;
 
+import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.repository.TraineeRepository;
@@ -19,12 +20,12 @@ public class TrainingServiceImpl implements TrainingService {
     private final TraineeRepository traineeRepository;
 
     @Override
-    public boolean save(TrainingAddRequestDto model) {
+    public void save(TrainingAddRequestDto model) {
         var trainee = traineeRepository.findByUser_Username(model.traineeUsername());
         var trainer = trainerRepository.findByUser_Username(model.trainerUsername());
 
         if (trainee.isEmpty() || trainer.isEmpty()) {
-            return false;
+            throw new BadRequestException();
         }
 
         var trainingEntity = new TrainingEntity(
@@ -38,7 +39,5 @@ public class TrainingServiceImpl implements TrainingService {
         );
 
         trainingRepository.save(trainingEntity);
-
-        return true;
     }
 }

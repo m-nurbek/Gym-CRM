@@ -1,5 +1,6 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
 import com.epam.gym.service.TrainingService;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,7 +31,7 @@ class TrainingControllerUnitTest {
     @Test
     @WithMockUser(username = "johndoe1", password = "password1")
     void addTraining() throws Exception {
-        when(trainingService.save(any(TrainingAddRequestDto.class))).thenReturn(true);
+        doNothing().when(trainingService).save(any(TrainingAddRequestDto.class));
 
         mockMvc.perform(post("/api/v1/trainings")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -42,13 +44,13 @@ class TrainingControllerUnitTest {
                                 "duration": 3
                                 }
                                 """))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
     @WithMockUser(username = "johndoe1", password = "password1")
     void failedAddTraining() throws Exception {
-        when(trainingService.save(any(TrainingAddRequestDto.class))).thenReturn(false);
+        doThrow(BadRequestException.class).when(trainingService).save(any(TrainingAddRequestDto.class));
 
         mockMvc.perform(post("/api/v1/trainings")
                         .contentType(MediaType.APPLICATION_JSON)

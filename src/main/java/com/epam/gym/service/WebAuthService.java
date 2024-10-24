@@ -3,16 +3,17 @@ package com.epam.gym.service;
 import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TrainerRegistrationDto;
 import com.epam.gym.dto.response.JwtTokenResponseDto;
+import com.epam.gym.dto.response.RegistrationResponseDto;
 
 public interface WebAuthService {
 
     JwtTokenResponseDto authenticate(String username, String password);
 
-    boolean changePassword(String username, String oldPassword, String newPassword);
+    void changePassword(String username, String oldPassword, String newPassword);
 
-    String[] registerTrainee(TraineeRegistrationDto trainee);
+    RegistrationResponseDto registerTrainee(TraineeRegistrationDto trainee);
 
-    String[] registerTrainer(TrainerRegistrationDto trainer);
+    RegistrationResponseDto registerTrainer(TrainerRegistrationDto trainer);
 
     void logout(String username);
 

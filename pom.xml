@@ -17,7 +17,7 @@
 
         <!--   Dependencies versions    -->
         <spring-boot.version>3.3.4</spring-boot.version>
-        <spring.security.test>6.3.3</spring.security.test>
+        <spring.security-test.version>6.3.3</spring.security-test.version>
         <lombok.version>1.18.34</lombok.version>
         <h2.version>2.3.232</h2.version>
         <postgresql.version>42.7.4</postgresql.version>
@@ -25,6 +25,7 @@
         <assertj.version>3.26.3</assertj.version>
         <prometheus.version>1.13.5</prometheus.version>
         <jjwt.version>0.11.5</jjwt.version>
+        <jackson.databind.version>2.15.2</jackson.databind.version>
 
         <!--  Plugin versions  -->
         <jacoco.version>0.8.12</jacoco.version>
@@ -123,7 +124,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <version>${spring.security.test}</version>
+            <version>${spring.security-test.version}</version>
         </dependency>
 
         <dependency>
@@ -160,19 +161,18 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

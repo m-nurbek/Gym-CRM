@@ -1,10 +1,7 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.dto.request.ChangeLoginDto;
 import com.epam.gym.dto.request.RefreshTokenRequestDto;
-import com.epam.gym.dto.request.TraineeRegistrationDto;
-import com.epam.gym.dto.request.TrainerRegistrationDto;
 import com.epam.gym.dto.request.UserCredentialDto;
 import com.epam.gym.dto.response.JwtTokenResponseDto;
 import com.epam.gym.service.JwtService;
@@ -13,10 +10,12 @@ import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,42 +32,17 @@ public class AuthController {
         return authService.authenticate(credential.username(), credential.password());
     }
 
-    @PostMapping("/register/trainee")
-    public String registerTrainee(@Valid @RequestBody TraineeRegistrationDto trainee) {
-        String[] usernameAndPassword = authService.registerTrainee(trainee);
-
-        return """
-                        Registration successful.
-                        YOUR USERNAME: %s
-                        YOUR PASSWORD: %s
-                """.formatted(usernameAndPassword[0], usernameAndPassword[1]);
-    }
-
-    @PostMapping("/register/trainer")
-    public String registerTrainer(@Valid @RequestBody TrainerRegistrationDto trainer) {
-        String[] usernameAndPassword = authService.registerTrainer(trainer);
-
-        return """
-                        Registration successful.
-                        YOUR USERNAME: %s
-                        YOUR PASSWORD: %s
-                """.formatted(usernameAndPassword[0], usernameAndPassword[1]);
-    }
-
     @PostMapping("/change-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changeLogin(@RequestHeader("Authorization") String tokenWithPrefix, @Valid @RequestBody ChangeLoginDto changedLogin) {
-        String jwtToken = tokenWithPrefix.trim().split("\\s+")[1];
-        String username = jwtService.extractUsername(jwtToken);
-
-        if (!authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword())) {
-            throw new BadRequestException();
-        }
+        String username = jwtService.extractUsername(jwtService.extractToken(tokenWithPrefix));
+        authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword());
     }
 
     @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@RequestHeader("Authorization") String tokenWithPrefix) {
-        String jwtToken = tokenWithPrefix.trim().split("\\s+")[1]; // remove prefix
-        authService.logout(jwtService.extractUsername(jwtToken));
+        authService.logout(jwtService.extractUsername(jwtService.extractToken(tokenWithPrefix)));
     }
 
     @PostMapping("/refresh-token")

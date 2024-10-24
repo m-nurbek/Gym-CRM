@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -39,6 +40,10 @@ import java.util.List;
 public class SecurityConfig {
     @Value(value = "${security.cors.allowed-origins}")
     private List<String> allowedOrigins;
+    @Value(value = "${security.cors.allowed-methods}")
+    private List<String> allowedMethods;
+    @Value(value = "${security.cors.allowed-headers}")
+    private List<String> allowedHeaders;
 
     private final JwtFilter jwtFilter;
     private final BruteForceProtectorFilter bruteForceProtectorFilter;
@@ -70,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserService userService) {
         return username -> {
-            log.info("Trying to find user with username: {}", username);
+            log.debug("Trying to find user with username: {}", username);
 
             UserDto userDto = userService.findByUsername(username).orElse(null);
 
@@ -79,7 +84,7 @@ public class SecurityConfig {
                 throw new UsernameNotFoundException("User with username '%s' not found".formatted(username));
             }
 
-            log.info("Found user with username: {}", username);
+            log.debug("Found user with username: {}", username);
             return userDto;
         };
     }
@@ -92,8 +97,8 @@ public class SecurityConfig {
                     var corsConfiguration = new CorsConfiguration();
 
                     corsConfiguration.setAllowedOriginPatterns(allowedOrigins);
-                    corsConfiguration.setAllowedMethods(List.of("*"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.setAllowedMethods(allowedMethods);
+                    corsConfiguration.setAllowedHeaders(allowedHeaders);
                     corsConfiguration.setAllowCredentials(true);
 
                     return corsConfiguration;
@@ -102,7 +107,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/register/**",
                                 "/api/v1/auth/refresh-token",
 
                                 "/h2/**",
@@ -112,7 +116,13 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
 
-                                "/actuator/**").permitAll()
+                                "/actuator/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/trainees",
+                                "/api/v1/trainers"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -131,8 +141,8 @@ public class SecurityConfig {
                     var corsConfiguration = new CorsConfiguration();
 
                     corsConfiguration.setAllowedOriginPatterns(allowedOrigins);
-                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-                    corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                    corsConfiguration.setAllowedMethods(allowedMethods);
+                    corsConfiguration.setAllowedHeaders(allowedHeaders);
                     corsConfiguration.setAllowCredentials(true);
 
                     return corsConfiguration;
@@ -141,8 +151,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/register/**",
                                 "/api/v1/auth/refresh-token"
+                        ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/trainees",
+                                "/api/v1/trainers"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

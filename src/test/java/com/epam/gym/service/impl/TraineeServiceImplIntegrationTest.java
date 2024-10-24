@@ -1,6 +1,7 @@
 package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.request.TraineeUpdateRequestDto;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -112,7 +114,7 @@ class TraineeServiceImplIntegrationTest {
         String username = "johndoe1";
 
         // when
-        TraineeResponseDto trainee = traineeService.findByUsername(username).orElse(null);
+        TraineeResponseDto trainee = traineeService.findByUsername(username);
 
         // then
         assertAll(
@@ -128,13 +130,10 @@ class TraineeServiceImplIntegrationTest {
         // given
         String username = "non-existent";
 
-        // when
-        TraineeResponseDto trainee = traineeService.findByUsername(username).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'findByUsername()' method",
-                () -> assertThat(trainee).isNull()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.findByUsername(username))
         );
     }
 
@@ -143,13 +142,10 @@ class TraineeServiceImplIntegrationTest {
         // given
         String username = "vincestewart50";
 
-        // when
-        TraineeResponseDto trainee = traineeService.findByUsername(username).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'findByUsername()' method",
-                () -> assertThat(trainee).isNull()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.findByUsername(username))
         );
     }
 
@@ -175,7 +171,7 @@ class TraineeServiceImplIntegrationTest {
         TraineeUpdateResponseDto trainee = traineeService.update(username, model).orElse(null);
 
         UserEntity user = userRepository.findByUsername(username).orElse(null);
-        TraineeResponseDto traineeResponseDto = traineeService.findByUsername(username).orElse(null);
+        TraineeResponseDto traineeResponseDto = traineeService.findByUsername(username);
 
         // then
         assertAll(
@@ -262,15 +258,12 @@ class TraineeServiceImplIntegrationTest {
         // given
         String username = "johndoe1";
 
-        // when
-        boolean success = traineeService.deleteByUsername(username);
-        var trainee = traineeService.findByUsername(username).orElse(null);
+        // when & then
+        traineeService.deleteByUsername(username);
 
-        // then
         assertAll(
                 "Assertions for 'delete()' method",
-                () -> assertThat(success).isTrue(),
-                () -> assertThat(trainee).isNull()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.findByUsername(username))
         );
     }
 
@@ -279,15 +272,10 @@ class TraineeServiceImplIntegrationTest {
         // given
         String username = "non-existent";
 
-        // when
-        boolean success = traineeService.deleteByUsername(username);
-        var trainee = traineeService.findByUsername(username).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'delete()' method",
-                () -> assertThat(success).isFalse(),
-                () -> assertThat(trainee).isNull()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.deleteByUsername(username))
         );
     }
 
@@ -296,15 +284,10 @@ class TraineeServiceImplIntegrationTest {
         // given
         String username = "vincestewart50"; // trainer username
 
-        // when
-        boolean success = traineeService.deleteByUsername(username);
-        var trainee = traineeService.findByUsername(username).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'delete()' method",
-                () -> assertThat(success).isFalse(),
-                () -> assertThat(trainee).isNull()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.deleteByUsername(username))
         );
     }
 
@@ -352,13 +335,10 @@ class TraineeServiceImplIntegrationTest {
         // given
         String username = "non-existent";
 
-        // when
-        Set<SimpleTrainerResponseDto> unassignedTrainers = traineeService.getUnassignedTrainersByUsernameToResponse(username);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'delete()' method",
-                () -> assertThat(unassignedTrainers).isEmpty()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.getUnassignedTrainersByUsernameToResponse(username))
         );
     }
 
@@ -367,13 +347,10 @@ class TraineeServiceImplIntegrationTest {
         // given
         String username = "vincestewart50"; // trainer username
 
-        // when
-        Set<SimpleTrainerResponseDto> unassignedTrainers = traineeService.getUnassignedTrainersByUsernameToResponse(username);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'delete()' method",
-                () -> assertThat(unassignedTrainers).isEmpty()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.getUnassignedTrainersByUsernameToResponse(username))
         );
     }
 
@@ -603,13 +580,10 @@ class TraineeServiceImplIntegrationTest {
         String trainerName = null;
         String trainingType = null;
 
-        // when
-        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainings).isEmpty()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType))
         );
     }
 
@@ -622,13 +596,10 @@ class TraineeServiceImplIntegrationTest {
         String trainerName = null;
         String trainingType = null;
 
-        // when
-        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainings).isEmpty()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType))
         );
     }
 

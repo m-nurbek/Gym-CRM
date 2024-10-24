@@ -1,6 +1,7 @@
 package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.request.TrainerUpdateRequestDto;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -91,7 +93,7 @@ class TrainerServiceImplIntegrationTest {
         String username = "vincestewart50";
 
         // when
-        TrainerResponseDto trainer = trainerService.findByUsername(username).orElse(null);
+        TrainerResponseDto trainer = trainerService.findByUsername(username);
 
         // then
         assertAll(
@@ -105,13 +107,10 @@ class TrainerServiceImplIntegrationTest {
         // given
         String username = "johndoe1"; // trainee username
 
-        // when
-        TrainerResponseDto trainer = trainerService.findByUsername(username).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'findByUsername()' method",
-                () -> assertThat(trainer).isNull()
+                () -> assertThrows(NotFoundException.class, () -> trainerService.findByUsername(username))
         );
     }
 
@@ -120,13 +119,10 @@ class TrainerServiceImplIntegrationTest {
         // given
         String username = "non-existent";
 
-        // when
-        TrainerResponseDto trainer = trainerService.findByUsername(username).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'findByUsername()' method",
-                () -> assertThat(trainer).isNull()
+                () -> assertThrows(NotFoundException.class, () -> trainerService.findByUsername(username))
         );
     }
 
@@ -147,10 +143,10 @@ class TrainerServiceImplIntegrationTest {
         );
 
         // when
-        TrainerUpdateResponseDto trainer = trainerService.update(username, model).orElse(null);
+        TrainerUpdateResponseDto trainer = trainerService.update(username, model);
 
         UserEntity user = userRepository.findByUsername(username).orElse(null);
-        TrainerResponseDto trainerResponseDto = trainerService.findByUsername(username).orElse(null);
+        TrainerResponseDto trainerResponseDto = trainerService.findByUsername(username);
 
         // then
         assertAll(
@@ -190,13 +186,10 @@ class TrainerServiceImplIntegrationTest {
                 isActive
         );
 
-        // when
-        TrainerUpdateResponseDto trainer = trainerService.update(username, model).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'update()' method",
-                () -> assertThat(trainer).isNull()
+                () -> assertThrows(NotFoundException.class, () -> trainerService.update(username, model))
         );
     }
 
@@ -216,13 +209,10 @@ class TrainerServiceImplIntegrationTest {
                 isActive
         );
 
-        // when
-        TrainerUpdateResponseDto trainer = trainerService.update(username, model).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'update()' method",
-                () -> assertThat(trainer).isNull()
+                () -> assertThrows(NotFoundException.class, () -> trainerService.update(username, model))
         );
     }
 
@@ -390,19 +380,15 @@ class TrainerServiceImplIntegrationTest {
     @Test
     void shouldNotGetTrainingsByUsernameToResponse1() {
         // given
-        String username = "johndoe1";
+        String username = "johndoe1";   // trainee username
         LocalDate periodFrom = null;
         LocalDate periodTo = null;
         String traineeName = null;
 
-        // when
-        Set<TrainingResponseForTrainerDto> trainer = trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainer).isNotNull(),
-                () -> assertThat(trainer.isEmpty()).isTrue()
+                () -> assertThrows(NotFoundException.class, () -> trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName))
         );
     }
 
@@ -414,14 +400,10 @@ class TrainerServiceImplIntegrationTest {
         LocalDate periodTo = null;
         String traineeName = null;
 
-        // when
-        Set<TrainingResponseForTrainerDto> trainer = trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainer).isNotNull(),
-                () -> assertThat(trainer.isEmpty()).isTrue()
+                () -> assertThrows(NotFoundException.class, () -> trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName))
         );
     }
 }

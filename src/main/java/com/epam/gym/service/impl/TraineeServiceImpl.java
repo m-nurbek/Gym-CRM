@@ -1,5 +1,6 @@
 package com.epam.gym.service.impl;
 
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.request.TraineeUpdateRequestDto;
 import com.epam.gym.dto.response.SimpleTrainerResponseDto;
 import com.epam.gym.dto.response.TraineeResponseDto;
@@ -67,14 +68,14 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public Optional<TraineeResponseDto> findByUsername(String username) {
+    public TraineeResponseDto findByUsername(String username) {
         TraineeEntity trainee = traineeRepository.findByUser_Username(username).orElse(null);
 
         if (trainee == null) {
-            return Optional.empty();
+            throw new NotFoundException("Trainee with this username doesn't exist");
         }
 
-        TraineeResponseDto response = new TraineeResponseDto(
+        return new TraineeResponseDto(
                 trainee.getUser().getFirstName(),
                 trainee.getUser().getLastName(),
                 trainee.getDob(),
@@ -87,8 +88,6 @@ public class TraineeServiceImpl implements TraineeService {
                         x.getSpecialization().getName().name())
                 ).toList()
         );
-
-        return Optional.of(response);
     }
 
     @Override
@@ -137,9 +136,11 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public boolean deleteByUsername(String username) {
+    public void deleteByUsername(String username) {
         Optional<TraineeEntity> optionalTrainee = traineeRepository.findByUser_Username(username);
-        return optionalTrainee.filter(trainee -> delete(trainee.getId())).isPresent();
+        if (optionalTrainee.filter(trainee -> delete(trainee.getId())).isEmpty()) {
+            throw new NotFoundException("Trainee with this username doesn't exist");
+        }
     }
 
     private boolean delete(BigInteger id) {
@@ -154,7 +155,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Set<SimpleTrainerResponseDto> getUnassignedTrainersByUsernameToResponse(String username) {
         if (!traineeRepository.existsByUser_Username(username)) {
-            return Set.of();
+            throw new NotFoundException("Trainee with this username doesn't exist");
         }
 
         Set<TrainerEntity> trainerEntitySet = trainerRepository.getUnassignedTrainersByTraineeUsername(username);
@@ -172,6 +173,10 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Set<TrainingResponseForTraineeDto> getTrainingsByUsernameToResponse(
             String username, LocalDate periodFrom, LocalDate periodTo, String trainerName, String trainingType) {
+        if (!traineeRepository.existsByUser_Username(username)) {
+            throw new NotFoundException("Trainee with this username doesn't exist");
+        }
+
         Set<TrainingEntity> trainingEntities = trainingRepository.findByTraineeUsername(username);
 
         return trainingEntities.stream()
@@ -199,7 +204,7 @@ public class TraineeServiceImpl implements TraineeService {
         TraineeEntity trainee = traineeRepository.findByUser_Username(username).orElse(null);
 
         if (trainee == null) {
-            return Set.of();
+            throw new NotFoundException("Trainee with this username doesn't exist");
         }
 
         Set<TrainerEntity> trainersFromUsernames = trainerUsernames.stream()

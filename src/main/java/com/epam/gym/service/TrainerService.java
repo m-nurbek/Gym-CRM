@@ -8,16 +8,15 @@ import com.epam.gym.entity.TrainingTypeEnum;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.Set;
 
 public interface TrainerService {
 
     TrainerResponseDto save(TrainingTypeEnum specialization, BigInteger userId);
 
-    Optional<TrainerResponseDto> findByUsername(String username);
+    TrainerResponseDto findByUsername(String username);
 
-    Optional<TrainerUpdateResponseDto> update(String username, TrainerUpdateRequestDto model);
+    TrainerUpdateResponseDto update(String username, TrainerUpdateRequestDto model);
 
     Set<TrainingResponseForTrainerDto> getTrainingsByUsernameToResponse(String username, LocalDate periodFrom, LocalDate periodTo, String traineeName);
 }

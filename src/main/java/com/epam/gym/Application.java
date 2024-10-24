@@ -19,7 +19,7 @@ public class Application {
 
     @Bean
     @Profile("stg")
-    public Object stgWarningLog() {
+    public Object stagWarningLog() {
         log.info("====================== RUNNING THE APPLICATION IN STG MODE! ======================");
         return null;
     }
@@ -40,6 +40,5 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        log.info("Application started ...");
     }
 }

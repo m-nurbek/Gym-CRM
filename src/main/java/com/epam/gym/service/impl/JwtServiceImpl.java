@@ -11,7 +11,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
     @Value("${jwt.secret.key}")
     private String SECRET;
@@ -44,8 +45,7 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.refresh-token.expiration.days}")
     private int refreshDays = 0;
 
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public String generateToken(String username) {
@@ -67,6 +67,11 @@ public class JwtServiceImpl implements JwtService {
     public Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    @Override
+    public String extractToken(String tokenWithPrefix) {
+        return tokenWithPrefix.trim().split("\\s+")[1];
     }
 
     @Override

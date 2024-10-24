@@ -1,8 +1,11 @@
 package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
+import com.epam.gym.controller.exception.BadRequestException;
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TrainerRegistrationDto;
+import com.epam.gym.dto.response.RegistrationResponseDto;
 import com.epam.gym.entity.TrainingTypeEnum;
 import com.epam.gym.repository.TraineeRepository;
 import com.epam.gym.repository.TrainerRepository;
@@ -11,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
@@ -72,13 +74,10 @@ class WebAuthServiceImplIntegrationTest {
         String oldPassword = "password1";
         String newPassword = "NEW_PASSWORD";
 
-        // when
-        boolean success = webAuthService.changePassword(username, oldPassword, newPassword);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'changePassword()' method",
-                () -> assertThat(success).isTrue()
+                () -> assertDoesNotThrow(() -> webAuthService.changePassword(username, oldPassword, newPassword))
         );
     }
 
@@ -89,13 +88,10 @@ class WebAuthServiceImplIntegrationTest {
         String oldPassword = "password1";
         String newPassword = "NEW_PASSWORD";
 
-        // when
-        boolean success = webAuthService.changePassword(username, oldPassword, newPassword);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'changePassword()' method",
-                () -> assertThat(success).isFalse()
+                () -> assertThrows(NotFoundException.class, () -> webAuthService.changePassword(username, oldPassword, newPassword))
         );
     }
 
@@ -106,13 +102,10 @@ class WebAuthServiceImplIntegrationTest {
         String oldPassword = "wrongPassword";
         String newPassword = "NEW_PASSWORD";
 
-        // when
-        boolean success = webAuthService.changePassword(username, oldPassword, newPassword);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'changePassword()' method",
-                () -> assertThat(success).isFalse()
+                () -> assertThrows(BadRequestException.class, () -> webAuthService.changePassword(username, oldPassword, newPassword))
         );
     }
 
@@ -126,19 +119,18 @@ class WebAuthServiceImplIntegrationTest {
         var traineeRegistrationDto = new TraineeRegistrationDto(firstName, lastName, dob, address, "password");
 
         // when
-        String[] usernamePassword = webAuthService.registerTrainee(traineeRegistrationDto);
-        String username = usernamePassword[0];
+        RegistrationResponseDto response = webAuthService.registerTrainee(traineeRegistrationDto);
 
-        var user = userRepository.findByUsername(username).orElse(null);
-        var trainee = traineeRepository.findByUser_Username(username).orElse(null);
+        var user = userRepository.findByUsername(response.username()).orElse(null);
+        var trainee = traineeRepository.findByUser_Username(response.username()).orElse(null);
 
         // then
         assertAll(
                 "Assertions for 'registerTrainee()' method",
-                () -> assertThat(username).isEqualTo(firstName + "." + lastName),
+                () -> assertThat(response.username()).isEqualTo(firstName + "." + lastName),
                 () -> assertThat(user).isNotNull(),
                 () -> assertThat(trainee).isNotNull(),
-                () -> assertThat(user.getUsername()).isEqualTo(username),
+                () -> assertThat(user.getUsername()).isEqualTo(response.username()),
                 () -> assertThat(user.getIsActive()).isTrue(),
                 () -> assertThat(user.getFirstName()).isEqualTo(firstName),
                 () -> assertThat(user.getLastName()).isEqualTo(lastName),
@@ -158,19 +150,18 @@ class WebAuthServiceImplIntegrationTest {
         var trainerRegistrationDto = new TrainerRegistrationDto(firstName, lastName, type, "password");
 
         // when
-        String[] usernamePassword = webAuthService.registerTrainer(trainerRegistrationDto);
-        String username = usernamePassword[0];
+        RegistrationResponseDto response = webAuthService.registerTrainer(trainerRegistrationDto);
 
-        var user = userRepository.findByUsername(username).orElse(null);
-        var trainer = trainerRepository.findByUser_Username(username).orElse(null);
+        var user = userRepository.findByUsername(response.username()).orElse(null);
+        var trainer = trainerRepository.findByUser_Username(response.username()).orElse(null);
 
         // then
         assertAll(
                 "Assertions for 'registerTrainer()' method",
-                () -> assertThat(username).isEqualTo(firstName + "." + lastName),
+                () -> assertThat(response.username()).isEqualTo(firstName + "." + lastName),
                 () -> assertThat(user).isNotNull(),
                 () -> assertThat(trainer).isNotNull(),
-                () -> assertThat(user.getUsername()).isEqualTo(username),
+                () -> assertThat(user.getUsername()).isEqualTo(response.username()),
                 () -> assertThat(user.getIsActive()).isTrue(),
                 () -> assertThat(user.getFirstName()).isEqualTo(firstName),
                 () -> assertThat(user.getLastName()).isEqualTo(lastName),

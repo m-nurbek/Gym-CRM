@@ -4,5 +4,5 @@ import com.epam.gym.dto.request.TrainingAddRequestDto;
 
 public interface TrainingService {
 
-    boolean save(TrainingAddRequestDto model);
+    void save(TrainingAddRequestDto model);
 }

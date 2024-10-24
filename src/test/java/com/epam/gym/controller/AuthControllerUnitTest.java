@@ -1,7 +1,5 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.dto.request.TraineeRegistrationDto;
-import com.epam.gym.dto.request.TrainerRegistrationDto;
 import com.epam.gym.dto.response.JwtTokenResponseDto;
 import com.epam.gym.service.WebAuthService;
 import org.junit.jupiter.api.Test;
@@ -11,11 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.security.test.context.support.WithMockUser;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -61,45 +58,9 @@ class AuthControllerUnitTest {
     }
 
     @Test
-    void registerTrainee() throws Exception {
-        when(authService.registerTrainee(any(TraineeRegistrationDto.class)))
-                .thenReturn(new String[]{"username", "password"});
-
-        mockMvc.perform(post("/api/v1/auth/register/trainee")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "firstName": "firstname",
-                                  "lastName": "lastname",
-                                  "dob": "2000-01-01",
-                                  "address": "address",
-                                  "password": "Password123!@"
-                                }"""))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void registerTrainer() throws Exception {
-        when(authService.registerTrainer(any(TrainerRegistrationDto.class)))
-                .thenReturn(new String[]{"username", "password"});
-
-        mockMvc.perform(post("/api/v1/auth/register/trainer")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "firstName": "firstname",
-                                  "lastName": "lastname",
-                                  "specialization": "SWIMMING",
-                                  "password": "Password123!@"
-                                }"""))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     @WithMockUser(username = "johndoe1", password = "password1")
     void failedChangeLogin() throws Exception {
-        when(authService.changePassword(anyString(), anyString(), anyString()))
-                .thenReturn(false);
+        doNothing().when(authService).changePassword(anyString(), anyString(), anyString());
 
         mockMvc.perform(post("/api/v1/auth/change-password")
                         .contentType(MediaType.APPLICATION_JSON)

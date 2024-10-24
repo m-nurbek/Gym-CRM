@@ -3,6 +3,7 @@ package com.epam.gym.service.impl;
 import com.epam.gym.service.BruteForceProtectorService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -36,17 +37,17 @@ public class BruteForceProtectorServiceImpl implements BruteForceProtectorServic
         int count = attempts.getOrDefault(clientIp, 0) + 1;
         attempts.put(clientIp, count);
 
-        log.debug("Login attempts count: {}", count);
+        log.trace("Login attempts count: {}", count);
 
         if (count >= MAX_ATTEMPTS) {
             lockTime.put(clientIp, System.currentTimeMillis());
-            log.debug("Reached the maximum number of login attempts");
+            log.warn("Reached the maximum number of login attempts");
         }
     }
 
     @Override
     public void loginSucceeded(String clientIp) {
-        log.debug("Logged in successfully, removing the client IP from the block list");
+        log.debug(MarkerFactory.getMarker("SUCCESS"), "Logged in successfully, removing the client IP from the block list");
 
         attempts.remove(clientIp);
         lockTime.remove(clientIp);
@@ -66,7 +67,7 @@ public class BruteForceProtectorServiceImpl implements BruteForceProtectorServic
             return false;
         }
 
-        log.debug("Client IP {} is blocked", clientIp);
+        log.warn("Client IP {} is blocked", clientIp);
         return true;
     }
 

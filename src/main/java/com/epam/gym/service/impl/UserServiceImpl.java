@@ -1,6 +1,8 @@
 package com.epam.gym.service.impl;
 
+import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.controller.exception.ConflictException;
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.UserRole;
 import com.epam.gym.entity.UserEntity;
@@ -51,24 +53,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean changePassword(String username, String oldPassword, String newPassword) {
-        var user = userRepository.findByUsername(username);
-        return user.filter(userEntity -> changePasswordForUser(userEntity, oldPassword, newPassword)).isPresent();
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        var user = userRepository.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            throw new NotFoundException("User with this username doesn't exist");
+        }
+
+        changePasswordForUser(user, oldPassword, newPassword);
     }
 
     @Override
-    public boolean changePassword(BigInteger id, String oldPassword, String newPassword) {
-        var user = userRepository.findById(id);
-        return user.filter(userEntity -> changePasswordForUser(userEntity, oldPassword, newPassword)).isPresent();
+    public void changePassword(BigInteger id, String oldPassword, String newPassword) {
+        var user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            throw new NotFoundException("User with this ID is not found");
+        }
+
+        changePasswordForUser(user, oldPassword, newPassword);
     }
 
-    private boolean changePasswordForUser(UserEntity user, String oldPassword, String newPassword) {
+    private void changePasswordForUser(UserEntity user, String oldPassword, String newPassword) {
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            return false;
+            throw new BadRequestException("Invalid oldPassword");
         }
 
         userRepository.updatePasswordById(user.getId(), passwordEncoder.encode(newPassword));
-        return true;
     }
 
     @Override
@@ -94,15 +105,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateActiveState(String username, boolean isActive) {
+    public void updateActiveState(String username, boolean isActive) {
         var u = userRepository.findByUsername(username).orElse(null);
 
         if (u == null) {
-            return false;
+            throw new NotFoundException("User with this username doesn't exist");
         }
 
         userRepository.updateIsActiveById(u.getId(), isActive);
-        return true;
     }
 
     @Override
