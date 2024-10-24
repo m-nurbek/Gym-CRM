@@ -1,6 +1,5 @@
 package com.epam.gym.entity;
 
-import com.epam.gym.dto.TraineeDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +12,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Temporal;
@@ -37,7 +37,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "TRAINEE")
-public class TraineeEntity implements EntityInterface<BigInteger> {
+public class TraineeEntity {
     @Value("${table-generator.initial-value}")
     private static final int ID_INITIAL_VALUE = 1000;
 
@@ -75,16 +75,11 @@ public class TraineeEntity implements EntityInterface<BigInteger> {
     @ToString.Exclude
     private Set<TrainerEntity> trainers;
 
-    public TraineeDto toDto() {
-        return new TraineeDto(id, dob, address, user, trainings, trainers);
-    }
-
-    public static TraineeEntity fromDto(TraineeDto dto) {
-        if (dto == null) {
-            return null;
+    @PreRemove
+    public void removeTrainers() {
+        for (TrainerEntity trainer : trainers) {
+            trainer.getTrainees().remove(this);
         }
-
-        return new TraineeEntity(dto.getId(), dto.getDob(), dto.getAddress(), dto.getUser(), dto.getTrainings(), dto.getTrainers());
     }
 
     @Override

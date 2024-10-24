@@ -1,17 +1,21 @@
 package com.epam.gym.service;
 
-import com.epam.gym.entity.TrainingTypeEnum;
-
-import java.time.LocalDate;
+import com.epam.gym.dto.request.TraineeRegistrationDto;
+import com.epam.gym.dto.request.TrainerRegistrationDto;
+import com.epam.gym.dto.response.JwtTokenResponseDto;
+import com.epam.gym.dto.response.RegistrationResponseDto;
 
 public interface WebAuthService {
-    boolean authenticate(String username, String password);
 
-    boolean changePassword(String username, String oldPassword, String newPassword);
+    JwtTokenResponseDto authenticate(String username, String password);
 
-    String[] register(String firstName, String lastName);
+    void changePassword(String username, String oldPassword, String newPassword);
 
-    String[] registerTrainee(String firstName, String lastName, LocalDate dob, String address);
+    RegistrationResponseDto registerTrainee(TraineeRegistrationDto trainee);
 
-    String[] registerTrainer(String firstName, String lastName, TrainingTypeEnum specialization);
+    RegistrationResponseDto registerTrainer(TrainerRegistrationDto trainer);
+
+    void logout(String username);
+
+    JwtTokenResponseDto refreshAccessToken(String refreshToken);
 }

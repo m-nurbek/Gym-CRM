@@ -1,65 +1,52 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.controller.exception.BadRequestException;
-import com.epam.gym.controller.exception.UnauthorizedException;
-import com.epam.gym.dto.model.request.ChangeLoginModel;
-import com.epam.gym.dto.model.request.TraineeRegistrationModel;
-import com.epam.gym.dto.model.request.TrainerRegistrationModel;
-import com.epam.gym.dto.model.request.UserCredentialModel;
-import com.epam.gym.service.serviceImpl.WebAuthServiceImpl;
+import com.epam.gym.dto.request.ChangeLoginDto;
+import com.epam.gym.dto.request.RefreshTokenRequestDto;
+import com.epam.gym.dto.request.UserCredentialDto;
+import com.epam.gym.dto.response.JwtTokenResponseDto;
+import com.epam.gym.service.JwtService;
+import com.epam.gym.service.WebAuthService;
+import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/auth")
+@RequestMapping("/api/v1/auth")
 @AllArgsConstructor
+@Tag(name = "Authentication endpoints")
 public class AuthController {
-    private final WebAuthServiceImpl authService;
+    private final WebAuthService authService;
+    private final JwtService jwtService;
 
+    @Timed(value = "request.login.api", description = "Login API Response Time", histogram = true, percentiles = {0.5, 0.7, 0.9, 0.99})
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
-    public void login(@Valid @RequestBody UserCredentialModel credential) throws UnauthorizedException {
-        if (!authService.authenticate(credential.username(), credential.password())) {
-            throw new UnauthorizedException();
-        }
+    public JwtTokenResponseDto login(@Valid @RequestBody UserCredentialDto credential) {
+        return authService.authenticate(credential.username(), credential.password());
     }
 
-    @PostMapping("/register/trainee")
-    @ResponseStatus(HttpStatus.OK)
-    public String registerTrainee(@Valid @RequestBody TraineeRegistrationModel trainee) {
-        String[] usernameAndPassword = authService.registerTrainee(trainee.firstName(), trainee.lastName(), trainee.dob(), trainee.address());
-
-        return """
-                        Registration successful.
-                        YOUR USERNAME: %s
-                        YOUR PASSWORD: %s
-                """.formatted(usernameAndPassword[0], usernameAndPassword[1]);
+    @PostMapping("/change-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changeLogin(@RequestHeader("Authorization") String tokenWithPrefix, @Valid @RequestBody ChangeLoginDto changedLogin) {
+        String username = jwtService.extractUsername(jwtService.extractToken(tokenWithPrefix));
+        authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword());
     }
 
-    @PostMapping("/register/trainer")
-    @ResponseStatus(HttpStatus.OK)
-    public String registerTrainer(@Valid @RequestBody TrainerRegistrationModel trainer) {
-        String[] usernameAndPassword = authService.registerTrainer(trainer.firstName(), trainer.lastName(), trainer.specialization());
-
-        return """
-                        Registration successful.
-                        YOUR USERNAME: %s
-                        YOUR PASSWORD: %s
-                """.formatted(usernameAndPassword[0], usernameAndPassword[1]);
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@RequestHeader("Authorization") String tokenWithPrefix) {
+        authService.logout(jwtService.extractUsername(jwtService.extractToken(tokenWithPrefix)));
     }
 
-    @PostMapping("/change-password/{username}")
-    @ResponseStatus(HttpStatus.OK)
-    public void changeLogin(@PathVariable String username, @Valid @RequestBody ChangeLoginModel changedLogin) throws BadRequestException {
-        if (!authService.changePassword(username, changedLogin.oldPassword(), changedLogin.newPassword())) {
-            throw new BadRequestException();
-        }
+    @PostMapping("/refresh-token")
+    public JwtTokenResponseDto refreshAccessToken(@RequestBody RefreshTokenRequestDto request) {
+        return authService.refreshAccessToken(request.refreshToken());
     }
 }

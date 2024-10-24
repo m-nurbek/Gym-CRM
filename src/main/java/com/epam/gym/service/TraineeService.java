@@ -1,13 +1,10 @@
 package com.epam.gym.service;
 
-import com.epam.gym.dto.TraineeDto;
-import com.epam.gym.dto.model.request.TraineeUpdateRequestModel;
-import com.epam.gym.dto.model.response.SimpleTrainerResponseModel;
-import com.epam.gym.dto.model.response.TraineeResponseModel;
-import com.epam.gym.dto.model.response.TraineeUpdateResponseModel;
-import com.epam.gym.dto.model.response.TrainingResponseForTraineeModel;
-import com.epam.gym.entity.TrainerEntity;
-import com.epam.gym.entity.TrainingEntity;
+import com.epam.gym.dto.request.TraineeUpdateRequestDto;
+import com.epam.gym.dto.response.SimpleTrainerResponseDto;
+import com.epam.gym.dto.response.TraineeResponseDto;
+import com.epam.gym.dto.response.TraineeUpdateResponseDto;
+import com.epam.gym.dto.response.TrainingResponseForTraineeDto;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -15,31 +12,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface TraineeService extends CrudService<TraineeDto, BigInteger> {
+public interface TraineeService {
 
-    Optional<TraineeDto> findByUsername(String username);
+    TraineeResponseDto save(LocalDate dob, String address, BigInteger userId);
 
-    Optional<TraineeResponseModel> findByUsernameToResponse(String username);
+    TraineeResponseDto findByUsername(String username);
 
-    Optional<TraineeUpdateResponseModel> update(String username, TraineeUpdateRequestModel model);
+    Optional<TraineeUpdateResponseDto> update(String username, TraineeUpdateRequestDto model);
 
-    boolean deleteByUsername(String username);
+    void deleteByUsername(String username);
 
-    Set<TrainerEntity> getTrainers(BigInteger traineeId);
+    Set<SimpleTrainerResponseDto> getUnassignedTrainersByUsernameToResponse(String username);
 
-    Set<TrainerEntity> getTrainers(String username);
+    Set<TrainingResponseForTraineeDto> getTrainingsByUsernameToResponse(String username, LocalDate periodFrom, LocalDate periodTo, String trainerName, String trainingType);
 
-    Set<TrainerEntity> getUnassignedTrainersByUsername(String username);
-
-    Set<SimpleTrainerResponseModel> getUnassignedTrainersByUsernameToResponse(String username);
-
-    Set<TrainingEntity> getTrainingsByUsername(String username);
-
-    Set<TrainingResponseForTraineeModel> getTrainingsByUsernameToResponse(String username, LocalDate periodFrom, LocalDate periodTo, String trainerName, String trainingType);
-
-    boolean assignTrainer(BigInteger traineeId, BigInteger trainerId);
-
-    Set<SimpleTrainerResponseModel> updateTrainerListByUsername(String username, List<String> trainerUsernames);
-
-    boolean unassignTrainer(BigInteger traineeId, BigInteger trainerId);
+    Set<SimpleTrainerResponseDto> updateTrainerListByUsername(String username, List<String> trainerUsernames);
 }

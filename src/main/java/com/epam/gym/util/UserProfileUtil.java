@@ -1,6 +1,6 @@
 package com.epam.gym.util;
 
-import com.epam.gym.dto.model.request.UserCredentialModel;
+import com.epam.gym.dto.request.UserCredentialDto;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
@@ -42,7 +42,7 @@ public class UserProfileUtil {
         return serialNumber.compareTo(BigInteger.ZERO) > 0 ? String.format("%s.%s%d", firstName, lastName, serialNumber) : String.format("%s.%s", firstName, lastName);
     }
 
-    public static Optional<UserCredentialModel> retrieveCredentialsFromBasicAuthHeader(String authHeader) {
+    public static Optional<UserCredentialDto> retrieveCredentialsFromBasicAuthHeader(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Basic ")) {
             int fromIndex = "Basic ".length();
             String base64Credentials = authHeader.substring(fromIndex);
@@ -55,7 +55,7 @@ public class UserProfileUtil {
             String username = values[0];
             String password = values[1];
 
-            return Optional.of(new UserCredentialModel(username, password));
+            return Optional.of(new UserCredentialDto(username, password));
         }
 
         return Optional.empty();
