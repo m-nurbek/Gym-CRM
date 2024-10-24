@@ -1,44 +1,39 @@
 package com.epam.gym.dto;
 
-import com.epam.gym.entity.TraineeEntity;
-import com.epam.gym.entity.TrainerEntity;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.List;
 
-@Data
-@Builder
-@ToString
-@AllArgsConstructor
-public class UserDto implements Dto<BigInteger> {
-    private BigInteger id;
-    private String firstName;
-    private String lastName;
-    private String username;
-    private String password;
-    private Boolean isActive;
-    @ToString.Exclude
-    private TraineeEntity trainee;
-    @ToString.Exclude
-    private TrainerEntity trainer;
+/**
+ * DTO for {@link com.epam.gym.entity.UserEntity}
+ */
+public record UserDto(
+        BigInteger id,
+        String firstName,
+        String lastName,
+        String username,
+        String password,
+        Boolean isActive,
+        List<UserRole> roles
+) implements UserDetails {
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(x -> new SimpleGrantedAuthority(x.toString()))
+                .toList();
+    }
 
-    @JsonCreator
-    public UserDto(
-            @JsonProperty("firstName") String firstName,
-            @JsonProperty("lastName") String lastName,
-            @JsonProperty("username") String username,
-            @JsonProperty("password") String password,
-            @JsonProperty("isActive") Boolean isActive
-    ) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.password = password;
-        this.isActive = isActive;
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
 }

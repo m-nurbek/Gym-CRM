@@ -1,6 +1,5 @@
 package com.epam.gym.entity;
 
-import com.epam.gym.dto.TrainerDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +12,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
@@ -34,7 +34,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "TRAINER")
-public class TrainerEntity implements EntityInterface<BigInteger> {
+public class TrainerEntity {
     @Value("${table-generator.initial-value}")
     private static final int ID_INITIAL_VALUE = 1000;
 
@@ -50,7 +50,7 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @Column(name = "ID")
     private BigInteger id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "SPECIALIZATION", referencedColumnName = "ID")
     @ToString.Exclude
     private TrainingTypeEntity specialization;
@@ -68,16 +68,11 @@ public class TrainerEntity implements EntityInterface<BigInteger> {
     @ToString.Exclude
     private Set<TraineeEntity> trainees;
 
-    public TrainerDto toDto() {
-        return new TrainerDto(id, specialization, user, trainings, trainees);
-    }
-
-    public static TrainerEntity fromDto(TrainerDto trainerDto) {
-        if (trainerDto == null) {
-            return null;
+    @PreRemove
+    public void removeTrainees() {
+        for (TraineeEntity trainee : trainees) {
+            trainee.getTrainers().remove(this);
         }
-
-        return new TrainerEntity(trainerDto.getId(), trainerDto.getSpecialization(), trainerDto.getUser(), trainerDto.getTrainings(), trainerDto.getTrainees());
     }
 
     @Override
