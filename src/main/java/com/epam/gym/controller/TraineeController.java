@@ -1,20 +1,25 @@
 package com.epam.gym.controller;
 
 import com.epam.gym.controller.exception.NotFoundException;
+import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TraineeUpdateRequestDto;
+import com.epam.gym.dto.response.RegistrationResponseDto;
 import com.epam.gym.dto.response.SimpleTrainerResponseDto;
 import com.epam.gym.dto.response.TraineeResponseDto;
 import com.epam.gym.dto.response.TraineeUpdateResponseDto;
 import com.epam.gym.dto.response.TrainingResponseForTraineeDto;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
+import com.epam.gym.service.WebAuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,74 +37,64 @@ import java.util.Set;
 public class TraineeController {
     private final TraineeService traineeService;
     private final UserService userService;
+    private final WebAuthService authService;
 
-    @GetMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
-    public TraineeResponseDto getProfile(@PathVariable String username) {
-        return traineeService.findByUsername(username).orElseThrow(NotFoundException::new);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public RegistrationResponseDto registerTrainee(@Valid @RequestBody TraineeRegistrationDto trainee) {
+        return authService.registerTrainee(trainee);
     }
 
+    @Secured("ROLE_TRAINEE")
+    @GetMapping("/{username}")
+    public TraineeResponseDto getProfile(@PathVariable String username) {
+        return traineeService.findByUsername(username);
+    }
+
+    @Secured("ROLE_TRAINEE")
     @PutMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public TraineeUpdateResponseDto updateProfile(
             @PathVariable String username,
-            @Valid @RequestBody TraineeUpdateRequestDto requestModel
-    ) {
+            @Valid @RequestBody TraineeUpdateRequestDto requestModel) {
         return traineeService.update(username, requestModel).orElseThrow(NotFoundException::new);
     }
 
+    @Secured("ROLE_TRAINEE")
     @DeleteMapping("/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProfile(@PathVariable String username) {
-        if (!traineeService.deleteByUsername(username)) {
-            throw new NotFoundException();
-        }
+        traineeService.deleteByUsername(username);
     }
 
+    @Secured("ROLE_TRAINEE")
     @GetMapping("/trainers/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public Set<SimpleTrainerResponseDto> getNotAssignedActiveTrainers(@PathVariable String username) {
-        if (traineeService.findByUsername(username).isEmpty()) {
-            throw new NotFoundException();
-        }
-
         return traineeService.getUnassignedTrainersByUsernameToResponse(username);
     }
 
+    @Secured("ROLE_TRAINEE")
     @PutMapping("/update-trainers/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public Set<SimpleTrainerResponseDto> updateTrainersList(
             @PathVariable String username,
-            @Valid @RequestBody List<String> trainerUsernameList
-    ) {
-        if (traineeService.findByUsername(username).isEmpty()) {
-            throw new NotFoundException();
-        }
-
+            @Valid @RequestBody List<String> trainerUsernameList) {
         return traineeService.updateTrainerListByUsername(username, trainerUsernameList);
     }
 
+    @Secured("ROLE_TRAINEE")
     @GetMapping("/trainings/{username}")
-    @ResponseStatus(HttpStatus.OK)
     public Set<TrainingResponseForTraineeDto> getTrainingsList(
             @PathVariable String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
             @RequestParam(value = "trainerName", required = false) String trainerName,
             @RequestParam(value = "trainingType", required = false) String trainingType) {
-
-        if (traineeService.findByUsername(username).isEmpty()) {
-            throw new NotFoundException();
-        }
-
         return traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
     }
 
+    @Secured("ROLE_TRAINEE")
     @PatchMapping("/active-state/{username}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
-        if (!userService.updateActiveState(username, isActive)) {
-            throw new NotFoundException();
-        }
+        userService.updateActiveState(username, isActive);
     }
 }

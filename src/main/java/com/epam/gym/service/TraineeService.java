@@ -16,11 +16,11 @@ public interface TraineeService {
 
     TraineeResponseDto save(LocalDate dob, String address, BigInteger userId);
 
-    Optional<TraineeResponseDto> findByUsername(String username);
+    TraineeResponseDto findByUsername(String username);
 
     Optional<TraineeUpdateResponseDto> update(String username, TraineeUpdateRequestDto model);
 
-    boolean deleteByUsername(String username);
+    void deleteByUsername(String username);
 
     Set<SimpleTrainerResponseDto> getUnassignedTrainersByUsernameToResponse(String username);
 

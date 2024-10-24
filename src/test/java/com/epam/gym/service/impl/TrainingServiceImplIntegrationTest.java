@@ -1,6 +1,7 @@
-package com.epam.gym.service.serviceImpl;
+package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
+import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -31,14 +32,8 @@ class TrainingServiceImplIntegrationTest {
                 3
         );
 
-        // when
-        boolean success = trainingService.save(model);
-
-        // then
-        assertAll(
-                "Assertions for 'save()' method",
-                () -> assertThat(success).isTrue()
-        );
+        // when & then
+        trainingService.save(model);
     }
 
     @Test
@@ -52,13 +47,10 @@ class TrainingServiceImplIntegrationTest {
                 3
         );
 
-        // when
-        boolean success = trainingService.save(model);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'save()' method",
-                () -> assertThat(success).isFalse()
+                () -> assertThrows(BadRequestException.class, () -> trainingService.save(model))
         );
     }
 
@@ -73,13 +65,10 @@ class TrainingServiceImplIntegrationTest {
                 3
         );
 
-        // when
-        boolean success = trainingService.save(model);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'save()' method",
-                () -> assertThat(success).isFalse()
+                () -> assertThrows(BadRequestException.class, () -> trainingService.save(model))
         );
     }
 
@@ -94,13 +83,10 @@ class TrainingServiceImplIntegrationTest {
                 3
         );
 
-        // when
-        boolean success = trainingService.save(model);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'save()' method",
-                () -> assertThat(success).isFalse()
+                () -> assertThrows(BadRequestException.class, () -> trainingService.save(model))
         );
     }
 
@@ -115,13 +101,10 @@ class TrainingServiceImplIntegrationTest {
                 3
         );
 
-        // when
-        boolean success = trainingService.save(model);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'save()' method",
-                () -> assertThat(success).isFalse()
+                () -> assertThrows(BadRequestException.class, () -> trainingService.save(model))
         );
     }
 }

@@ -18,6 +18,8 @@ import java.util.Set;
 @Repository
 public interface TrainerRepository extends JpaRepository<TrainerEntity, BigInteger> {
 
+    boolean existsByUser_Username(String username);
+
     Optional<TrainerEntity> findByUser_Username(String username);
 
     @Transactional

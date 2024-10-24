@@ -1,6 +1,5 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
 import com.epam.gym.service.TrainingService;
 import jakarta.validation.Valid;
@@ -19,10 +18,8 @@ public class TrainingController {
     private final TrainingService trainingService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void addTraining(@Valid @RequestBody TrainingAddRequestDto model) {
-        if (!trainingService.save(model)) {
-            throw new BadRequestException();
-        }
+        trainingService.save(model);
     }
 }

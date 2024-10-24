@@ -3,6 +3,7 @@ package com.epam.gym.dto.request;
 import com.epam.gym.entity.TrainingTypeEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record TrainerRegistrationDto(
@@ -15,6 +16,10 @@ public record TrainerRegistrationDto(
         String lastName,
 
         @NotNull(message = "Specialization is required")
-        TrainingTypeEnum specialization
+        TrainingTypeEnum specialization,
+
+        @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}",
+                message = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
+        String password
 ) {
 }

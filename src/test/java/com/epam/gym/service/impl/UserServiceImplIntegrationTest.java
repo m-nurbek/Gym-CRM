@@ -1,11 +1,14 @@
-package com.epam.gym.service.serviceImpl;
+package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
+import com.epam.gym.controller.exception.BadRequestException;
+import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
@@ -13,6 +16,8 @@ import java.math.BigInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -22,6 +27,8 @@ class UserServiceImplIntegrationTest {
     private UserServiceImpl userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     void shouldMatchUsernameAndPassword() {
@@ -67,8 +74,8 @@ class UserServiceImplIntegrationTest {
         String newPassword2 = "NewPassword2";
 
         // when
-        boolean success1 = userService.changePassword(username, oldPassword1, newPassword1);
-        boolean success2 = userService.changePassword(id, oldPassword2, newPassword2);
+        userService.changePassword(username, oldPassword1, newPassword1);
+        userService.changePassword(id, oldPassword2, newPassword2);
 
         var user1 = userRepository.findByUsername(username).orElse(null);
         var user2 = userRepository.findById(id).orElse(null);
@@ -76,12 +83,10 @@ class UserServiceImplIntegrationTest {
         // then
         assertAll(
                 "Assertions for 'changePassword()' method",
-                () -> assertThat(success1).isTrue(),
-                () -> assertThat(success2).isTrue(),
                 () -> assertThat(user1).isNotNull(),
                 () -> assertThat(user2).isNotNull(),
-                () -> assertThat(user1.getPassword()).isEqualTo(newPassword1),
-                () -> assertThat(user2.getPassword()).isEqualTo(newPassword2)
+                () -> assertThat(passwordEncoder.matches(newPassword1, user1.getPassword())).isTrue(),
+                () -> assertThat(passwordEncoder.matches(newPassword2, user2.getPassword())).isTrue()
         );
     }
 
@@ -102,30 +107,13 @@ class UserServiceImplIntegrationTest {
 
         BigInteger id2 = BigInteger.valueOf(2);
 
-        // when
-        boolean success1 = userService.changePassword(username1, oldPassword1, newPassword1);
-        boolean success2 = userService.changePassword(id1, oldPassword2, newPassword2);
-        boolean success3 = userService.changePassword(username2, oldPassword3, newPassword3);
-        boolean success4 = userService.changePassword(id2, oldPassword3, newPassword3);
-
-        var user1 = userRepository.findByUsername(username1).orElse(null);
-        var user2 = userRepository.findById(id1).orElse(null);
-        var user3 = userRepository.findByUsername(username2).orElse(null);
-        var user4 = userRepository.findById(id2).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'changePassword()' method",
-                () -> assertThat(success1).isFalse(),
-                () -> assertThat(success2).isFalse(),
-                () -> assertThat(success3).isFalse(),
-                () -> assertThat(success4).isFalse(),
-                () -> assertThat(user1).isNull(),
-                () -> assertThat(user2).isNull(),
-                () -> assertThat(user3).isNotNull(),
-                () -> assertThat(user4).isNotNull(),
-                () -> assertThat(user3.getPassword()).isNotEqualTo(newPassword3),
-                () -> assertThat(user4.getPassword()).isNotEqualTo(newPassword3)
+                () -> assertThrows(NotFoundException.class, () -> userService.changePassword(username1, oldPassword1, newPassword1)),
+                () -> assertThrows(NotFoundException.class, () -> userService.changePassword(id1, oldPassword2, newPassword2)),
+                () -> assertThrows(BadRequestException.class, () -> userService.changePassword(username2, oldPassword3, newPassword3)),
+                () -> assertThrows(BadRequestException.class, () -> userService.changePassword(id2, oldPassword3, newPassword3))
         );
     }
 
@@ -182,21 +170,16 @@ class UserServiceImplIntegrationTest {
         boolean isActive = false;
 
         // when
-        boolean success1 = userService.updateActiveState(username, isActive);
-        boolean success2 = userService.updateActiveState(id, isActive);
-
-        var user1 = userRepository.findByUsername(username).orElse(null);
-        var user2 = userRepository.findById(id).orElse(null);
+        boolean success = userService.updateActiveState(id, isActive);
+        var user = userRepository.findById(id).orElse(null);
 
         // then
         assertAll(
                 "Assertions for 'updateActiveState()' method",
-                () -> assertThat(success1).isTrue(),
-                () -> assertThat(success2).isTrue(),
-                () -> assertThat(user1).isNotNull(),
-                () -> assertThat(user2).isNotNull(),
-                () -> assertThat(user1.getIsActive()).isEqualTo(isActive),
-                () -> assertThat(user2.getIsActive()).isEqualTo(isActive)
+                () -> assertDoesNotThrow(() -> userService.updateActiveState(username, isActive)),
+                () -> assertThat(success).isTrue(),
+                () -> assertThat(user).isNotNull(),
+                () -> assertThat(user.getIsActive()).isEqualTo(isActive)
         );
     }
 
@@ -208,19 +191,15 @@ class UserServiceImplIntegrationTest {
         boolean isActive = false;
 
         // when
-        boolean success1 = userService.updateActiveState(username, isActive);
-        boolean success2 = userService.updateActiveState(id, isActive);
-
-        var user1 = userRepository.findByUsername(username).orElse(null);
-        var user2 = userRepository.findById(id).orElse(null);
+        boolean success = userService.updateActiveState(id, isActive);
+        var user = userRepository.findById(id).orElse(null);
 
         // then
         assertAll(
                 "Assertions for 'updateActiveState()' method",
-                () -> assertThat(success1).isFalse(),
-                () -> assertThat(success2).isFalse(),
-                () -> assertThat(user1).isNull(),
-                () -> assertThat(user2).isNull()
+                () -> assertThrows(NotFoundException.class, () -> userService.updateActiveState(username, isActive)),
+                () -> assertThat(success).isFalse(),
+                () -> assertThat(user).isNull()
         );
     }
 
@@ -230,9 +209,10 @@ class UserServiceImplIntegrationTest {
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
         boolean isActive = false;
+        String password = "password";
 
         // when
-        UserDto userDto = userService.save(firstName, lastName, isActive);
+        UserDto userDto = userService.save(firstName, lastName, password, isActive);
 
         // then
         assertAll(
