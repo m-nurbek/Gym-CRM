@@ -203,7 +203,7 @@ class TraineeControllerUnitTest {
         when(traineeService.updateTrainerListByUsername(anyString(), any()))
                 .thenReturn(Set.of());
 
-        mockMvc.perform(put("/api/v1/trainees/update-trainers/username")
+        mockMvc.perform(put("/api/v1/trainees/trainers/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 [
@@ -221,7 +221,7 @@ class TraineeControllerUnitTest {
         when(traineeService.updateTrainerListByUsername(anyString(), any()))
                 .thenThrow(NotFoundException.class);
 
-        mockMvc.perform(put("/api/v1/trainees/update-trainers/username")
+        mockMvc.perform(put("/api/v1/trainees/trainers/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 [

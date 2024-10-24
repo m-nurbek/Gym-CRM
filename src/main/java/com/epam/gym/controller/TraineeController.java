@@ -73,7 +73,7 @@ public class TraineeController {
     }
 
     @Secured("ROLE_TRAINEE")
-    @PutMapping("/update-trainers/{username}")
+    @PutMapping("/trainers/{username}")
     public Set<SimpleTrainerResponseDto> updateTrainersList(
             @PathVariable String username,
             @Valid @RequestBody List<String> trainerUsernameList) {
