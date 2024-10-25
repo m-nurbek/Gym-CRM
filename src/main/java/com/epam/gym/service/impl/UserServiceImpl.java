@@ -131,10 +131,6 @@ public class UserServiceImpl implements UserService {
                 null
         );
 
-        if (!userEntity.isValid()) {
-            throw new ConflictException("Invalid user");
-        }
-
         UserEntity u = userRepository.save(userEntity);
 
         return new UserDto(

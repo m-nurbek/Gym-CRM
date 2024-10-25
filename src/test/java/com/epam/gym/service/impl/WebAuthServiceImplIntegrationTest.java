@@ -11,6 +11,9 @@ import com.epam.gym.repository.TraineeRepository;
 import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.repository.UserRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,6 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -47,24 +51,18 @@ class WebAuthServiceImplIntegrationTest {
         assertDoesNotThrow(() -> webAuthService.authenticate(username, password));
     }
 
-    @Test
-    void shouldNotAuthenticate1() {
-        // given
-        String username = "non-existent";
-        String password = "password1";
-
+    @ParameterizedTest
+    @MethodSource("provideUsernameAndPassword")
+    void shouldNotAuthenticate(String username, String password) {
         // when & then
         assertThrows(BadCredentialsException.class, () -> webAuthService.authenticate(username, password));
     }
 
-    @Test
-    void shouldNotAuthenticate2() {
-        // given
-        String username = "johndoe1";
-        String password = "wrongPassword";
-
-        // when & then
-        assertThrows(BadCredentialsException.class, () -> webAuthService.authenticate(username, password));
+    private static Stream<Arguments> provideUsernameAndPassword() {
+        return Stream.of(
+                Arguments.of("non-existent", "password1"),
+                Arguments.of("johndoe1", "wrongPassword")
+        );
     }
 
     @Test

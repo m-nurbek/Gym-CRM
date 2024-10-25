@@ -1,6 +1,7 @@
 package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
+import com.epam.gym.controller.exception.ConflictException;
 import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.request.TrainerUpdateRequestDto;
@@ -13,6 +14,8 @@ import com.epam.gym.entity.UserEntity;
 import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.TrainingService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -71,19 +74,17 @@ class TrainerServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotSave() {
+    @ParameterizedTest
+    @ValueSource(longs = {0, 1, 25, 26, 50, 51})
+    void shouldNotSave(Long id) {
         // given
         var specialization = TrainingTypeEnum.AEROBICS;
-        BigInteger userId = BigInteger.valueOf(1);
+        BigInteger userId = BigInteger.valueOf(id);
 
-        // when
-        TrainerResponseDto trainer = trainerService.save(specialization, userId);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'save()' method",
-                () -> assertThat(trainer).isNull()
+                () -> assertThrows(ConflictException.class, () -> trainerService.save(specialization, userId))
         );
     }
 
@@ -102,23 +103,9 @@ class TrainerServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotFindUsername1() {
-        // given
-        String username = "johndoe1"; // trainee username
-
-        // when & then
-        assertAll(
-                "Assertions for 'findByUsername()' method",
-                () -> assertThrows(NotFoundException.class, () -> trainerService.findByUsername(username))
-        );
-    }
-
-    @Test
-    void shouldNotFindUsername2() {
-        // given
-        String username = "non-existent";
-
+    @ParameterizedTest
+    @ValueSource(strings = {"johndoe1", "non-existent"})
+    void shouldNotFindUsername(String username) {
         // when & then
         assertAll(
                 "Assertions for 'findByUsername()' method",
@@ -170,33 +157,10 @@ class TrainerServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotUpdate1() {
+    @ParameterizedTest
+    @ValueSource(strings = {"non-existent", "johndoe1"})
+    void shouldNotUpdate(String username) {
         // given
-        String username = "johndoe1"; // trainee username
-        String firstName = "FIRSTNAME";
-        String lastName = "LASTNAME";
-        var type = TrainingTypeEnum.BOXING;
-        boolean isActive = false;
-
-        TrainerUpdateRequestDto model = new TrainerUpdateRequestDto(
-                firstName,
-                lastName,
-                type,
-                isActive
-        );
-
-        // when & then
-        assertAll(
-                "Assertions for 'update()' method",
-                () -> assertThrows(NotFoundException.class, () -> trainerService.update(username, model))
-        );
-    }
-
-    @Test
-    void shouldNotUpdate2() {
-        // given
-        String username = "non-existent";
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
         var type = TrainingTypeEnum.BOXING;
@@ -377,25 +341,10 @@ class TrainerServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotGetTrainingsByUsernameToResponse1() {
+    @ParameterizedTest
+    @ValueSource(strings = {"johndoe1", "non-existent"})
+    void shouldNotGetTrainingsByUsernameToResponse(String username) {
         // given
-        String username = "johndoe1";   // trainee username
-        LocalDate periodFrom = null;
-        LocalDate periodTo = null;
-        String traineeName = null;
-
-        // when & then
-        assertAll(
-                "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThrows(NotFoundException.class, () -> trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName))
-        );
-    }
-
-    @Test
-    void shouldNotGetTrainingsByUsernameToResponse2() {
-        // given
-        String username = "non-existent";
         LocalDate periodFrom = null;
         LocalDate periodTo = null;
         String traineeName = null;

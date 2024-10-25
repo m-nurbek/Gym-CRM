@@ -4,12 +4,16 @@ import com.epam.gym.Application;
 import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,66 +40,22 @@ class TrainingServiceImplIntegrationTest {
         trainingService.save(model);
     }
 
-    @Test
-    void shouldNotSave1() {
-        // given
-        var model = new TrainingAddRequestDto(
-                "johndoe1",
-                "nonExistentTrainer",
-                "TRAINING NAME",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        // when & then
-        assertAll(
-                "Assertions for 'save()' method",
-                () -> assertThrows(BadRequestException.class, () -> trainingService.save(model))
+    private static Stream<Arguments> provideTraineeAndTrainerUsernames() {
+        return Stream.of(
+                Arguments.of("johndoe1", "nonExistentTrainer"),
+                Arguments.of("nonExistentTrainee", "vincestewart50"),
+                Arguments.of("johndoe1", "janedoe2"),
+                Arguments.of("umalewis49", "vincestewart50")
         );
     }
 
-    @Test
-    void shouldNotSave2() {
+    @ParameterizedTest
+    @MethodSource("provideTraineeAndTrainerUsernames")
+    void shouldNotSave(String traineeUsername, String trainerUsername) {
         // given
         var model = new TrainingAddRequestDto(
-                "nonExistentTrainee",
-                "vincestewart50",
-                "TRAINING NAME",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        // when & then
-        assertAll(
-                "Assertions for 'save()' method",
-                () -> assertThrows(BadRequestException.class, () -> trainingService.save(model))
-        );
-    }
-
-    @Test
-    void shouldNotSave3() {
-        // given
-        var model = new TrainingAddRequestDto(
-                "johndoe1",
-                "janedoe2", // trainee username
-                "TRAINING NAME",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        // when & then
-        assertAll(
-                "Assertions for 'save()' method",
-                () -> assertThrows(BadRequestException.class, () -> trainingService.save(model))
-        );
-    }
-
-    @Test
-    void shouldNotSave4() {
-        // given
-        var model = new TrainingAddRequestDto(
-                "umalewis49", // trainer username
-                "vincestewart50",
+                traineeUsername,
+                trainerUsername,
                 "TRAINING NAME",
                 LocalDate.of(2025, 1, 1),
                 3

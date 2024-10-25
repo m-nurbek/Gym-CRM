@@ -1,6 +1,7 @@
 package com.epam.gym.service.impl;
 
 import com.epam.gym.Application;
+import com.epam.gym.controller.exception.ConflictException;
 import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.dto.request.TraineeUpdateRequestDto;
@@ -14,6 +15,8 @@ import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.TrainingService;
 import com.epam.gym.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -74,37 +77,18 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotSave1() {
+    @ParameterizedTest
+    @ValueSource(longs = {0, 1, 25, 26, 50, 51})
+    void shouldNotSave(Long id) {
         // given
         LocalDate dob = LocalDate.of(2000, 1, 1);
         String address = "ADDRESS";
-        BigInteger userId = BigInteger.valueOf(26);
+        BigInteger userId = BigInteger.valueOf(id);
 
-        // when
-        TraineeResponseDto trainee = traineeService.save(dob, address, userId);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'save()' method",
-                () -> assertThat(trainee).isNull()
-        );
-    }
-
-    @Test
-    void shouldNotSave2() {
-        // given
-        LocalDate dob = LocalDate.of(2000, 1, 1);
-        String address = "ADDRESS";
-        BigInteger userId = BigInteger.valueOf(51); // non-existent user
-
-        // when
-        TraineeResponseDto trainee = traineeService.save(dob, address, userId);
-
-        // then
-        assertAll(
-                "Assertions for 'save()' method",
-                () -> assertThat(trainee).isNull()
+                () -> assertThrows(ConflictException.class, () -> traineeService.save(dob, address, userId))
         );
     }
 
@@ -125,23 +109,9 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotFindByUsername1() {
-        // given
-        String username = "non-existent";
-
-        // when & then
-        assertAll(
-                "Assertions for 'findByUsername()' method",
-                () -> assertThrows(NotFoundException.class, () -> traineeService.findByUsername(username))
-        );
-    }
-
-    @Test
-    void shouldNotFindByUsername2() {
-        // given
-        String username = "vincestewart50";
-
+    @ParameterizedTest
+    @ValueSource(strings = {"non-existent", "vincestewart50"})
+    void shouldNotFindByUsername(String username) {
         // when & then
         assertAll(
                 "Assertions for 'findByUsername()' method",
@@ -197,38 +167,10 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotUpdate1() {
+    @ParameterizedTest
+    @ValueSource(strings = {"vincestewart50", "non-existent"})
+    void shouldNotUpdate(String username) {
         // given
-        String username = "vincestewart50"; // trainer username
-        String firstName = "FIRSTNAME";
-        String lastName = "LASTNAME";
-        LocalDate dob = LocalDate.of(2000, 1, 1);
-        String address = "ADDRESS";
-        boolean isActive = false;
-
-        TraineeUpdateRequestDto model = new TraineeUpdateRequestDto(
-                firstName,
-                lastName,
-                dob,
-                address,
-                isActive
-        );
-
-        // when
-        TraineeUpdateResponseDto trainee = traineeService.update(username, model).orElse(null);
-
-        // then
-        assertAll(
-                "Assertions for 'update()' method",
-                () -> assertThat(trainee).isNull()
-        );
-    }
-
-    @Test
-    void shouldNotUpdate2() {
-        // given
-        String username = "non-existent";
         String firstName = "FIRSTNAME";
         String lastName = "LASTNAME";
         LocalDate dob = LocalDate.of(2000, 1, 1);
@@ -267,23 +209,9 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotDeleteByUsername1() {
-        // given
-        String username = "non-existent";
-
-        // when & then
-        assertAll(
-                "Assertions for 'delete()' method",
-                () -> assertThrows(NotFoundException.class, () -> traineeService.deleteByUsername(username))
-        );
-    }
-
-    @Test
-    void shouldNotDeleteByUsername2() {
-        // given
-        String username = "vincestewart50"; // trainer username
-
+    @ParameterizedTest
+    @ValueSource(strings = {"non-existent", "vincestewart50"})
+    void shouldNotDeleteByUsername(String username) {
         // when & then
         assertAll(
                 "Assertions for 'delete()' method",
@@ -330,23 +258,9 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotGetUnassignedTrainersByUsernameToResponse1() {
-        // given
-        String username = "non-existent";
-
-        // when & then
-        assertAll(
-                "Assertions for 'delete()' method",
-                () -> assertThrows(NotFoundException.class, () -> traineeService.getUnassignedTrainersByUsernameToResponse(username))
-        );
-    }
-
-    @Test
-    void shouldNotGetUnassignedTrainersByUsernameToResponse2() {
-        // given
-        String username = "vincestewart50"; // trainer username
-
+    @ParameterizedTest
+    @ValueSource(strings = {"non-existent", "vincestewart50"})
+    void shouldNotGetUnassignedTrainersByUsernameToResponse(String username) {
         // when & then
         assertAll(
                 "Assertions for 'delete()' method",
@@ -571,10 +485,10 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldNotGetTrainingsByUsernameToResponse1() {
+    @ParameterizedTest
+    @ValueSource(strings = {"non-existent", "vincestewart50"})
+    void shouldNotGetTrainingsByUsernameToResponse1(String username) {
         // given
-        String username = "non-existent";
         LocalDate periodFrom = null;
         LocalDate periodTo = null;
         String trainerName = null;
@@ -588,23 +502,7 @@ class TraineeServiceImplIntegrationTest {
     }
 
     @Test
-    void shouldNotGetTrainingsByUsernameToResponse2() {
-        // given
-        String username = "vincestewart50"; // trainer username
-        LocalDate periodFrom = null;
-        LocalDate periodTo = null;
-        String trainerName = null;
-        String trainingType = null;
-
-        // when & then
-        assertAll(
-                "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThrows(NotFoundException.class, () -> traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType))
-        );
-    }
-
-    @Test
-    void updateTrainerListByUsername1() {
+    void shouldUpdateTrainerListByUsername1() {
         // given
         String username = "johndoe1";
 
@@ -627,7 +525,7 @@ class TraineeServiceImplIntegrationTest {
     }
 
     @Test
-    void updateTrainerListByUsername2() {
+    void shouldUpdateTrainerListByUsername2() {
         // given
         String username = "johndoe1";
 
