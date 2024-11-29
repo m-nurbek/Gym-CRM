@@ -1,5 +1,6 @@
 package com.epam.gym.service.impl;
 
+import com.epam.gym.controller.exception.ConflictException;
 import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.request.TraineeUpdateRequestDto;
 import com.epam.gym.dto.response.SimpleTrainerResponseDto;
@@ -38,10 +39,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public TraineeResponseDto save(LocalDate dob, String address, BigInteger userId) {
         UserEntity user = userRepository.findById(userId).orElse(null);
-
-        if (user == null || user.getTrainer() != null) {
-            return null;
-        }
+        validateUserRoleAssignment(user);
 
         TraineeEntity trainee = traineeRepository.save(new TraineeEntity(
                 null,
@@ -65,6 +63,14 @@ public class TraineeServiceImpl implements TraineeService {
                         t.getSpecialization().getName().name()
                 )).toList()
         );
+    }
+
+    private void validateUserRoleAssignment(UserEntity user) {
+        if (user == null) {
+            throw new ConflictException("User cannot be null");
+        } else if (user.getTrainee() != null || user.getTrainer() != null) {
+            throw new ConflictException("User is already assigned to a specific trainee or trainer entity");
+        }
     }
 
     @Override

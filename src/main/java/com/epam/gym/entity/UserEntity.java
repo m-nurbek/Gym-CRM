@@ -1,5 +1,6 @@
 package com.epam.gym.entity;
 
+import com.epam.gym.controller.exception.ConflictException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
@@ -60,8 +63,22 @@ public class UserEntity {
     @ToString.Exclude
     private TrainerEntity trainer;
 
-    public boolean isValid() {
-        return !(this.trainer != null && this.trainee != null);
+    private boolean isNotValid() {
+        return this.trainer != null && this.trainee != null;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (isNotValid()) {
+            throw new ConflictException("User cannot be both a trainee and a trainer.");
+        }
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (isNotValid()) {
+            throw new ConflictException("User cannot be both a trainee and a trainer.");
+        }
     }
 
     @Override
