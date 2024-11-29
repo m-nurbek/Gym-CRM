@@ -16,6 +16,8 @@ import com.epam.gym.service.TrainingService;
 import com.epam.gym.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -278,7 +281,8 @@ class TraineeServiceImplIntegrationTest {
         String trainingType = null;
 
         // when
-        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
+        Set<TrainingResponseForTraineeDto> trainings = traineeService
+                .getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
 
         // then
         assertAll(
@@ -289,17 +293,21 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldGetTrainingsByUsernameToResponse2() {
-        // given
-        String username = "johndoe1";
-        LocalDate periodFrom = null;
-        LocalDate periodTo = null;
-        String trainerName = null;
-        String trainingType = null;
+    private static Stream<Arguments> provideArgumentsForGetTrainingsByUsername() {
+        return Stream.of(
+                Arguments.of("johndoe1", null, null, null, null, 4),
+                Arguments.of("johndoe1", LocalDate.of(2027, 1, 1), LocalDate.of(2030, 1, 1), null, null, 1),
+                Arguments.of("johndoe1", null, null, "tomward48", null, 1),
+                Arguments.of("johndoe1", null, null, null, "SWIMMING", 1)
+        );
+    }
 
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForGetTrainingsByUsername")
+    void shouldGetTrainingsByUsernameToResponse2(String traineeUsername, LocalDate periodFrom, LocalDate periodTo, String trainerName, String trainingType, int resultSize) {
+        // given
         TrainingAddRequestDto model1 = new TrainingAddRequestDto(
-                username,
+                traineeUsername,
                 "vincestewart50",
                 "TRAINING 1",
                 LocalDate.of(2025, 1, 1),
@@ -307,7 +315,7 @@ class TraineeServiceImplIntegrationTest {
         );
 
         TrainingAddRequestDto model2 = new TrainingAddRequestDto(
-                username,
+                traineeUsername,
                 "umalewis49",
                 "TRAINING 2",
                 LocalDate.of(2030, 1, 1),
@@ -315,7 +323,7 @@ class TraineeServiceImplIntegrationTest {
         );
 
         TrainingAddRequestDto model3 = new TrainingAddRequestDto(
-                username,
+                traineeUsername,
                 "tomward48",
                 "TRAINING 2",
                 LocalDate.of(2035, 1, 1),
@@ -327,161 +335,14 @@ class TraineeServiceImplIntegrationTest {
         trainingService.save(model2);
         trainingService.save(model3);
 
-        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
+        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(traineeUsername, periodFrom, periodTo, trainerName, trainingType);
 
         // then
         assertAll(
                 "Assertions for 'getTrainingsByUsernameToResponse()' method",
                 () -> assertThat(trainings).isNotNull(),
                 () -> assertThat(trainings.isEmpty()).isFalse(),
-                () -> assertThat(trainings.size()).isEqualTo(4)
-        );
-    }
-
-    @Test
-    void shouldGetTrainingsByUsernameToResponse3() {
-        // given
-        String username = "johndoe1";
-        LocalDate periodFrom = LocalDate.of(2027, 1, 1);
-        LocalDate periodTo = LocalDate.of(2030, 1, 1);
-        String trainerName = null;
-        String trainingType = null;
-
-        TrainingAddRequestDto model1 = new TrainingAddRequestDto(
-                username,
-                "vincestewart50",
-                "TRAINING 1",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model2 = new TrainingAddRequestDto(
-                username,
-                "umalewis49",
-                "TRAINING 2",
-                LocalDate.of(2030, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model3 = new TrainingAddRequestDto(
-                username,
-                "tomward48",
-                "TRAINING 2",
-                LocalDate.of(2035, 1, 1),
-                3
-        );
-
-        // when
-        trainingService.save(model1);
-        trainingService.save(model2);
-        trainingService.save(model3);
-
-        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
-
-        // then
-        assertAll(
-                "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainings).isNotNull(),
-                () -> assertThat(trainings.isEmpty()).isFalse(),
-                () -> assertThat(trainings.size()).isEqualTo(1)
-        );
-    }
-
-    @Test
-    void shouldGetTrainingsByUsernameToResponse4() {
-        // given
-        String username = "johndoe1";
-        LocalDate periodFrom = null;
-        LocalDate periodTo = null;
-        String trainerName = "tomward48";
-        String trainingType = null;
-
-        TrainingAddRequestDto model1 = new TrainingAddRequestDto(
-                username,
-                "vincestewart50",
-                "TRAINING 1",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model2 = new TrainingAddRequestDto(
-                username,
-                "umalewis49",
-                "TRAINING 2",
-                LocalDate.of(2030, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model3 = new TrainingAddRequestDto(
-                username,
-                trainerName,
-                "TRAINING 2",
-                LocalDate.of(2035, 1, 1),
-                3
-        );
-
-        // when
-        trainingService.save(model1);
-        trainingService.save(model2);
-        trainingService.save(model3);
-
-        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
-
-        // then
-        assertAll(
-                "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainings).isNotNull(),
-                () -> assertThat(trainings.isEmpty()).isFalse(),
-                () -> assertThat(trainings.size()).isEqualTo(1)
-        );
-    }
-
-    @Test
-    void shouldGetTrainingsByUsernameToResponse5() {
-        // given
-        String username = "johndoe1";
-        LocalDate periodFrom = null;
-        LocalDate periodTo = null;
-        String trainerName = null;
-        String trainingType = "SWIMMING";
-
-        TrainingAddRequestDto model1 = new TrainingAddRequestDto(
-                username,
-                "vincestewart50",
-                "TRAINING 1",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model2 = new TrainingAddRequestDto(
-                username,
-                "umalewis49",
-                "TRAINING 2",
-                LocalDate.of(2030, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model3 = new TrainingAddRequestDto(
-                username,
-                "tomward48",
-                "TRAINING 3",
-                LocalDate.of(2035, 1, 1),
-                3
-        );
-
-        // when
-        trainingService.save(model1);
-        trainingService.save(model2);
-        trainingService.save(model3);
-
-        Set<TrainingResponseForTraineeDto> trainings = traineeService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, trainerName, trainingType);
-
-        // then
-        assertAll(
-                "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainings).isNotNull(),
-                () -> assertThat(trainings.isEmpty()).isFalse(),
-                () -> assertThat(trainings.size()).isEqualTo(1)
+                () -> assertThat(trainings.size()).isEqualTo(resultSize)
         );
     }
 
@@ -501,41 +362,44 @@ class TraineeServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldUpdateTrainerListByUsername1() {
-        // given
-        String username = "johndoe1";
-
-        // when
-        var trainers = traineeService.updateTrainerListByUsername(username, List.of(
-                "vincestewart50",
-                "umalewis49",
-                "ninahayes42",
-                "leosanders40",
-                "alicesmith3", // trainee username
-                "non-existent"
-        ));
-
-        // then
-        assertAll(
-                "Assertions for 'updateTrainerListByUsername()' method",
-                () -> assertThat(trainers).isNotEmpty(),
-                () -> assertThat(trainers.size()).isEqualTo(4)
+    private static Stream<Arguments> provideArgumentsForUpdateTrainerList() {
+        return Stream.of(
+                Arguments.of(
+                        "johndoe1",
+                        List.of("vincestewart50",
+                                "umalewis49",
+                                "ninahayes42",
+                                "leosanders40",
+                                "alicesmith3", // trainee username
+                                "non-existent"),
+                        4),
+                Arguments.of(
+                        "janedoe2",
+                        List.of("leosanders40",
+                                "alicesmith3", // trainee username
+                                "non-existent"),
+                        1),
+                Arguments.of(
+                        "johndoe1",
+                        List.of(),
+                        0
+                )
         );
     }
 
-    @Test
-    void shouldUpdateTrainerListByUsername2() {
-        // given
-        String username = "johndoe1";
-
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForUpdateTrainerList")
+    void shouldUpdateTrainerListByUsername1(String traineeUsername, List<String> trainerUsernames, int resultSize) {
         // when
-        var trainers = traineeService.updateTrainerListByUsername(username, List.of());
+        var trainers = traineeService.updateTrainerListByUsername(traineeUsername, trainerUsernames);
+        var trainersFromDb = traineeService.findByUsername(traineeUsername);
 
         // then
         assertAll(
                 "Assertions for 'updateTrainerListByUsername()' method",
-                () -> assertThat(trainers).isEmpty()
+                () -> assertThat(trainers).isNotNull(),
+                () -> assertThat(trainers.size()).isEqualTo(resultSize),
+                () -> assertThat(trainersFromDb.trainerList().size()).isEqualTo(trainers.size())
         );
     }
 }

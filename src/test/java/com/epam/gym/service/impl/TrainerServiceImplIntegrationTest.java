@@ -15,6 +15,8 @@ import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.TrainingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -200,17 +203,21 @@ class TrainerServiceImplIntegrationTest {
         );
     }
 
-    @Test
-    void shouldGetTrainingsByUsernameToResponse2() {
-        // given
-        String username = "vincestewart50";
-        LocalDate periodFrom = null;
-        LocalDate periodTo = null;
-        String traineeName = null;
+    private static Stream<Arguments> provideArgumentsForGetTrainingsByUsername() {
+        return Stream.of(
+                Arguments.of("vincestewart50", null, null, null, 4),
+                Arguments.of("vincestewart50", LocalDate.of(2027, 1, 1), LocalDate.of(2030, 1, 1), null, 1),
+                Arguments.of("vincestewart50", null, null, "janedoe2", 1)
+        );
+    }
 
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForGetTrainingsByUsername")
+    void shouldGetTrainingsByUsernameToResponse2(String trainerUsername, LocalDate periodFrom, LocalDate periodTo, String traineeName, int resultSize) {
+        // given
         TrainingAddRequestDto model1 = new TrainingAddRequestDto(
                 "johndoe1",
-                username,
+                trainerUsername,
                 "TRAINING 1",
                 LocalDate.of(2025, 1, 1),
                 3
@@ -218,7 +225,7 @@ class TrainerServiceImplIntegrationTest {
 
         TrainingAddRequestDto model2 = new TrainingAddRequestDto(
                 "janedoe2",
-                username,
+                trainerUsername,
                 "TRAINING 2",
                 LocalDate.of(2030, 1, 1),
                 3
@@ -226,7 +233,7 @@ class TrainerServiceImplIntegrationTest {
 
         TrainingAddRequestDto model3 = new TrainingAddRequestDto(
                 "alicesmith3",
-                username,
+                trainerUsername,
                 "TRAINING 2",
                 LocalDate.of(2035, 1, 1),
                 3
@@ -236,108 +243,14 @@ class TrainerServiceImplIntegrationTest {
         trainingService.save(model1);
         trainingService.save(model2);
         trainingService.save(model3);
-        Set<TrainingResponseForTrainerDto> trainer = trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName);
+        Set<TrainingResponseForTrainerDto> trainer = trainerService.getTrainingsByUsernameToResponse(trainerUsername, periodFrom, periodTo, traineeName);
 
         // then
         assertAll(
                 "Assertions for 'getTrainingsByUsernameToResponse()' method",
                 () -> assertThat(trainer).isNotNull(),
                 () -> assertThat(trainer.isEmpty()).isFalse(),
-                () -> assertThat(trainer.size()).isEqualTo(4)
-        );
-    }
-
-    @Test
-    void shouldGetTrainingsByUsernameToResponse3() {
-        // given
-        String username = "vincestewart50";
-        LocalDate periodFrom = LocalDate.of(2027, 1, 1);
-        LocalDate periodTo = LocalDate.of(2030, 1, 1);
-        String traineeName = null;
-
-        TrainingAddRequestDto model1 = new TrainingAddRequestDto(
-                "johndoe1",
-                username,
-                "TRAINING 1",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model2 = new TrainingAddRequestDto(
-                "janedoe2",
-                username,
-                "TRAINING 2",
-                LocalDate.of(2030, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model3 = new TrainingAddRequestDto(
-                "alicesmith3",
-                username,
-                "TRAINING 2",
-                LocalDate.of(2035, 1, 1),
-                3
-        );
-
-        // when
-        trainingService.save(model1);
-        trainingService.save(model2);
-        trainingService.save(model3);
-        Set<TrainingResponseForTrainerDto> trainer = trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName);
-
-        // then
-        assertAll(
-                "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainer).isNotNull(),
-                () -> assertThat(trainer.isEmpty()).isFalse(),
-                () -> assertThat(trainer.size()).isEqualTo(1)
-        );
-    }
-
-    @Test
-    void shouldGetTrainingsByUsernameToResponse4() {
-        // given
-        String username = "vincestewart50";
-        LocalDate periodFrom = null;
-        LocalDate periodTo = null;
-        String traineeName = "janedoe2";
-
-        TrainingAddRequestDto model1 = new TrainingAddRequestDto(
-                "johndoe1",
-                username,
-                "TRAINING 1",
-                LocalDate.of(2025, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model2 = new TrainingAddRequestDto(
-                traineeName,
-                username,
-                "TRAINING 2",
-                LocalDate.of(2030, 1, 1),
-                3
-        );
-
-        TrainingAddRequestDto model3 = new TrainingAddRequestDto(
-                "alicesmith3",
-                username,
-                "TRAINING 2",
-                LocalDate.of(2035, 1, 1),
-                3
-        );
-
-        // when
-        trainingService.save(model1);
-        trainingService.save(model2);
-        trainingService.save(model3);
-        Set<TrainingResponseForTrainerDto> trainer = trainerService.getTrainingsByUsernameToResponse(username, periodFrom, periodTo, traineeName);
-
-        // then
-        assertAll(
-                "Assertions for 'getTrainingsByUsernameToResponse()' method",
-                () -> assertThat(trainer).isNotNull(),
-                () -> assertThat(trainer.isEmpty()).isFalse(),
-                () -> assertThat(trainer.size()).isEqualTo(1)
+                () -> assertThat(trainer.size()).isEqualTo(resultSize)
         );
     }
 
