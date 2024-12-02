@@ -1,8 +1,10 @@
 package com.epam.gym.controller;
 
 import com.epam.gym.controller.exception.NotFoundException;
+import com.epam.gym.dto.request.ActiveStateRequestDto;
 import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TraineeUpdateRequestDto;
+import com.epam.gym.dto.request.UpdateTrainersListRequestDto;
 import com.epam.gym.dto.response.RegistrationResponseDto;
 import com.epam.gym.dto.response.SimpleTrainerResponseDto;
 import com.epam.gym.dto.response.TraineeResponseDto;
@@ -11,6 +13,7 @@ import com.epam.gym.dto.response.TrainingResponseForTraineeDto;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
 import com.epam.gym.service.WebAuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,12 +31,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/trainees")
 @AllArgsConstructor
+@Tag(name = "Trainee controller endpoints")
 public class TraineeController {
     private final TraineeService traineeService;
     private final UserService userService;
@@ -76,8 +79,8 @@ public class TraineeController {
     @PutMapping("/trainers/{username}")
     public Set<SimpleTrainerResponseDto> updateTrainersList(
             @PathVariable String username,
-            @Valid @RequestBody List<String> trainerUsernameList) {
-        return traineeService.updateTrainerListByUsername(username, trainerUsernameList);
+            @Valid @RequestBody UpdateTrainersListRequestDto requestDto) {
+        return traineeService.updateTrainerListByUsername(username, requestDto.trainerUsernames());
     }
 
     @Secured("ROLE_TRAINEE")
@@ -94,7 +97,7 @@ public class TraineeController {
     @Secured("ROLE_TRAINEE")
     @PatchMapping("/active-state/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
-        userService.updateActiveState(username, isActive);
+    public void changeProfileActiveState(@PathVariable String username, @Valid @RequestBody ActiveStateRequestDto activeStateRequestDto) {
+        userService.updateActiveState(username, activeStateRequestDto.isActive());
     }
 }

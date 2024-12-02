@@ -1,5 +1,6 @@
 package com.epam.gym.controller;
 
+import com.epam.gym.dto.request.ActiveStateRequestDto;
 import com.epam.gym.dto.request.TrainerRegistrationDto;
 import com.epam.gym.dto.request.TrainerUpdateRequestDto;
 import com.epam.gym.dto.response.RegistrationResponseDto;
@@ -9,6 +10,7 @@ import com.epam.gym.dto.response.TrainingResponseForTrainerDto;
 import com.epam.gym.service.TrainerService;
 import com.epam.gym.service.UserService;
 import com.epam.gym.service.WebAuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/trainers")
 @AllArgsConstructor
+@Tag(name = "Trainer controller endpoints")
 public class TrainerController {
     private final TrainerService trainerService;
     private final UserService userService;
@@ -68,7 +71,7 @@ public class TrainerController {
     @Secured("ROLE_TRAINER")
     @PatchMapping("/active-state/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeProfileActiveState(@PathVariable String username, @RequestBody Boolean isActive) {
-        userService.updateActiveState(username, isActive);
+    public void changeProfileActiveState(@PathVariable String username, @Valid @RequestBody ActiveStateRequestDto activeStateRequestDto) {
+        userService.updateActiveState(username, activeStateRequestDto.isActive());
     }
 }

@@ -159,7 +159,9 @@ class TrainerControllerUnitTest {
         mockMvc.perform(patch("/api/v1/trainers/active-state/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                true
+                                {
+                                "isActive": true
+                                }
                                 """))
                 .andExpect(status().isNoContent());
     }
@@ -172,7 +174,9 @@ class TrainerControllerUnitTest {
         mockMvc.perform(patch("/api/v1/trainers/active-state/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                true
+                                {
+                                "isActive": true
+                                }
                                 """))
                 .andExpect(status().isNotFound());
     }

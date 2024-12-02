@@ -28,7 +28,7 @@ public class BruteForceProtectorServiceImpl implements BruteForceProtectorServic
 
     /**
      * key -> client IP,
-     * value -> time when the user with given username was locked
+     * value -> time when the user with current IP was locked
      */
     private final Map<String, Long> lockTime = new ConcurrentHashMap<>();
 
@@ -40,7 +40,7 @@ public class BruteForceProtectorServiceImpl implements BruteForceProtectorServic
         log.trace("Login attempts count: {}", count);
 
         if (count >= MAX_ATTEMPTS) {
-            lockTime.put(clientIp, System.currentTimeMillis());
+            blockIp(clientIp);
             log.warn("Reached the maximum number of login attempts");
         }
     }
@@ -49,8 +49,7 @@ public class BruteForceProtectorServiceImpl implements BruteForceProtectorServic
     public void loginSucceeded(String clientIp) {
         log.debug(MarkerFactory.getMarker("SUCCESS"), "Logged in successfully, removing the client IP from the block list");
 
-        attempts.remove(clientIp);
-        lockTime.remove(clientIp);
+        unblockIp(clientIp);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class BruteForceProtectorServiceImpl implements BruteForceProtectorServic
         }
 
         if (System.currentTimeMillis() - lockTime.get(clientIp) > LOCK_TIME) {
-            lockTime.remove(clientIp);
+            unblockIp(clientIp);
 
             log.debug("Client IP {} is not blocked", clientIp);
             return false;
@@ -69,6 +68,15 @@ public class BruteForceProtectorServiceImpl implements BruteForceProtectorServic
 
         log.warn("Client IP {} is blocked", clientIp);
         return true;
+    }
+
+    private void blockIp(String clientIp) {
+        lockTime.put(clientIp, System.currentTimeMillis());
+    }
+
+    private void unblockIp(String clientIp) {
+        lockTime.remove(clientIp);
+        attempts.remove(clientIp);
     }
 
     @Override

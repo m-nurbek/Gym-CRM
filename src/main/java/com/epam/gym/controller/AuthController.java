@@ -26,8 +26,8 @@ public class AuthController {
     private final WebAuthService authService;
     private final JwtService jwtService;
 
-    @Timed(value = "request.login.api", description = "Login API Response Time", histogram = true, percentiles = {0.5, 0.7, 0.9, 0.99})
     @PostMapping("/login")
+    @Timed(value = "request.login.api", description = "Login API Response Time", histogram = true, percentiles = {0.5, 0.7, 0.9, 0.99})
     public JwtTokenResponseDto login(@Valid @RequestBody UserCredentialDto credential) {
         return authService.authenticate(credential.username(), credential.password());
     }
@@ -46,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public JwtTokenResponseDto refreshAccessToken(@RequestBody RefreshTokenRequestDto request) {
+    public JwtTokenResponseDto refreshAccessToken(@Valid @RequestBody RefreshTokenRequestDto request) {
         return authService.refreshAccessToken(request.refreshToken());
     }
 }

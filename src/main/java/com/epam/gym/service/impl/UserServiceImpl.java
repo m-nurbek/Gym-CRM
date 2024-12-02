@@ -116,31 +116,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto save(String firstName, String lastName, String password, boolean isActive) {
-        String uniqueUsername = generateUniqueUsername(firstName, lastName);
-        String generatedPassword = passwordEncoder.encode(password);
-
+    public synchronized UserDto save(String firstName, String lastName, String password, boolean isActive) {
         UserEntity userEntity = new UserEntity(
                 null,
                 firstName,
                 lastName,
-                uniqueUsername,
-                generatedPassword,
+                generateUniqueUsername(firstName, lastName),
+                passwordEncoder.encode(password),
                 isActive,
                 null,
                 null
         );
 
-        UserEntity u = userRepository.save(userEntity);
+        UserEntity user = userRepository.save(userEntity);
 
         return new UserDto(
-                u.getId(),
-                u.getFirstName(),
-                u.getLastName(),
-                u.getUsername(),
-                u.getPassword(),
-                u.getIsActive(),
-                getUserRoles(u)
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getIsActive(),
+                getUserRoles(user)
         );
     }
 

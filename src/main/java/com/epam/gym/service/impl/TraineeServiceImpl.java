@@ -39,7 +39,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public TraineeResponseDto save(LocalDate dob, String address, BigInteger userId) {
         UserEntity user = userRepository.findById(userId).orElse(null);
-        validateUserRoleAssignment(user);
+        validateUser(user);
 
         TraineeEntity trainee = traineeRepository.save(new TraineeEntity(
                 null,
@@ -65,7 +65,7 @@ public class TraineeServiceImpl implements TraineeService {
         );
     }
 
-    private void validateUserRoleAssignment(UserEntity user) {
+    private void validateUser(UserEntity user) {
         if (user == null) {
             throw new ConflictException("User cannot be null");
         } else if (user.getTrainee() != null || user.getTrainer() != null) {

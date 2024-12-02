@@ -1,5 +1,7 @@
 package com.epam.gym;
 
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +11,11 @@ import org.springframework.context.annotation.Profile;
 @Slf4j
 @SpringBootApplication
 public class Application {
+
+    @Bean
+    public TimedAspect timedAspect(MeterRegistry meterRegistry) {
+        return new TimedAspect(meterRegistry);
+    }
 
     @Bean
     @Profile("prod")

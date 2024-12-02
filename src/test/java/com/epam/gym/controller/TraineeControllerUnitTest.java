@@ -206,12 +206,14 @@ class TraineeControllerUnitTest {
         mockMvc.perform(put("/api/v1/trainees/trainers/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                [
+                                {
+                                "trainerUsernames": [
                                   "quincyramirez45",
                                   "raybailey46",
                                   "saracooper47",
                                   "bobjohnson4"
-                                ]"""))
+                                  ]
+                                }"""))
                 .andExpect(status().isOk());
     }
 
@@ -224,12 +226,14 @@ class TraineeControllerUnitTest {
         mockMvc.perform(put("/api/v1/trainees/trainers/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                [
+                                {
+                                "trainerUsernames": [
                                   "quincyramirez45",
                                   "raybailey46",
                                   "saracooper47",
                                   "bobjohnson4"
-                                ]"""))
+                                  ]
+                                }"""))
                 .andExpect(status().isNotFound());
     }
 
@@ -261,7 +265,9 @@ class TraineeControllerUnitTest {
         mockMvc.perform(patch("/api/v1/trainees/active-state/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                true
+                                {
+                                "isActive": true
+                                }
                                 """))
                 .andExpect(status().isNoContent());
     }
@@ -274,7 +280,9 @@ class TraineeControllerUnitTest {
         mockMvc.perform(patch("/api/v1/trainees/active-state/username")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                true
+                                {
+                                "isActive": true
+                                }
                                 """))
                 .andExpect(status().isNotFound());
     }

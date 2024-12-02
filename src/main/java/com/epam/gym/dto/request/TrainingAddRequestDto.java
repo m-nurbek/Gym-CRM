@@ -9,15 +9,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 public record TrainingAddRequestDto(
-        @NotBlank(message = "Trainee username is mandatory")
+        @NotBlank(message = "Trainee username is required")
         @Size(min = 3, max = 20, message = "Trainee username must be between 3 and 20 characters")
         String traineeUsername,
 
-        @NotBlank(message = "Trainer username is mandatory")
+        @NotBlank(message = "Trainer username is required")
         @Size(min = 3, max = 20, message = "Trainer username must be between 3 and 20 characters")
         String trainerUsername,
 
-        @NotBlank(message = "Training name is mandatory")
+        @NotBlank(message = "Training name is required")
         @Size(min = 1, max = 30, message = "Training name must be between 1 and 30 characters")
         String trainingName,
 
