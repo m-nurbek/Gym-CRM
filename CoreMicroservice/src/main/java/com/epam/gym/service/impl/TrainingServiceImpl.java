@@ -12,9 +12,12 @@ import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.repository.TrainingRepository;
 import com.epam.gym.service.TrainingService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
@@ -54,6 +57,8 @@ public class TrainingServiceImpl implements TrainingService {
                 model.duration(),
                 actionType
         );
+
+        log.trace(MarkerFactory.getMarker("REQUEST TO MICROSERVICE"), "Sending request to 'TrainerReport' microservice with request body: {}", request);
         trainerReportFeignClient.handleTrainerWorkload(request);
     }
 }

@@ -21,6 +21,7 @@
         <jjwt.version>0.11.5</jjwt.version>
         <jackson.databind.version>2.15.2</jackson.databind.version>
         <spring.cloud.starter.openfeign.version>4.1.4</spring.cloud.starter.openfeign.version>
+        <resilience4j.spring.boot3.version>2.2.0</resilience4j.spring.boot3.version>
 
         <!--  Plugin versions  -->
         <jacoco.version>0.8.12</jacoco.version>
@@ -40,6 +41,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <version>${spring.cloud.starter.openfeign.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>${resilience4j.spring.boot3.version}</version>
         </dependency>
 
         <!--    Actuator    -->
