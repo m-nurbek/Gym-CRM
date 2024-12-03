@@ -5,6 +5,8 @@ import com.epam.gym.dto.TrainerWorkloadRequest;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.service.TrainerService;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@Slf4j
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
 
@@ -36,5 +39,7 @@ public class TrainerServiceImpl implements TrainerService {
         }
 
         trainerRepository.save(trainer);
+
+        log.trace("(Transaction ID: {}): saved the trainer workload successfully", MDC.get("transactionId"));
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  * @author Nurbek on 03.12.2024
  */
-@FeignClient(name = "TRAINERREPORTMICROSERVICE", path = "/api/v1/trainers")
+@FeignClient(name = "TRAINERREPORTMICROSERVICE", path = "/api/v1/trainers", configuration = FeignConfig.class)
 public interface TrainerReportFeignClient {
 
     @PostMapping("/workload")
