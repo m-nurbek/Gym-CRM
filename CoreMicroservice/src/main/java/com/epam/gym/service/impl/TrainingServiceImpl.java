@@ -58,7 +58,8 @@ public class TrainingServiceImpl implements TrainingService {
                 actionType
         );
 
-        log.trace(MarkerFactory.getMarker("REQUEST TO MICROSERVICE"), "Sending request to 'TrainerReport' microservice with request body: {}", request);
+        log.trace(MarkerFactory.getMarker("REQUEST TO MICROSERVICE"),
+                "Sending request to 'TrainerReport' microservice with request body: {}", request);
         trainerReportFeignClient.handleTrainerWorkload(request);
     }
 }
