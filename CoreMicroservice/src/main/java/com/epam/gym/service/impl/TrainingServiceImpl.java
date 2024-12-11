@@ -4,7 +4,7 @@ import com.epam.gym.controller.exception.BadRequestException;
 import com.epam.gym.dto.request.TrainingAddRequestDto;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
-import com.epam.gym.integration.TrainerReportFeignClient;
+import com.epam.gym.integration.RabbitMQService;
 import com.epam.gym.integration.dto.ActionType;
 import com.epam.gym.integration.dto.TrainerWorkloadRequest;
 import com.epam.gym.repository.TraineeRepository;
@@ -25,7 +25,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingRepository trainingRepository;
     private final TrainerRepository trainerRepository;
     private final TraineeRepository traineeRepository;
-    private final TrainerReportFeignClient trainerReportFeignClient;
+    private final RabbitMQService rabbitMQService;
 
     @Override
     public void save(TrainingAddRequestDto model) {
@@ -60,6 +60,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         log.trace(MarkerFactory.getMarker("REQUEST TO MICROSERVICE"),
                 "Sending request to 'TrainerReport' microservice with request body: {}", request);
-        trainerReportFeignClient.handleTrainerWorkload(request);
+
+        rabbitMQService.sendReportRequest(request);
     }
 }
