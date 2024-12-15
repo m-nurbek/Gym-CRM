@@ -4,6 +4,8 @@ import com.epam.gym.dto.TrainerWorkloadRequest;
 import com.epam.gym.dto.WorkloadDeleteRequest;
 import com.epam.gym.service.TrainerWorkloadService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -19,17 +21,28 @@ import org.springframework.stereotype.Service;
 public class RequestListener {
     private final TrainerWorkloadService trainerWorkloadService;
     private final ObjectMapper objectMapper;
+    private final Tracer tracer;
 
     @RabbitListener(queues = "addReportQueue")
     public void handleAddRequest(Message message) {
-        String request = retrieveRequest(message);
-        trainerWorkloadService.addWorkloadReport(processTrainerWorkloadRequest(request));
+        Span newSpan = tracer.nextSpan().name("handleAddRequest").start();
+        try (var ws = tracer.withSpan(newSpan)) {
+            String request = retrieveRequest(message);
+            trainerWorkloadService.addWorkloadReport(processTrainerWorkloadRequest(request));
+        } finally {
+            newSpan.end();
+        }
     }
 
     @RabbitListener(queues = "deleteReportQueue")
     public void handleDeleteRequest(Message message) {
-        String request = retrieveRequest(message);
-        trainerWorkloadService.deleteWorkloadReport(processWorkloadDeleteRequest(request));
+        Span newSpan = tracer.nextSpan().name("handleDeleteRequest").start();
+        try (var ws = tracer.withSpan(newSpan)) {
+            String request = retrieveRequest(message);
+            trainerWorkloadService.deleteWorkloadReport(processWorkloadDeleteRequest(request));
+        } finally {
+            newSpan.end();
+        }
     }
 
     private String retrieveRequest(Message message) {

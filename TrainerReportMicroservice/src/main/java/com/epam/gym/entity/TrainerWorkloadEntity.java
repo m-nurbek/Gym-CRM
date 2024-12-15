@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,9 @@ public class TrainerWorkloadEntity {
     @ElementCollection
     private Map<YearMonth, Integer> yearlyMonthlySummary;
 
+    @Transient
+    private int MIN_SUMMARY = 0;
+
     public void addTraining(LocalDate date, int duration) {
         YearMonth yearMonth = YearMonth.from(date);
 
@@ -48,7 +52,7 @@ public class TrainerWorkloadEntity {
         YearMonth yearMonth = YearMonth.from(date);
 
         if (yearlyMonthlySummary != null) {
-            yearlyMonthlySummary.computeIfPresent(yearMonth, (ym, total) -> Math.max(total - duration, 0));
+            yearlyMonthlySummary.computeIfPresent(yearMonth, (ym, total) -> Math.max(total - duration, MIN_SUMMARY));
         }
     }
 }

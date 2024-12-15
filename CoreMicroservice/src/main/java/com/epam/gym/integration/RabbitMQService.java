@@ -6,6 +6,7 @@ import com.epam.gym.integration.dto.WorkloadDeleteRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.tracing.Tracer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.MessageProperties;
@@ -20,26 +21,21 @@ import java.util.Optional;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class RabbitMQService {
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
     private final Tracer tracer;
 
-    private final String exchangeName = "workloadReportExchange";
-    private final String addReportRoutingKey = "add.report.key";
-    private final String deleteReportRoutingKey = "delete.report.key";
-
-    public RabbitMQService(RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, Tracer tracer) {
-        this.rabbitTemplate = rabbitTemplate;
-        this.objectMapper = objectMapper;
-        this.tracer = tracer;
-    }
+    private final String EXCHANGE_NAME = "workloadReportExchange";
+    private final String ADD_REPORT_ROUTING_KEY = "add.report.key";
+    private final String DELETE_REPORT_ROUTING_KEY = "delete.report.key";
 
     @Async
     public void sendReportRequest(TrainerWorkloadRequest request) {
         try {
             String jsonRequest = objectMapper.writeValueAsString(request);
-            sendReport(jsonRequest, exchangeName, addReportRoutingKey);
+            sendReport(jsonRequest, EXCHANGE_NAME, ADD_REPORT_ROUTING_KEY);
         } catch (JsonProcessingException ex) {
             log.error("Failed to process json");
             throw new BadRequestException("Failed to process json");
@@ -50,7 +46,7 @@ public class RabbitMQService {
     public void sendDeleteReportRequest(WorkloadDeleteRequest request) {
         try {
             String jsonRequest = objectMapper.writeValueAsString(request);
-            sendReport(jsonRequest, exchangeName, deleteReportRoutingKey);
+            sendReport(jsonRequest, EXCHANGE_NAME, DELETE_REPORT_ROUTING_KEY);
         } catch (JsonProcessingException ex) {
             log.error("Failed to process json");
             throw new BadRequestException("Failed to process json");

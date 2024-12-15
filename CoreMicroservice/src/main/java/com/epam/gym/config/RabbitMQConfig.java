@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableRabbit
 public class RabbitMQConfig {
-    private final String trainerWorkloadQueue = "addReportQueue";
-    private final String trainerWorkloadRoutingKey = "add.report.key.#";
+    private final String TRAINER_WORKLOAD_QUEUE = "addReportQueue";
+    private final String TRAINER_WORKLOAD_ROUTING_KEY = "add.report.key.#";
 
-    private final String deleteWorkloadQueue = "deleteReportQueue";
-    private final String deleteWorkloadRoutingKey = "delete.report.key.#";
+    private final String DELETE_WORKLOAD_QUEUE = "deleteReportQueue";
+    private final String DELETE_WORKLOAD_ROUTING_KEY = "delete.report.key.#";
 
     @Bean
     public Exchange exchange() {
@@ -29,12 +29,12 @@ public class RabbitMQConfig {
     // Queue Beans
     @Bean
     public Queue trainerWorkloadQueue() {
-        return new Queue(trainerWorkloadQueue, false);
+        return new Queue(TRAINER_WORKLOAD_QUEUE, false);
     }
 
     @Bean
     public Queue deleteWorkloadQueue() {
-        return new Queue(deleteWorkloadQueue, false);
+        return new Queue(DELETE_WORKLOAD_QUEUE, false);
     }
 
     @Bean
@@ -42,7 +42,7 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(trainerWorkloadQueue)
                 .to(exchange)
-                .with(trainerWorkloadRoutingKey)
+                .with(TRAINER_WORKLOAD_ROUTING_KEY)
                 .noargs();
     }
 
@@ -51,7 +51,7 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(deleteWorkloadQueue)
                 .to(exchange)
-                .with(deleteWorkloadRoutingKey)
+                .with(DELETE_WORKLOAD_ROUTING_KEY)
                 .noargs();
     }
 }
