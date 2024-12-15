@@ -8,13 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.Optional;
 
-@Repository
 public interface UserRepository extends JpaRepository<UserEntity, BigInteger> {
     @Transactional
     @Modifying
@@ -40,8 +38,6 @@ public interface UserRepository extends JpaRepository<UserEntity, BigInteger> {
     @Modifying
     @Query("update UserEntity u set u.password = :password where u.id = :id")
     void updatePasswordById(@Param("id") @NonNull BigInteger id, @Param("password") @NonNull String password);
-
-    boolean existsByUsernameAndPassword(@NonNull String username, @NonNull String password);
 
     @Transactional
     @Modifying

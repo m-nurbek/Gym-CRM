@@ -11,12 +11,16 @@ import com.epam.gym.entity.TraineeEntity;
 import com.epam.gym.entity.TrainerEntity;
 import com.epam.gym.entity.TrainingEntity;
 import com.epam.gym.entity.UserEntity;
+import com.epam.gym.integration.RabbitMQService;
+import com.epam.gym.integration.dto.WorkloadDeleteRequest;
 import com.epam.gym.repository.TraineeRepository;
 import com.epam.gym.repository.TrainerRepository;
 import com.epam.gym.repository.TrainingRepository;
 import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.TraineeService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
@@ -35,6 +40,7 @@ public class TraineeServiceImpl implements TraineeService {
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
     private final TrainingRepository trainingRepository;
+    private final RabbitMQService rabbitMQService;
 
     @Override
     public TraineeResponseDto save(LocalDate dob, String address, BigInteger userId) {
@@ -75,11 +81,8 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public TraineeResponseDto findByUsername(String username) {
-        TraineeEntity trainee = traineeRepository.findByUser_Username(username).orElse(null);
-
-        if (trainee == null) {
-            throw new NotFoundException("Trainee with this username doesn't exist");
-        }
+        TraineeEntity trainee = traineeRepository.findByUser_Username(username)
+                .orElseThrow(() -> new NotFoundException("Trainee with this username doesn't exist"));
 
         return new TraineeResponseDto(
                 trainee.getUser().getFirstName(),
@@ -97,12 +100,8 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public Optional<TraineeUpdateResponseDto> update(String username, TraineeUpdateRequestDto model) {
-        TraineeEntity traineeInDb = traineeRepository.findByUser_Username(username).orElse(null);
-
-        if (traineeInDb == null) {
-            return Optional.empty();
-        }
+    public TraineeUpdateResponseDto update(String username, TraineeUpdateRequestDto model) {
+        TraineeEntity traineeInDb = traineeRepository.findByUser_Username(username).orElseThrow(NotFoundException::new);
 
         traineeInDb.getUser().setFirstName(model.firstName());
         traineeInDb.getUser().setLastName(model.lastName());
@@ -121,48 +120,52 @@ public class TraineeServiceImpl implements TraineeService {
                 model.address()
         );
 
-        return Optional.of(
-                new TraineeUpdateResponseDto(
-                        username,
-                        model.firstName(),
-                        model.lastName(),
-                        model.dob(),
-                        model.address(),
-                        model.isActive(),
-                        traineeInDb.getTrainers().stream().map(
-                                x -> new SimpleTrainerResponseDto(
-                                        x.getUser().getUsername(),
-                                        x.getUser().getFirstName(),
-                                        x.getUser().getLastName(),
-                                        x.getSpecialization().getName().name()
-                                )
-                        ).toList()
-                )
+        return new TraineeUpdateResponseDto(
+                username,
+                model.firstName(),
+                model.lastName(),
+                model.dob(),
+                model.address(),
+                model.isActive(),
+                traineeInDb.getTrainers().stream().map(
+                        x -> new SimpleTrainerResponseDto(
+                                x.getUser().getUsername(),
+                                x.getUser().getFirstName(),
+                                x.getUser().getLastName(),
+                                x.getSpecialization().getName().name()
+                        )
+                ).toList()
         );
     }
 
     @Override
     public void deleteByUsername(String username) {
-        Optional<TraineeEntity> optionalTrainee = traineeRepository.findByUser_Username(username);
-        if (optionalTrainee.filter(trainee -> delete(trainee.getId())).isEmpty()) {
-            throw new NotFoundException("Trainee with this username doesn't exist");
-        }
+        var trainee = traineeRepository.findByUser_Username(username)
+                .orElseThrow(() -> new NotFoundException("Trainee with this username doesn't exist"));
+        traineeRepository.deleteByUser_Username(username);
+
+        sendDeleteWorkloadReport(new WorkloadDeleteRequest(
+                trainee.getTrainers()
+                        .stream().map(x -> x.getUser().getUsername())
+                        .toList()
+        ));
     }
 
-    private boolean delete(BigInteger id) {
-        if (!traineeRepository.existsById(id)) {
-            return false;
-        }
+    private void sendDeleteWorkloadReport(WorkloadDeleteRequest request) {
+        log.trace(MarkerFactory.getMarker("REQUEST TO MICROSERVICE"),
+                "Sending request to 'TrainerReport' microservice with request body: {}", request);
+        rabbitMQService.sendDeleteReportRequest(request);
+    }
 
-        traineeRepository.deleteById(id);
-        return true;
+    private void checkTraineeExistenceByUsername(String username) {
+        if (!traineeRepository.existsByUser_Username(username)) {
+            throw new NotFoundException("Trainee with this username doesn't exist");
+        }
     }
 
     @Override
     public Set<SimpleTrainerResponseDto> getUnassignedTrainersByUsernameToResponse(String username) {
-        if (!traineeRepository.existsByUser_Username(username)) {
-            throw new NotFoundException("Trainee with this username doesn't exist");
-        }
+        checkTraineeExistenceByUsername(username);
 
         Set<TrainerEntity> trainerEntitySet = trainerRepository.getUnassignedTrainersByTraineeUsername(username);
 
@@ -179,9 +182,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Set<TrainingResponseForTraineeDto> getTrainingsByUsernameToResponse(
             String username, LocalDate periodFrom, LocalDate periodTo, String trainerName, String trainingType) {
-        if (!traineeRepository.existsByUser_Username(username)) {
-            throw new NotFoundException("Trainee with this username doesn't exist");
-        }
+        checkTraineeExistenceByUsername(username);
 
         Set<TrainingEntity> trainingEntities = trainingRepository.findByTraineeUsername(username);
 
@@ -207,11 +208,8 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public Set<SimpleTrainerResponseDto> updateTrainerListByUsername(String username, List<String> trainerUsernames) {
-        TraineeEntity trainee = traineeRepository.findByUser_Username(username).orElse(null);
-
-        if (trainee == null) {
-            throw new NotFoundException("Trainee with this username doesn't exist");
-        }
+        TraineeEntity trainee = traineeRepository.findByUser_Username(username)
+                .orElseThrow(() -> new NotFoundException("Trainee with this username doesn't exist"));
 
         Set<TrainerEntity> trainersFromUsernames = trainerUsernames.stream()
                 .map(trainerRepository::findByUser_Username)

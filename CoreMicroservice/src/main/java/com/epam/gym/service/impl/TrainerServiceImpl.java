@@ -18,6 +18,7 @@ import com.epam.gym.repository.TrainingTypeRepository;
 import com.epam.gym.repository.UserRepository;
 import com.epam.gym.service.TrainerService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
@@ -72,11 +74,8 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public TrainerResponseDto findByUsername(String username) {
-        TrainerEntity trainer = trainerRepository.findByUser_Username(username).orElse(null);
-
-        if (trainer == null) {
-            throw new NotFoundException("Trainer with this username doesn't exist");
-        }
+        TrainerEntity trainer = trainerRepository.findByUser_Username(username)
+                .orElseThrow(() -> new NotFoundException("Trainer with this username doesn't exist"));
 
         return new TrainerResponseDto(
                 trainer.getUser().getFirstName(),
@@ -93,11 +92,8 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public TrainerUpdateResponseDto update(String username, TrainerUpdateRequestDto model) {
-        TrainerEntity trainer = trainerRepository.findByUser_Username(username).orElse(null);
-
-        if (trainer == null) {
-            throw new NotFoundException("Trainer with this username doesn't exist");
-        }
+        TrainerEntity trainer = trainerRepository.findByUser_Username(username)
+                .orElseThrow(() -> new NotFoundException("Trainer with this username doesn't exist"));
 
         userRepository.updateProfileById(
                 trainer.getUser().getId(),
@@ -134,9 +130,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Set<TrainingResponseForTrainerDto> getTrainingsByUsernameToResponse(
             String username, LocalDate periodFrom, LocalDate periodTo, String traineeName) {
-        if (!trainerRepository.existsByUser_Username(username)) {
-            throw new NotFoundException("Trainer with this username doesn't exist");
-        }
+        checkTrainerExistenceByUsername(username);
 
         Set<TrainingEntity> trainingEntities = trainingRepository.findByTrainerUsername(username);
 
@@ -157,5 +151,11 @@ public class TrainerServiceImpl implements TrainerService {
                     );
                 })
                 .collect(Collectors.toSet());
+    }
+
+    private void checkTrainerExistenceByUsername(String username) {
+        if (!trainerRepository.existsByUser_Username(username)) {
+            throw new NotFoundException("Trainer with this username doesn't exist");
+        }
     }
 }

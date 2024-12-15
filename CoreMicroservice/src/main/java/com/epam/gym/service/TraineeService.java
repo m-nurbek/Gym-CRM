@@ -9,7 +9,6 @@ import com.epam.gym.dto.response.TrainingResponseForTraineeDto;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public interface TraineeService {
@@ -18,7 +17,7 @@ public interface TraineeService {
 
     TraineeResponseDto findByUsername(String username);
 
-    Optional<TraineeUpdateResponseDto> update(String username, TraineeUpdateRequestDto model);
+    TraineeUpdateResponseDto update(String username, TraineeUpdateRequestDto model);
 
     void deleteByUsername(String username);
 

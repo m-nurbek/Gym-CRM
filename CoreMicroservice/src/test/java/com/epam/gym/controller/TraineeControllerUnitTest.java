@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -99,7 +98,7 @@ class TraineeControllerUnitTest {
     @WithMockUser(username = "johndoe1", password = "password1", roles = "TRAINEE")
     void updateProfile() throws Exception {
         when(traineeService.update(anyString(), any(TraineeUpdateRequestDto.class)))
-                .thenReturn(Optional.of(new TraineeUpdateResponseDto(
+                .thenReturn(new TraineeUpdateResponseDto(
                         "username",
                         "firstName",
                         "lastName",
@@ -107,7 +106,7 @@ class TraineeControllerUnitTest {
                         "address",
                         true,
                         List.of()
-                )));
+                ));
 
         mockMvc.perform(put("/api/v1/trainees/username")
                         .contentType(MediaType.APPLICATION_JSON)

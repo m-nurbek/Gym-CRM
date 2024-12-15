@@ -141,7 +141,7 @@ class TraineeServiceImplIntegrationTest {
         );
 
         // when
-        TraineeUpdateResponseDto trainee = traineeService.update(username, model).orElse(null);
+        TraineeUpdateResponseDto trainee = traineeService.update(username, model);
 
         UserEntity user = userRepository.findByUsername(username).orElse(null);
         TraineeResponseDto traineeResponseDto = traineeService.findByUsername(username);
@@ -188,13 +188,10 @@ class TraineeServiceImplIntegrationTest {
                 isActive
         );
 
-        // when
-        TraineeUpdateResponseDto trainee = traineeService.update(username, model).orElse(null);
-
-        // then
+        // when & then
         assertAll(
                 "Assertions for 'update()' method",
-                () -> assertThat(trainee).isNull()
+                () -> assertThrows(NotFoundException.class, () -> traineeService.update(username, model))
         );
     }
 

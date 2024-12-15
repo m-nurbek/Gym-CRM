@@ -42,12 +42,12 @@ public class TrainingServiceImpl implements TrainingService {
                 trainer.getSpecialization()
         );
 
+        trainee.getTrainers().add(trainer);
         trainingRepository.saveAndFlush(trainingEntity);
-
-        sendTrainerReport(trainer, model, ActionType.ADD);
+        sendTrainerReport(trainer, model);
     }
 
-    private void sendTrainerReport(TrainerEntity trainer, TrainingAddRequestDto model, ActionType actionType) {
+    private void sendTrainerReport(TrainerEntity trainer, TrainingAddRequestDto model) {
         TrainerWorkloadRequest request = new TrainerWorkloadRequest(
                 trainer.getUser().getUsername(),
                 trainer.getUser().getFirstName(),
@@ -55,12 +55,11 @@ public class TrainingServiceImpl implements TrainingService {
                 trainer.getUser().getIsActive(),
                 model.date(),
                 model.duration(),
-                actionType
+                ActionType.ADD
         );
 
         log.trace(MarkerFactory.getMarker("REQUEST TO MICROSERVICE"),
                 "Sending request to 'TrainerReport' microservice with request body: {}", request);
-
         rabbitMQService.sendReportRequest(request);
     }
 }

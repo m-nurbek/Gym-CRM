@@ -20,7 +20,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainerEntity {
+public class TrainerWorkloadEntity {
     @Id
     @Column(name = "USERNAME", unique = true, nullable = false)
     private String username;

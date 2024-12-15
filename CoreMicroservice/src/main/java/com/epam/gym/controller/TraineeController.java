@@ -1,6 +1,5 @@
 package com.epam.gym.controller;
 
-import com.epam.gym.controller.exception.NotFoundException;
 import com.epam.gym.dto.request.ActiveStateRequestDto;
 import com.epam.gym.dto.request.TraineeRegistrationDto;
 import com.epam.gym.dto.request.TraineeUpdateRequestDto;
@@ -59,7 +58,7 @@ public class TraineeController {
     public TraineeUpdateResponseDto updateProfile(
             @PathVariable String username,
             @Valid @RequestBody TraineeUpdateRequestDto requestModel) {
-        return traineeService.update(username, requestModel).orElseThrow(NotFoundException::new);
+        return traineeService.update(username, requestModel);
     }
 
     @Secured("ROLE_TRAINEE")
