@@ -1,18 +1,17 @@
 package com.epam.gym.repository;
 
 import com.epam.gym.entity.TrainerWorkloadEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * @author Nurbek on 03.12.2024
  */
-public interface TrainerWorkloadRepository extends JpaRepository<TrainerWorkloadEntity, String> {
+public interface TrainerWorkloadRepository extends MongoRepository<TrainerWorkloadEntity, String> {
 
     Optional<TrainerWorkloadEntity> findByUsername(String username);
 
-    List<TrainerWorkloadEntity> deleteByUsernameIn(Collection<String> usernames);
+    void deleteByUsernameIn(Collection<String> usernames);
 }
