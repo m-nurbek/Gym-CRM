@@ -49,14 +49,14 @@ public class TraineeController {
 
     @Secured("ROLE_TRAINEE")
     @GetMapping("/{username}")
-    public TraineeResponseDto getProfile(@PathVariable String username) {
+    public TraineeResponseDto getProfile(@PathVariable("username") String username) {
         return traineeService.findByUsername(username);
     }
 
     @Secured("ROLE_TRAINEE")
     @PutMapping("/{username}")
     public TraineeUpdateResponseDto updateProfile(
-            @PathVariable String username,
+            @PathVariable("username") String username,
             @Valid @RequestBody TraineeUpdateRequestDto requestModel) {
         return traineeService.update(username, requestModel);
     }
@@ -64,20 +64,20 @@ public class TraineeController {
     @Secured("ROLE_TRAINEE")
     @DeleteMapping("/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProfile(@PathVariable String username) {
+    public void deleteProfile(@PathVariable("username") String username) {
         traineeService.deleteByUsername(username);
     }
 
     @Secured("ROLE_TRAINEE")
     @GetMapping("/trainers/{username}")
-    public Set<SimpleTrainerResponseDto> getNotAssignedActiveTrainers(@PathVariable String username) {
+    public Set<SimpleTrainerResponseDto> getNotAssignedActiveTrainers(@PathVariable("username") String username) {
         return traineeService.getUnassignedTrainersByUsernameToResponse(username);
     }
 
     @Secured("ROLE_TRAINEE")
     @PutMapping("/trainers/{username}")
     public Set<SimpleTrainerResponseDto> updateTrainersList(
-            @PathVariable String username,
+            @PathVariable("username") String username,
             @Valid @RequestBody UpdateTrainersListRequestDto requestDto) {
         return traineeService.updateTrainerListByUsername(username, requestDto.trainerUsernames());
     }
@@ -85,7 +85,7 @@ public class TraineeController {
     @Secured("ROLE_TRAINEE")
     @GetMapping("/trainings/{username}")
     public Set<TrainingResponseForTraineeDto> getTrainingsList(
-            @PathVariable String username,
+            @PathVariable("username") String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
             @RequestParam(value = "trainerName", required = false) String trainerName,
@@ -96,7 +96,7 @@ public class TraineeController {
     @Secured("ROLE_TRAINEE")
     @PatchMapping("/active-state/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeProfileActiveState(@PathVariable String username, @Valid @RequestBody ActiveStateRequestDto activeStateRequestDto) {
+    public void changeProfileActiveState(@PathVariable("username") String username, @Valid @RequestBody ActiveStateRequestDto activeStateRequestDto) {
         userService.updateActiveState(username, activeStateRequestDto.isActive());
     }
 }

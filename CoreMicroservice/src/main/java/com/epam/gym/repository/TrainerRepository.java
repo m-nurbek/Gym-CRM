@@ -38,5 +38,5 @@ public interface TrainerRepository extends JpaRepository<TrainerEntity, BigInteg
                 select trainee.trainers from TraineeEntity trainee, UserEntity user
                 where user.username = :username AND user = trainee.user)
             """)
-    Set<TrainerEntity> getUnassignedTrainersByTraineeUsername(@NonNull String username);
+    Set<TrainerEntity> getUnassignedTrainersByTraineeUsername(@Param("username") @NonNull String username);
 }

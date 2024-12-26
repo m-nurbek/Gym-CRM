@@ -6,6 +6,7 @@ import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,7 +39,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding trainerWorkloadBinding(Queue trainerWorkloadQueue, Exchange exchange) {
+    public Binding trainerWorkloadBinding(@Qualifier("trainerWorkloadQueue") Queue trainerWorkloadQueue, Exchange exchange) {
         return BindingBuilder
                 .bind(trainerWorkloadQueue)
                 .to(exchange)
@@ -47,7 +48,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding deleteWorkloadBinding(Queue deleteWorkloadQueue, Exchange exchange) {
+    public Binding deleteWorkloadBinding(@Qualifier("deleteWorkloadQueue") Queue deleteWorkloadQueue, Exchange exchange) {
         return BindingBuilder
                 .bind(deleteWorkloadQueue)
                 .to(exchange)

@@ -46,14 +46,14 @@ public class TrainerController {
 
     @Secured("ROLE_TRAINER")
     @GetMapping("/{username}")
-    public TrainerResponseDto getProfile(@PathVariable String username) {
+    public TrainerResponseDto getProfile(@PathVariable("username") String username) {
         return trainerService.findByUsername(username);
     }
 
     @Secured("ROLE_TRAINER")
     @PutMapping("/{username}")
     public TrainerUpdateResponseDto updateProfile(
-            @PathVariable String username,
+            @PathVariable("username") String username,
             @Valid @RequestBody TrainerUpdateRequestDto requestModel) {
         return trainerService.update(username, requestModel);
     }
@@ -61,7 +61,7 @@ public class TrainerController {
     @Secured("ROLE_TRAINER")
     @GetMapping("/trainings/{username}")
     public Set<TrainingResponseForTrainerDto> getTrainingsList(
-            @PathVariable String username,
+            @PathVariable("username") String username,
             @RequestParam(value = "periodFrom", required = false) LocalDate periodFrom,
             @RequestParam(value = "periodTo", required = false) LocalDate periodTo,
             @RequestParam(value = "traineeName", required = false) String traineeName) {
@@ -71,7 +71,7 @@ public class TrainerController {
     @Secured("ROLE_TRAINER")
     @PatchMapping("/active-state/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeProfileActiveState(@PathVariable String username, @Valid @RequestBody ActiveStateRequestDto activeStateRequestDto) {
+    public void changeProfileActiveState(@PathVariable("username") String username, @Valid @RequestBody ActiveStateRequestDto activeStateRequestDto) {
         userService.updateActiveState(username, activeStateRequestDto.isActive());
     }
 }

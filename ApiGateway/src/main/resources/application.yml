@@ -1,0 +1,30 @@
+server:
+  port: 8888
+
+# Eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+
+# Api Gateway
+spring:
+  application:
+    name: ApiGateway
+  cloud:
+    discovery:
+      enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: CoreMicroservice
+          uri: lb://GYMCRMSYSTEM
+          predicates:
+            - Path=/api/**

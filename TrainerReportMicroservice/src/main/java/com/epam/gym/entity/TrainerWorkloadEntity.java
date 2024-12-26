@@ -2,6 +2,7 @@ package com.epam.gym.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -18,16 +19,14 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Document("trainerWorkload")
 public class TrainerWorkloadEntity {
     @Id
     private String username;
-
     private String firstName;
-
     private String lastName;
     private boolean isActive;
-
     private Map<YearMonth, Integer> yearlyMonthlySummary;
 
     @Transient
