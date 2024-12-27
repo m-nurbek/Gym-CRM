@@ -23,19 +23,35 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
     @Override
     public void addWorkloadReport(TrainerWorkloadRequest request) {
-        TrainerWorkloadEntity trainer = trainerWorkloadRepository.findByUsername(request.username())
-                .orElseGet(() -> defineTrainer(request));
+        if (request == null) {
+            throw new IllegalArgumentException("TrainerWorkloadRequest cannot be null");
+        }
 
-        TrainingAction trainingAction = new TrainingAction(request.actionType());
-        trainingAction.execute(trainer, request);
+        try {
+            TrainerWorkloadEntity trainer = trainerWorkloadRepository.findByUsername(request.username())
+                    .orElseGet(() -> defineTrainer(request));
 
-        trainerWorkloadRepository.save(trainer);
-        log.trace("Saved the trainer workload successfully");
+            TrainingAction trainingAction = new TrainingAction(request.actionType());
+            trainingAction.execute(trainer, request);
+
+            trainerWorkloadRepository.save(trainer);
+            log.trace("Saved the trainer workload successfully with username: {}", trainer.getUsername());
+        } catch (Exception ex) {
+            log.error("Unable to save the trainer workload from request: {}. Exception: {}", request, ex.getMessage());
+        }
     }
 
+    /**
+     * Method deletes all trainers from database with usernames from the request
+     * @param request - {@link WorkloadDeleteRequest} contains trainer usernames to delete
+     */
     @Override
     public void deleteWorkloadReport(WorkloadDeleteRequest request) {
-        trainerWorkloadRepository.deleteByUsernameIn(request.trainerUsernames());
-        log.trace("Saved the trainer workload successfully");
+        try {
+            trainerWorkloadRepository.deleteByUsernameIn(request.trainerUsernames());
+            log.trace("Successfully deleted report for all trainers in the request: {}", request);
+        } catch (Exception ex) {
+            log.error("Unable to save the trainer workload from request: {}. Exception: {}", request, ex.getMessage());
+        }
     }
 }

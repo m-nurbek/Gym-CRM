@@ -30,7 +30,7 @@ public class TrainerWorkloadEntity {
     private Map<YearMonth, Integer> yearlyMonthlySummary;
 
     @Transient
-    private int MIN_SUMMARY = 0;
+    private final int MIN_SUMMARY = 0;
 
     public void addTraining(LocalDate date, int duration) {
         YearMonth yearMonth = YearMonth.from(date);

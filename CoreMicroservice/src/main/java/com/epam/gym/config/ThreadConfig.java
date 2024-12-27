@@ -26,6 +26,8 @@ public class ThreadConfig implements AsyncConfigurer {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         threadPoolExecutor.setCorePoolSize(availableProcessors);
         threadPoolExecutor.setMaxPoolSize(availableProcessors * 3);
+        threadPoolExecutor.setWaitForTasksToCompleteOnShutdown(true);
+        threadPoolExecutor.setAwaitTerminationSeconds(5);
         threadPoolExecutor.setTaskDecorator(runnable -> {
             Span span = tracer.nextSpan().name("rabbitMqProducer").start();
             return () -> {
