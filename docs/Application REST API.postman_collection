@@ -1,0 +1,1330 @@
+{
+	"info": {
+		"_postman_id": "62fffb54-bcc2-4a7c-a7cd-0a08de81aabc",
+		"name": "Gym REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39144813"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Trainee",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateRandomDob() {\r",
+									"    let day = Math.floor(Math.random()*100) % 30;\r",
+									"    if (day < 10) {\r",
+									"        day = \"0\" + day;\r",
+									"    }\r",
+									"    let month = Math.floor(Math.random()*10) % 9 + 1;\r",
+									"    let year = Math.floor(Math.random()*100) % 20 + 80;\r",
+									"\r",
+									"    return `19${year}-0${month}-${day}`;\r",
+									"}\r",
+									"\r",
+									"let firstName = pm.collectionVariables.replaceIn(\"{{$randomFirstName}}\");\r",
+									"let lastName = pm.collectionVariables.replaceIn(\"{{$randomLastName}}\");\r",
+									"let randomDob = generateRandomDob();\r",
+									"\r",
+									"pm.collectionVariables.set(\"traineeFirstName\", firstName);\r",
+									"pm.collectionVariables.set(\"traineeLastName\", lastName);\r",
+									"pm.collectionVariables.set(\"randomDob\", randomDob);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Test JsonBody to retrieve username\", () => {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(jsonData).to.have.property(\"username\");\r",
+									"    pm.collectionVariables.set(\"traineeUsername\", jsonData.username);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"{{traineeFirstName}}\",\r\n    \"lastName\": \"{{traineeLastName}}\",\r\n    \"dob\": \"{{randomDob}}\",\r\n    \"address\": \"{{$randomStreetAddress}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{traineesPath}}",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{traineesPath}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Trainer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let firstName = pm.collectionVariables.replaceIn(\"{{$randomFirstName}}\");\r",
+									"let lastName = pm.collectionVariables.replaceIn(\"{{$randomLastName}}\");\r",
+									"\r",
+									"pm.collectionVariables.set(\"trainerFirstName\", firstName);\r",
+									"pm.collectionVariables.set(\"trainerLastName\", lastName);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Test JsonBody to retrieve username\", () => {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(jsonData).to.have.property(\"username\");\r",
+									"    pm.collectionVariables.set(\"trainerUsername\", jsonData.username);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"{{trainerFirstName}}\",\r\n  \"lastName\": \"{{trainerLastName}}\",\r\n  \"specialization\": \"STRENGTH_TRAINING\",\r\n  \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{trainersPath}}",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{trainersPath}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Parse JSON body and retrieve access token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('accessToken');\r",
+									"    pm.expect(jsonData).to.have.property('refreshToken');\r",
+									"\r",
+									"    pm.collectionVariables.set('accessToken', jsonData.accessToken);\r",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{traineeUsername}}\",\r\n  \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}/auth/login",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Parse JSON body and retrieve access token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('accessToken');\r",
+									"    pm.expect(jsonData).to.have.property('refreshToken');\r",
+									"\r",
+									"    pm.collectionVariables.set('accessToken', jsonData.accessToken);\r",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}/auth/refresh-token",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}"
+							],
+							"path": [
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"oldPassword\": \"{{password}}\",\r\n  \"newPassword\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}/auth/change-password",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}/auth/logout",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Trainee API",
+			"item": [
+				{
+					"name": "Get By Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Parse JSON body and compare\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('firstName');\r",
+									"    pm.expect(jsonData).to.have.property('lastName');\r",
+									"    pm.expect(jsonData).to.have.property('dob');\r",
+									"    pm.expect(jsonData).to.have.property('address');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{traineesPath}}/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{traineesPath}}"
+							],
+							"path": [
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{traineeUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update By Username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"newDob\", \"2000-01-01\");\r",
+									"pm.collectionVariables.set(\"newAddress\", \"NEW ADDRESS\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Parse JSON body and compare\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('firstName');\r",
+									"    pm.expect(jsonData).to.have.property('lastName');\r",
+									"    pm.expect(jsonData).to.have.property('dob');\r",
+									"    pm.expect(jsonData).to.have.property('address');\r",
+									"\r",
+									"    pm.expect(jsonData.dob).to.equal(pm.collectionVariables.get(\"newDob\"));\r",
+									"    pm.expect(jsonData.address).to.equal(pm.collectionVariables.get(\"newAddress\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"{{traineeFirstName}}\",\r\n  \"lastName\": \"{{traineeLastName}}\",\r\n  \"dob\": \"{{newDob}}\",\r\n  \"address\": \"{{newAddress}}\",\r\n  \"isActive\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{traineesPath}}/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{traineesPath}}"
+							],
+							"path": [
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{traineeUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete By Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{traineesPath}}/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{traineesPath}}"
+							],
+							"path": [
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{traineeUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Trainers",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const trainerNames = [\"James Jameson\", \"Nikola Tesla\", \"James Bond\", \"Lucy Yang\", \"Vin Disel\", \"Robert Dawni\", \"Some Guy\", \"Ivan Smit\", \"Anelite Granger\", \"No Name\", \"Best Trainer\"];\r",
+									"\r",
+									"const specializations = [\"FUNCTIONAL_TRAINING\", \"KETTLEBELL_TRAINING\", \"ZUMBA\", \"OLYMPIC_WEIGHTLIFTING\", \"PILATES\", \"CIRCUIT_TRAINING\", \"SPINNING\", \"FLEXIBILITY_TRAINING\", \"BODYBUILDING\"];\r",
+									"\r",
+									"try {\r",
+									"    // Registering new Trainers\r",
+									"    for (trainer of trainerNames) {\r",
+									"        let firstName = trainer.split(\" \")[0];\r",
+									"        let lastName = trainer.split(\" \")[1];\r",
+									"\r",
+									"        const baseUrl = pm.environment.get(\"baseUrl\");\r",
+									"        const apiPath = pm.collectionVariables.get(\"apiPathV1\");\r",
+									"        const trainersPath = pm.collectionVariables.get(\"trainersPath\");\r",
+									"\r",
+									"        const response = await pm.sendRequest({\r",
+									"            url: baseUrl + apiPath + trainersPath,\r",
+									"            method: \"POST\",\r",
+									"            header: {\r",
+									"                'Accept': '*/*',\r",
+									"                'Content-Type': 'application/json',\r",
+									"            },\r",
+									"            body: {\r",
+									"                mode: 'raw',\r",
+									"                raw: JSON.stringify(\r",
+									"                    {\r",
+									"                    \"firstName\": firstName,\r",
+									"                    \"lastName\": lastName,\r",
+									"                    \"specialization\": specializations[Math.floor(Math.random() * specializations.length)],\r",
+									"                    \"password\": pm.environment.get(\"password\")\r",
+									"                    }\r",
+									"                )\r",
+									"            }\r",
+									"        });\r",
+									"        console.log(response.json());\r",
+									"    }\r",
+									"} catch (err) {\r",
+									"    console.error(err);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"trainerUsernames\": [\r\n    \"James.Jameson\", \"Nikola.Tesla\", \"James.Bond\", \"Ivan.Smit\", \"Anelite.Granger\"\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{traineesPath}}/trainers/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{traineesPath}}"
+							],
+							"path": [
+								"trainers",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{traineeUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trainers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{traineesPath}}/trainers/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{traineesPath}}"
+							],
+							"path": [
+								"trainers",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{traineeUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update active state",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"isActive\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{traineesPath}}/active-state/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{traineesPath}}"
+							],
+							"path": [
+								"active-state",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{traineeUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{traineeAccessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"let firstName = \"firstName\";\r",
+							"let lastName = \"lastName\";\r",
+							"\r",
+							"pm.collectionVariables.set(\"traineeFirstName\", firstName);\r",
+							"pm.collectionVariables.set(\"traineeLastName\", lastName);\r",
+							"\r",
+							"try {\r",
+							"    // Registering new Trainee\r",
+							"    const baseUrl = pm.environment.get(\"baseUrl\");\r",
+							"    const apiPath = pm.collectionVariables.get(\"apiPathV1\");\r",
+							"    const traineesPath = pm.collectionVariables.get(\"traineesPath\");\r",
+							"\r",
+							"    const response = await pm.sendRequest({\r",
+							"        url: baseUrl + apiPath + traineesPath,\r",
+							"        method: \"POST\",\r",
+							"        header: {\r",
+							"            'Accept': '*/*',\r",
+							"            'Content-Type': 'application/json',\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(\r",
+							"                {\r",
+							"                    \"firstName\": firstName,\r",
+							"                    \"lastName\": lastName,\r",
+							"                    \"dob\": \"2000-01-01\",\r",
+							"                    \"address\": \"address\",\r",
+							"                    \"password\": pm.environment.get(\"password\")\r",
+							"                }\r",
+							"            )\r",
+							"        }\r",
+							"    });\r",
+							"    console.log(response.json());\r",
+							"\r",
+							"    let username = response.json().username;\r",
+							"    pm.collectionVariables.set(\"traineeUsername\", username);\r",
+							"\r",
+							"    const loginResponse = await pm.sendRequest({\r",
+							"        url: baseUrl + apiPath + \"/auth/login\",\r",
+							"        method: \"POST\",\r",
+							"        header: {\r",
+							"            'Accept': '*/*',\r",
+							"            'Content-Type': 'application/json',\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(\r",
+							"                {\r",
+							"                    \"username\": username,\r",
+							"                    \"password\": pm.environment.get(\"password\")\r",
+							"                }\r",
+							"            )\r",
+							"        }\r",
+							"    });\r",
+							"    console.log(loginResponse.json());\r",
+							"\r",
+							"    let accessToken = loginResponse.json().accessToken;\r",
+							"    let refreshToken = loginResponse.json().refreshToken;\r",
+							"\r",
+							"    pm.collectionVariables.set(\"traineeAccessToken\", accessToken);\r",
+							"    pm.collectionVariables.set(\"traineeRefreshToken\", refreshToken);\r",
+							"} catch (err) {\r",
+							"    console.error(err);\r",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Trainer API",
+			"item": [
+				{
+					"name": "Get By Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{trainersPath}}/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{trainersPath}}"
+							],
+							"path": [
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{trainerUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update By Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"{{trainerFirstName}}\",\r\n  \"lastName\": \"{{trainerLastName}}\",\r\n  \"specialization\": \"STRENGTH_TRAINING\",\r\n  \"isActive\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{trainersPath}}/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{trainersPath}}"
+							],
+							"path": [
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{trainerUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update active state",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"isActive\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}{{trainersPath}}/active-state/:username",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}{{trainersPath}}"
+							],
+							"path": [
+								"active-state",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "{{trainerUsername}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{trainerAccessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"let firstName = \"firstName\";\r",
+							"let lastName = \"lastName\";\r",
+							"\r",
+							"pm.collectionVariables.set(\"trainerFirstName\", firstName);\r",
+							"pm.collectionVariables.set(\"trainerLastName\", lastName);\r",
+							"\r",
+							"const specializations = [\"FUNCTIONAL_TRAINING\", \"KETTLEBELL_TRAINING\", \"ZUMBA\", \"OLYMPIC_WEIGHTLIFTING\", \"PILATES\", \"CIRCUIT_TRAINING\", \"SPINNING\", \"FLEXIBILITY_TRAINING\", \"BODYBUILDING\"];\r",
+							"\r",
+							"try {\r",
+							"    // Registering new Trainer\r",
+							"    const baseUrl = pm.environment.get(\"baseUrl\");\r",
+							"    const apiPath = pm.collectionVariables.get(\"apiPathV1\");\r",
+							"    const trainersPath = pm.collectionVariables.get(\"trainersPath\");\r",
+							"\r",
+							"    const response = await pm.sendRequest({\r",
+							"        url: baseUrl + apiPath + trainersPath,\r",
+							"        method: \"POST\",\r",
+							"        header: {\r",
+							"            'Accept': '*/*',\r",
+							"            'Content-Type': 'application/json',\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(\r",
+							"                {\r",
+							"                    \"firstName\": firstName,\r",
+							"                    \"lastName\": lastName,\r",
+							"                    \"specialization\": specializations[Math.floor(Math.random() * specializations.length)],\r",
+							"                    \"password\": pm.environment.get(\"password\")\r",
+							"                }\r",
+							"            )\r",
+							"        }\r",
+							"    });\r",
+							"    console.log(response.json());\r",
+							"\r",
+							"    let username = response.json().username;\r",
+							"    pm.collectionVariables.set(\"trainerUsername\", username);\r",
+							"\r",
+							"    const loginResponse = await pm.sendRequest({\r",
+							"        url: baseUrl + apiPath + \"/auth/login\",\r",
+							"        method: \"POST\",\r",
+							"        header: {\r",
+							"            'Accept': '*/*',\r",
+							"            'Content-Type': 'application/json',\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(\r",
+							"                {\r",
+							"                    \"username\": username,\r",
+							"                    \"password\": pm.environment.get(\"password\")\r",
+							"                }\r",
+							"            )\r",
+							"        }\r",
+							"    });\r",
+							"    console.log(loginResponse.json());\r",
+							"\r",
+							"    let accessToken = loginResponse.json().accessToken;\r",
+							"    let refreshToken = loginResponse.json().refreshToken;\r",
+							"\r",
+							"    pm.collectionVariables.set(\"trainerAccessToken\", accessToken);\r",
+							"    pm.collectionVariables.set(\"trainerRefreshToken\", refreshToken);\r",
+							"} catch (err) {\r",
+							"    console.error(err);\r",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Training API",
+			"item": [
+				{
+					"name": "Create New Training",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"protocolVersion": "http2"
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"traineeUsername\": \"{{traineeUsername}}\",\r\n  \"trainerUsername\": \"{{trainerUsername}}\",\r\n  \"trainingName\": \"New Training\",\r\n  \"date\": \"2025-12-07\",\r\n  \"duration\": 30\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{apiPathV1}}/trainings",
+							"host": [
+								"{{baseUrl}}{{apiPathV1}}"
+							],
+							"path": [
+								"trainings"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{trainerAccessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"let traineeFirstName = pm.collectionVariables.replaceIn(\"{{$randomFirstName}}\");\r",
+							"let traineeLastName = pm.collectionVariables.replaceIn(\"{{$randomLastName}}\");\r",
+							"\r",
+							"try {\r",
+							"    // Registering new Trainee\r",
+							"    const baseUrl = pm.environment.get(\"baseUrl\");\r",
+							"    const apiPath = pm.collectionVariables.get(\"apiPathV1\");\r",
+							"    const traineesPath = pm.collectionVariables.get(\"traineesPath\");\r",
+							"\r",
+							"    const response = await pm.sendRequest({\r",
+							"        url: baseUrl + apiPath + traineesPath,\r",
+							"        method: \"POST\",\r",
+							"        header: {\r",
+							"            'Accept': '*/*',\r",
+							"            'Content-Type': 'application/json',\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(\r",
+							"                {\r",
+							"                    \"firstName\": traineeFirstName,\r",
+							"                    \"lastName\": traineeLastName,\r",
+							"                    \"dob\": \"2000-01-01\",\r",
+							"                    \"address\": \"address\",\r",
+							"                    \"password\": pm.environment.get(\"password\")\r",
+							"                }\r",
+							"            )\r",
+							"        }\r",
+							"    });\r",
+							"    console.log(response.json());\r",
+							"\r",
+							"    let username = response.json().username;\r",
+							"    pm.collectionVariables.set(\"traineeUsername\", username);\r",
+							"} catch (err) {\r",
+							"    console.error(err);\r",
+							"}\r",
+							"\r",
+							"\r",
+							"let trainerFirstName = pm.collectionVariables.replaceIn(\"{{$randomFirstName}}\");\r",
+							"let trainerLastName = pm.collectionVariables.replaceIn(\"{{$randomLastName}}\");\r",
+							"const specializations = [\"FUNCTIONAL_TRAINING\", \"KETTLEBELL_TRAINING\", \"ZUMBA\", \"OLYMPIC_WEIGHTLIFTING\", \"PILATES\", \"CIRCUIT_TRAINING\", \"SPINNING\", \"FLEXIBILITY_TRAINING\", \"BODYBUILDING\"];\r",
+							"\r",
+							"try {\r",
+							"    // Registering new Trainer\r",
+							"    const baseUrl = pm.environment.get(\"baseUrl\");\r",
+							"    const apiPath = pm.collectionVariables.get(\"apiPathV1\");\r",
+							"    const trainersPath = pm.collectionVariables.get(\"trainersPath\");\r",
+							"\r",
+							"    const response = await pm.sendRequest({\r",
+							"        url: baseUrl + apiPath + trainersPath,\r",
+							"        method: \"POST\",\r",
+							"        header: {\r",
+							"            'Accept': '*/*',\r",
+							"            'Content-Type': 'application/json',\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(\r",
+							"                {\r",
+							"                    \"firstName\": trainerFirstName,\r",
+							"                    \"lastName\": trainerLastName,\r",
+							"                    \"specialization\": specializations[Math.floor(Math.random() * specializations.length)],\r",
+							"                    \"password\": pm.environment.get(\"password\")\r",
+							"                }\r",
+							"            )\r",
+							"        }\r",
+							"    });\r",
+							"    console.log(response.json());\r",
+							"\r",
+							"    let username = response.json().username;\r",
+							"    pm.collectionVariables.set(\"trainerUsername\", username);\r",
+							"\r",
+							"    const loginResponse = await pm.sendRequest({\r",
+							"        url: baseUrl + apiPath + \"/auth/login\",\r",
+							"        method: \"POST\",\r",
+							"        header: {\r",
+							"            'Accept': '*/*',\r",
+							"            'Content-Type': 'application/json',\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify(\r",
+							"                {\r",
+							"                    \"username\": username,\r",
+							"                    \"password\": pm.environment.get(\"password\")\r",
+							"                }\r",
+							"            )\r",
+							"        }\r",
+							"    });\r",
+							"    console.log(loginResponse.json());\r",
+							"\r",
+							"    let accessToken = loginResponse.json().accessToken;\r",
+							"    let refreshToken = loginResponse.json().refreshToken;\r",
+							"\r",
+							"    pm.collectionVariables.set(\"trainerAccessToken\", accessToken);\r",
+							"    pm.collectionVariables.set(\"trainerRefreshToken\", refreshToken);\r",
+							"} catch (err) {\r",
+							"    console.error(err);\r",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiPathV1",
+			"value": "/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "traineesPath",
+			"value": "/trainees",
+			"type": "string"
+		},
+		{
+			"key": "trainersPath",
+			"value": "/trainers",
+			"type": "string"
+		},
+		{
+			"key": "trainingPath\n",
+			"value": "/trainings",
+			"type": "string"
+		},
+		{
+			"key": "trainingTypePath",
+			"value": "/training-types",
+			"type": "string"
+		},
+		{
+			"key": "traineeFirstName",
+			"value": ""
+		},
+		{
+			"key": "traineeLastName",
+			"value": ""
+		},
+		{
+			"key": "randomDob",
+			"value": ""
+		},
+		{
+			"key": "traineeUsername",
+			"value": ""
+		},
+		{
+			"key": "trainerFirstName",
+			"value": ""
+		},
+		{
+			"key": "trainerLastName",
+			"value": ""
+		},
+		{
+			"key": "trainerUsername",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "traineeAccessToken",
+			"value": ""
+		},
+		{
+			"key": "traineeRefreshToken",
+			"value": ""
+		},
+		{
+			"key": "trainerAccessToken",
+			"value": ""
+		},
+		{
+			"key": "trainerRefreshToken",
+			"value": ""
+		},
+		{
+			"key": "newDob",
+			"value": ""
+		},
+		{
+			"key": "newAddress",
+			"value": ""
+		}
+	]
+}

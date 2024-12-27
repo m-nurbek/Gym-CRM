@@ -1,0 +1,125 @@
+{
+	"info": {
+		"_postman_id": "f70e5bef-8ed8-4ac4-abbb-3f081e7a1ddc",
+		"name": "Load Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39144813"
+	},
+	"item": [
+		{
+			"name": "Attempt Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Parse JSON body and retrieve access token\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('accessToken');\r",
+							"    pm.expect(jsonData).to.have.property('refreshToken');\r",
+							"\r",
+							"    pm.environment.set('accessToken', jsonData.accessToken);\r",
+							"    pm.environment.set('refreshToken', jsonData.refreshToken);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"let firstName = \"firstName\";\r",
+					"let lastName = \"lastName\";\r",
+					"let username = firstName + \".\" + lastName;\r",
+					"pm.environment.set(\"username\", username);\r",
+					"\r",
+					"try {\r",
+					"    const response = await pm.sendRequest({\r",
+					"        url: pm.environment.get(\"baseUrl\") + \"/api/v1/trainees\",\r",
+					"        method: \"POST\",\r",
+					"        header: {\r",
+					"            'Accept': '*/*',\r",
+					"            'Content-Type': 'application/json',\r",
+					"        },\r",
+					"        body: {\r",
+					"            mode: 'raw',\r",
+					"            raw: JSON.stringify(\r",
+					"                {\r",
+					"                    \"firstName\": firstName,\r",
+					"                    \"lastName\": lastName,\r",
+					"                    \"dob\": \"2000-01-01\",\r",
+					"                    \"address\": \"address\",\r",
+					"                    \"password\": pm.environment.get(\"password\")\r",
+					"                }\r",
+					"            )\r",
+					"        }\r",
+					"    });\r",
+					"\r",
+					"    console.log(response.json());\r",
+					"} catch (err) {\r",
+					"    console.error(err);\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
