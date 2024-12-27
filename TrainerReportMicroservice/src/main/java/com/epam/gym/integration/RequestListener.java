@@ -5,6 +5,7 @@ import com.epam.gym.dto.WorkloadDeleteRequest;
 import com.epam.gym.service.TrainerWorkloadService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.tracing.Span;
+import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,24 +26,46 @@ public class RequestListener {
 
     @RabbitListener(queues = "addReportQueue")
     public void handleAddRequest(Message message) {
-        Span newSpan = tracer.nextSpan().name("handleAddRequest").start();
-        try (var ws = tracer.withSpan(newSpan)) {
+        Span span = retrieveCurrentSpan(message, "addReportConsumer");
+        try (var ws = tracer.withSpan(span)) {
             String request = retrieveRequest(message);
             trainerWorkloadService.addWorkloadReport(processTrainerWorkloadRequest(request));
         } finally {
-            newSpan.end();
+            span.end();
         }
     }
 
     @RabbitListener(queues = "deleteReportQueue")
     public void handleDeleteRequest(Message message) {
-        Span newSpan = tracer.nextSpan().name("handleDeleteRequest").start();
-        try (var ws = tracer.withSpan(newSpan)) {
+        Span span = retrieveCurrentSpan(message, "deleteReportConsumer");
+        try (var ws = tracer.withSpan(span)) {
             String request = retrieveRequest(message);
             trainerWorkloadService.deleteWorkloadReport(processWorkloadDeleteRequest(request));
         } finally {
-            newSpan.end();
+            span.end();
         }
+    }
+
+    private Span retrieveCurrentSpan(Message message, String spanName) {
+        String traceId = message.getMessageProperties().getHeader("X-B3-TraceId");
+        String parentId = message.getMessageProperties().getHeader("X-B3-SpanId");
+        String isSampled = message.getMessageProperties().getHeader("X-B3-Sampled");
+        String spanId = tracer.nextSpan().context().spanId();
+
+        Span span;
+        if (traceId == null || parentId == null || isSampled == null) {
+            span = tracer.nextSpan().name(spanName).start();
+        } else {
+            TraceContext traceContextParent = tracer.traceContextBuilder()
+                    .sampled("1".equals(isSampled))
+                    .traceId(traceId)
+                    .spanId(spanId)
+                    .parentId(parentId)
+                    .build();
+            span = tracer.spanBuilder().name(spanName).setParent(traceContextParent).start();
+        }
+
+        return span;
     }
 
     private String retrieveRequest(Message message) {

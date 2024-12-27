@@ -5,6 +5,7 @@ import com.epam.gym.integration.dto.TrainerWorkloadRequest;
 import com.epam.gym.integration.dto.WorkloadDeleteRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,27 +32,38 @@ public class RabbitMQService {
     private final String ADD_REPORT_ROUTING_KEY = "add.report.key";
     private final String DELETE_REPORT_ROUTING_KEY = "delete.report.key";
 
-    @Async
+    @Async("tracingAsyncExecutor")
     public void sendReportRequest(TrainerWorkloadRequest request) {
-        try {
+        Span span = tracer.nextSpan().name("RabbitMQ message").start();
+        try (var ws = tracer.withSpan(span)) {
             String jsonRequest = objectMapper.writeValueAsString(request);
             sendReport(jsonRequest, EXCHANGE_NAME, ADD_REPORT_ROUTING_KEY);
+
+            span.tag("exchange", EXCHANGE_NAME);
+            span.tag("routingKey", ADD_REPORT_ROUTING_KEY);
         } catch (JsonProcessingException ex) {
             log.error("Failed to process json");
             throw new BadRequestException("Failed to process json");
+        } finally {
+            span.end();
         }
     }
 
-    @Async
+    @Async("tracingAsyncExecutor")
     public void sendDeleteReportRequest(WorkloadDeleteRequest request) {
-        try {
+        Span span = tracer.nextSpan().name("RabbitMQ message").start();
+        try (var ws = tracer.withSpan(span)) {
             String jsonRequest = objectMapper.writeValueAsString(request);
             sendReport(jsonRequest, EXCHANGE_NAME, DELETE_REPORT_ROUTING_KEY);
+
+            span.tag("exchange", EXCHANGE_NAME);
+            span.tag("routingKey", DELETE_REPORT_ROUTING_KEY);
         } catch (JsonProcessingException ex) {
             log.error("Failed to process json");
             throw new BadRequestException("Failed to process json");
+        } finally {
+            span.end();
         }
-
     }
 
     private void sendReport(String jsonRequest, String exchange, String routingKey) {
@@ -68,9 +80,16 @@ public class RabbitMQService {
         return message -> {
             MessageProperties messageProperties = message.getMessageProperties();
 
+            log.debug("Trying to retrieve traceId and spanId from currentTraceContext to set them as message headers");
             Optional.ofNullable(tracer.currentTraceContext().context()).ifPresent(traceContext -> {
-                messageProperties.setHeader("traceId", traceContext.traceId());
-                messageProperties.setHeader("spanId", traceContext.spanId());
+                String traceId = traceContext.traceId();
+                String spanId = traceContext.spanId();
+                boolean isSampled = traceContext.sampled();
+                messageProperties.setHeader("X-B3-TraceId", traceId);
+                messageProperties.setHeader("X-B3-SpanId", spanId);
+                messageProperties.setHeader("X-B3-Sampled", isSampled ? "1" : "0");
+
+                log.debug("Setting traceId: {}, spanId: {} and isSampled: {} as message headers", traceId, spanId, isSampled);
             });
 
             return message;

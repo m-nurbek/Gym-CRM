@@ -1,5 +1,8 @@
 package com.epam.gym.config;
 
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -13,13 +16,26 @@ import java.util.concurrent.Executor;
  */
 @Configuration
 @EnableAsync
+@AllArgsConstructor
 public class ThreadConfig implements AsyncConfigurer {
-    @Bean
+    private final Tracer tracer;
+
+    @Bean(name = "tracingAsyncExecutor")
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor threadPoolExecutor = new ThreadPoolTaskExecutor();
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         threadPoolExecutor.setCorePoolSize(availableProcessors);
         threadPoolExecutor.setMaxPoolSize(availableProcessors * 3);
+        threadPoolExecutor.setTaskDecorator(runnable -> {
+            Span span = tracer.nextSpan().name("rabbitMqProducer").start();
+            return () -> {
+                try (var ws = tracer.withSpan(span)) {
+                    runnable.run();
+                } finally {
+                    span.end();
+                }
+            };
+        });
         threadPoolExecutor.initialize();
 
         return threadPoolExecutor;
