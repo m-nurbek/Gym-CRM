@@ -1,4 +1,4 @@
-Feature: Authentication
+Feature: Authentication endpoints
 
   Scenario Outline: Trainee Registration
     Given firstname: "<firstname>", lastname: "<lastname>" and password: "<password>"
@@ -20,13 +20,30 @@ Feature: Authentication
     Then the username should start with "Samuel.Johnson"
     Then the password is "NewPassword1!@"
 
-  Scenario: Trainee login
-    Given firstname: "Peter", lastname: "Griffin" and password: "Password1!@"
+  Scenario Outline: Incorrect registration
+    Given firstname: "<firstname>", lastname: "<lastname>" and password: "<password>"
+    When trainer registers
+    Then the status code is <statusCode>
+
+    Examples:
+      | firstname | lastname  | password                 | statusCode |
+      | Peter     | Griffin   | short                    | 400        |
+      | Pt        | Gg        | o1@3Ort                  | 400        |
+      | aad       | ber       | incorrectformat2321@2@   | 400        |
+
+  Scenario Outline: Trainee login
+    Given firstname: "<firstname>", lastname: "<lastname>" and password: "<password>"
     When trainee registers
 
-    When login with username: "Peter.Griffin" and password: "Password1!@"
-    Then the status code is 200
+    When login with username: "<username>" and password: "<password>"
+    Then the status code is <statusCode>
     Then access token and refresh token are valid
+
+    Examples:
+    | firstname | lastname  | username          | password        | statusCode |
+    | Peter     | Griffin   | Peter.Griffin     | Password1!@     | 200        |
+    | Pt        | Gg        | Pt.Gg             | dfdeD!@13t      | 200        |
+    | aad       | ber       | aad.ber           | shortdD2321@2@  | 200        |
 
   Scenario: Trainer login
     Given firstname: "Lois", lastname: "Griffin" and password: "Password1!@"
