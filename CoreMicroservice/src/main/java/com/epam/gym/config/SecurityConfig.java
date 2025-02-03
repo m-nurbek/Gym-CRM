@@ -4,13 +4,15 @@ import com.epam.gym.config.filter.BruteForceProtectorFilter;
 import com.epam.gym.config.filter.JwtFilter;
 import com.epam.gym.dto.UserDto;
 import com.epam.gym.service.UserService;
+import com.epam.gym.util.annotation.DevelopmentProfile;
+import com.epam.gym.util.annotation.LocalProfile;
+import com.epam.gym.util.annotation.ProductionProfile;
+import com.epam.gym.util.annotation.StagingProfile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -28,7 +30,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
@@ -90,6 +91,8 @@ public class SecurityConfig {
     }
 
     @Bean
+    @DevelopmentProfile
+    @LocalProfile
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -132,11 +135,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile({"prod", "stg"})
-    @Order(1)
+    @ProductionProfile
+    @StagingProfile
     public SecurityFilterChain filterChainForProduction(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         return http
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                // TODO: configure the csrf for production environment
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new CorsConfiguration();
 
@@ -151,7 +155,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/refresh-token"
+                                "/api/v1/auth/refresh-token",
+
+                                "/actuator/**"
                         ).permitAll()
                         .requestMatchers(
                                 HttpMethod.POST,

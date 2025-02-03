@@ -3,6 +3,4 @@ LABEL authors="Nurbek Malikov"
 WORKDIR /app
 COPY target/CoreMicroservice-1.1.0.jar .
 
-EXPOSE 8082
-ENV SPRING_PROFILES_ACTIVE=dev
 ENTRYPOINT ["java", "-jar", "./CoreMicroservice-1.1.0.jar"]

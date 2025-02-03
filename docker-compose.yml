@@ -1,11 +1,7 @@
 name: gym-compose-app
-# TODO: change the profile of the core microservice to production. Remember to setup the security of the /actuator endpoint
-# TODO: mongodb for some reason doesn't work. Deal with it!
-# TODO: I want the logs to go to grafana!
-# TODO: I want the CI/CD pipeline
-# TODO: I want to push my application to the cloud
-# TODO: It's highly important to change the README.md file, make it much more user-friendly
-# TODO: Do not forget about linkedin!
+# TODO: Send logs to grafana
+# TODO: Setup the CI/CD pipeline
+# TODO: Push the application to the cloud
 services:
   postgres:
     image: postgres:latest
@@ -39,6 +35,8 @@ services:
       - ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
     networks:
       - gym-app-network
+    depends_on:
+      - zipkin
 
   zipkin:
     image: openzipkin/zipkin:latest
@@ -51,15 +49,21 @@ services:
   core-app:
     build: CoreMicroservice/
     ports:
-      - target: 8082
-        published: 8082
+      - target: 8080
+        published: 8080
     environment:
       - RABBITMQ_HOST=rabbitmq
       - EUREKA_CLIENT_URL_DEFAULT_ZONE=http://eureka:8761/eureka
       - ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
       - POSTGRES_DATASOURCE_URL=postgres:5432/gymDB
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - gym-app-network
+    depends_on:
+      - rabbitmq
+      - zipkin
+      - eureka
+      - postgres
 
   trainer-report-app:
     build: TrainerReportMicroservice/
@@ -75,6 +79,8 @@ services:
     depends_on:
       - rabbitmq
       - zipkin
+      - core-app
+      - eureka
 
   api-gateway:
     build: ApiGateway/
@@ -86,6 +92,11 @@ services:
         published: 8888
     networks:
       - gym-app-network
+    depends_on:
+      - core-app
+      - trainer-report-app
+      - zipkin
+      - eureka
 
 networks:
   gym-app-network:

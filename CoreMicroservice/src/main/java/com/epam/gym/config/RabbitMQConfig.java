@@ -24,18 +24,17 @@ public class RabbitMQConfig {
 
     @Bean
     public Exchange exchange() {
-        return new TopicExchange("workloadReportExchange", false, false);
+        return new TopicExchange("workloadReportExchange", true, false);
     }
-
-    // Queue Beans
+    
     @Bean
     public Queue trainerWorkloadQueue() {
-        return new Queue(TRAINER_WORKLOAD_QUEUE, false);
+        return new Queue(TRAINER_WORKLOAD_QUEUE, true);
     }
 
     @Bean
     public Queue deleteWorkloadQueue() {
-        return new Queue(DELETE_WORKLOAD_QUEUE, false);
+        return new Queue(DELETE_WORKLOAD_QUEUE, true);
     }
 
     @Bean
