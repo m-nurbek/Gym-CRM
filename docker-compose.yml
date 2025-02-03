@@ -1,0 +1,94 @@
+name: gym-compose-app
+# TODO: change the profile of the core microservice to production. Remember to setup the security of the /actuator endpoint
+# TODO: mongodb for some reason doesn't work. Deal with it!
+# TODO: I want the logs to go to grafana!
+# TODO: I want the CI/CD pipeline
+# TODO: I want to push my application to the cloud
+# TODO: It's highly important to change the README.md file, make it much more user-friendly
+# TODO: Do not forget about linkedin!
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - target: 5432
+        published: 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=gymDB
+    networks:
+      - gym-app-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    ports:
+      - target: 15672
+        published: 15672
+    networks:
+      - gym-app-network
+
+  eureka:
+    build: EurekaServer/
+    ports:
+      - target: 8761
+        published: 8761
+    environment:
+      - EUREKA_INSTANCE_HOSTNAME=eureka
+      - ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+    networks:
+      - gym-app-network
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - target: 9411
+        published: 9411
+    networks:
+      - gym-app-network
+
+  core-app:
+    build: CoreMicroservice/
+    ports:
+      - target: 8082
+        published: 8082
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - EUREKA_CLIENT_URL_DEFAULT_ZONE=http://eureka:8761/eureka
+      - ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+      - POSTGRES_DATASOURCE_URL=postgres:5432/gymDB
+    networks:
+      - gym-app-network
+
+  trainer-report-app:
+    build: TrainerReportMicroservice/
+    ports:
+      - target: 8900
+        published: 8900
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - EUREKA_CLIENT_URL_DEFAULT_ZONE=http://eureka:8761/eureka
+      - ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+    networks:
+      - gym-app-network
+    depends_on:
+      - rabbitmq
+      - zipkin
+
+  api-gateway:
+    build: ApiGateway/
+    environment:
+      - EUREKA_CLIENT_URL_DEFAULT_ZONE=http://eureka:8761/eureka
+      - ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+    ports:
+      - target: 8888
+        published: 8888
+    networks:
+      - gym-app-network
+
+networks:
+  gym-app-network:
+
+volumes:
+  db-data:

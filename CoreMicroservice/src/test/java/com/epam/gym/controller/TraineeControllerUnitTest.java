@@ -9,7 +9,9 @@ import com.epam.gym.dto.response.TraineeUpdateResponseDto;
 import com.epam.gym.service.TraineeService;
 import com.epam.gym.service.UserService;
 import com.epam.gym.service.WebAuthService;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -40,6 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application-test.properties")
 class TraineeControllerUnitTest {
+    @Rule
+    public Timeout globalTimeout = new Timeout(10, TimeUnit.SECONDS);
     @Autowired
     private MockMvc mockMvc;
     @MockBean

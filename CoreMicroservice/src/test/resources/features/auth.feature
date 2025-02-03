@@ -1,5 +1,6 @@
 Feature: Authentication endpoints
 
+  @positive
   Scenario Outline: Trainee Registration
     Given firstname: "<firstname>", lastname: "<lastname>" and password: "<password>"
     When trainee registers
@@ -13,6 +14,7 @@ Feature: Authentication endpoints
       | Rock      | Johnson   | Rock.Johnson  | PsdafA1!@dsaf | 201        |
       | No        | Name      | No.Name       | TraewreQa@21! | 201        |
 
+  @positive
   Scenario: Trainer Registration
     Given firstname: "Samuel", lastname: "Johnson" and password: "NewPassword1!@"
     When trainer registers
@@ -20,6 +22,7 @@ Feature: Authentication endpoints
     Then the username should start with "Samuel.Johnson"
     Then the password is "NewPassword1!@"
 
+  @negative
   Scenario Outline: Incorrect registration
     Given firstname: "<firstname>", lastname: "<lastname>" and password: "<password>"
     When trainer registers
@@ -31,6 +34,7 @@ Feature: Authentication endpoints
       | Pt        | Gg        | o1@3Ort                  | 400        |
       | aad       | ber       | incorrectformat2321@2@   | 400        |
 
+  @positive
   Scenario Outline: Trainee login
     Given firstname: "<firstname>", lastname: "<lastname>" and password: "<password>"
     When trainee registers
@@ -45,6 +49,7 @@ Feature: Authentication endpoints
     | Pt        | Gg        | Pt.Gg             | dfdeD!@13t      | 200        |
     | aad       | ber       | aad.ber           | shortdD2321@2@  | 200        |
 
+  @positive
   Scenario: Trainer login
     Given firstname: "Lois", lastname: "Griffin" and password: "Password1!@"
     When trainer registers
@@ -53,6 +58,7 @@ Feature: Authentication endpoints
     Then the status code is 200
     Then access token and refresh token are valid
 
+  @positive
   Scenario: Trainee wants to change password, refresh token and logout
     Given firstname: "Rick", lastname: "Sanchez" and password: "Password1!@"
     When trainee registers
@@ -73,6 +79,7 @@ Feature: Authentication endpoints
 
 # ---------------------------------------------------------------------------------
 
+  @negative
   Scenario: Negative scenario when trainee tries to login with incorrect password
     Given firstname: "Peter", lastname: "Griffin" and password: "Password1!@"
     When trainee registers
@@ -83,6 +90,7 @@ Feature: Authentication endpoints
     When login with username: "Peter.Griffin" and password: "IncorrectPassword1!@"
     Then the status code is 401
 
+  @negative
   Scenario: Negative scenario when trainer tries to login with incorrect password
     Given firstname: "Peter", lastname: "Griffin" and password: "Password1!@"
     When trainer registers

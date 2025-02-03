@@ -1,4 +1,7 @@
-FROM ubuntu:latest
-LABEL authors="Nurbek"
+FROM amazoncorretto:21 AS production
+LABEL authors="Nurbek Malikov"
+WORKDIR /app
+COPY target/TrainerReportMicroservice-1.1.0.jar .
 
-ENTRYPOINT ["top", "-b"]
+EXPOSE 8900
+ENTRYPOINT ["java", "-jar", "./TrainerReportMicroservice-1.1.0.jar"]
