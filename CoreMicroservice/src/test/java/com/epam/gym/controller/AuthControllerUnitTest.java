@@ -2,7 +2,9 @@ package com.epam.gym.controller;
 
 import com.epam.gym.dto.response.JwtTokenResponseDto;
 import com.epam.gym.service.WebAuthService;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -24,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application-test.properties")
 class AuthControllerUnitTest {
+    @Rule
+    public Timeout globalTimeout = new Timeout(10, TimeUnit.SECONDS);
     @Autowired
     private MockMvc mockMvc;
     @MockBean

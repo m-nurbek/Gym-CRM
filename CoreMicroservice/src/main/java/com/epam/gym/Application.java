@@ -1,5 +1,9 @@
 package com.epam.gym;
 
+import com.epam.gym.util.annotation.DevelopmentProfile;
+import com.epam.gym.util.annotation.LocalProfile;
+import com.epam.gym.util.annotation.ProductionProfile;
+import com.epam.gym.util.annotation.StagingProfile;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +11,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 
 @Slf4j
 @SpringBootApplication
@@ -20,28 +23,28 @@ public class Application {
     }
 
     @Bean
-    @Profile("prod")
+    @ProductionProfile
     public Object productionWarningLog() {
         log.info("====================== RUNNING THE APPLICATION IN PRODUCTION MODE! ======================");
         return null;
     }
 
     @Bean
-    @Profile("stg")
-    public Object stagWarningLog() {
-        log.info("====================== RUNNING THE APPLICATION IN STG MODE! ======================");
+    @StagingProfile
+    public Object stagingWarningLog() {
+        log.info("====================== RUNNING THE APPLICATION IN STAGING MODE! ======================");
         return null;
     }
 
     @Bean
-    @Profile("local")
+    @LocalProfile
     public Object localWarningLog() {
         log.info("====================== RUNNING THE APPLICATION IN LOCAL MODE! ======================");
         return null;
     }
 
     @Bean
-    @Profile("dev")
+    @DevelopmentProfile
     public Object devWarningLog() {
         log.info("====================== RUNNING THE APPLICATION IN DEVELOPMENT MODE! ======================");
         return null;

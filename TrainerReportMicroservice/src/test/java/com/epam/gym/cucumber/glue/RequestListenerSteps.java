@@ -4,6 +4,7 @@ import com.epam.gym.integration.RequestListener;
 import com.epam.gym.repository.TrainerWorkloadRepository;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,15 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Nurbek on 05.01.2025
  */
+@RequiredArgsConstructor
 public class RequestListenerSteps {
     private final RequestListener requestListener;
     private final TrainerWorkloadRepository repository;
     private Exception exception;
-
-    public RequestListenerSteps(RequestListener requestListener, TrainerWorkloadRepository repository) {
-        this.requestListener = requestListener;
-        this.repository = repository;
-    }
 
     @When("the message comes to addReportQueue with message: {string}")
     public void whenMessageComesToAddReportQueue(String message) {
