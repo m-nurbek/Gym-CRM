@@ -1,6 +1,6 @@
 # Gym-CRM Application Documentation
 
-![Gym-CRM](https://github.com/user-attachments/assets/4c100587-ee7b-4c0d-a6e4-088c59424197)
+![image](https://github.com/user-attachments/assets/750de130-66a0-45f5-8006-f7888fc45e2d)
 
 ## Project Overview
 Gym-CRM is a robust Customer Relationship Management (CRM) system designed for gym and fitness centers. It leverages a microservices architecture to ensure scalability, reliability, and maintainability. The system includes the following microservices:
